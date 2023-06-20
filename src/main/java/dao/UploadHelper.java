@@ -24,7 +24,7 @@ public class UploadHelper {
         appPath = appPath.replace('\\', '/');
         String relativePath = "upload";
         String savePath = appPath + relativePath;
-        System.out.println(savePath+" svae path");
+        System.out.println(savePath+" save path");
         File folder = new File(savePath);
         if (!folder.exists()) {
             boolean created = folder.mkdirs(); // Create the folder and any necessary parent directories

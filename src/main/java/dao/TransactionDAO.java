@@ -68,6 +68,7 @@ public class TransactionDAO extends DBContext {
                         rs.getDate("createdAt"),
                         rs.getString("Description")
                 );
+
                 list.add(t);
             }
         } catch (SQLException e) {
@@ -97,15 +98,31 @@ public class TransactionDAO extends DBContext {
         return null;
     }
 
-    public List<Transaction> getAllByAccount(String account, int start, int end) {
+    public List<Transaction> getAllByAccount(String account, int limit, int offset) {
         List<Transaction> list = new ArrayList<>();
-        List<Transaction> list1 = new ArrayList<>();
-        TransactionDAO td = new TransactionDAO();
-        list = td.getAllByAccount(account);
-        for (int i = start; i < end; i++) {
-            list1.add(list.get(i));
+        String sql = "select * from transaction where accountId = ? \n"
+                + "limit ? offset ?;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, account);
+            st.setInt(2, limit);
+            st.setInt(3, offset);
+            
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Transaction t = new Transaction(
+                        rs.getInt("Id"),
+                        rs.getDouble("BuyPrice"),
+                        rs.getInt("BuyAmount"),
+                        rs.getDate("createdAt"),
+                        rs.getString("Description")
+                );
+
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
-        return list1;
+        return list;
     }
 
     public List<Transaction> getAllTransaction() {
@@ -128,6 +145,20 @@ public class TransactionDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return list;
+    }
+
+    public int getSizeByAccount(String userName) {
+        String sql = "SELECT count(*) FROM transaction WHERE accountID = ?";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, userName);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
     }
 
 }

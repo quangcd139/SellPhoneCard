@@ -66,8 +66,7 @@ public class HistoryBuyServlet extends HttpServlet {
         TransactionDAO td = new TransactionDAO();
         HttpSession sess = request.getSession();
         Account account = (Account) sess.getAttribute("account");
-        List<Transaction> list = td.getAllByAccount(account.getUserName());
-        int size = list.size();
+        int size = td.getSizeByAccount(account.getUserName());
         int soTrang = (size % 5 == 0) ? (size / 5) : (size / 5 + 1);
         //10
         //trang 3 end 11
@@ -81,9 +80,10 @@ public class HistoryBuyServlet extends HttpServlet {
         } else {
             page = Integer.parseInt(xpage);
         }
-        int start = (page - 1) * 5;
-        int end = Math.min(page * 5, size);
-        list = td.getAllByAccount(account.getUserName(), start, end);
+       int limit = 5; 
+       int offset = (page - 1) * limit;
+      
+        List<Transaction> list = td.getAllByAccount(account.getUserName(),limit ,offset );
         request.setAttribute("list", list);
         request.setAttribute("soTrang", soTrang);
         request.getRequestDispatcher("historybuy.jsp").forward(request, response);

@@ -47,7 +47,6 @@ public class UploadFile extends HttpServlet {
             throws ServletException, IOException {
         String appPath = request.getServletContext().getRealPath("");
         appPath = appPath.replace('\\', '/');
-        System.out.println(appPath);
         List<String> fileUrls = UploadHelper.upload(request);
         System.out.println(fileUrls.get(0));
         List<Card> listCard = CardDAO.ImportExcel(appPath + fileUrls.get(0));
