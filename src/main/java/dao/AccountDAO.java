@@ -75,7 +75,7 @@ public class AccountDAO {
 
     public void updateNewPass(String acc, String password) {
         try {
-            String strSelect = "UPDATE accounts\n"
+            String strSelect = "UPDATE account\n"
                     + "SET Password=? \n"
                     + "WHERE Account=? ;";
             Connection cnn = (new DBContext()).connection;

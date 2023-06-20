@@ -127,6 +127,11 @@
             .denomination-btns button:hover {
                 background-color: #23527c;
             }
+            
+            .denomination-btns button.active {
+                background-color: #4caf50;
+                color: greenyellow;
+            }
 
             /* Quantity input */
             label {
@@ -162,42 +167,42 @@
                 border-radius: 8px;
                 cursor: pointer;
                 font-size: 20px;
-          
 
-                </style>
-    </head>
-    <body>
-    <center>
-        <div class="form">
-            <h3>Choose one denomination</h3>
-            <div class="denomination-btns">
-                <button type="button" onclick="selectDenomination(20000)" id="denomination20000">20k</button>
-                <button type="button" onclick="selectDenomination(50000)" id="denomination50000">50k</button><br><br>
-                <button type="button" onclick="selectDenomination(100000)" id="denomination100000">100k</button>
-                <button type="button" onclick="selectDenomination(200000)" id="denomination200000">200k</button>
-                <button type="button" onclick="selectDenomination(500000)" id="denomination500000">500k</button>
-                <input type="hidden" id="denomination" name="denomination">
+            </style>
+        </head>
+        
+        <body>
+        <center>
+            <div class="form">
+                <h3>Choose one denomination</h3>
+                <div class="denomination-btns">
+                    <button type="button" onclick="selectDenomination(20000)" id="denomination20000">20k</button>
+                    <button type="button" onclick="selectDenomination(50000)" id="denomination50000">50k</button><br><br>
+                    <button type="button" onclick="selectDenomination(100000)" id="denomination100000">100k</button>
+                    <button type="button" onclick="selectDenomination(200000)" id="denomination200000">200k</button>
+                    <button type="button" onclick="selectDenomination(500000)" id="denomination500000">500k</button>
+                    <input type="hidden" id="denomination" name="denomination">
+                </div>
+                <br>
+                <h3>Choose quantity</h3>
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" value="1" name="quantity" min="1" required="">
+                <br><br>
+
             </div>
-            <br>
-            <h3>Choose quantity</h3>
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" value="1" name="quantity" min="1" required="">
-            <br><br>
-            
-        </div>
-    </center>
-    <br><br>
-    <script>
-        function selectDenomination(value) {
-            var denominationButtons = document.querySelectorAll('.denomination-btns button');
-            for (var i = 0; i < denominationButtons.length; i++) {
-                denominationButtons[i].classList.remove('active');
+        </center>
+        <br><br>
+        <script>
+            function selectDenomination(value) {
+                var denominationButtons = document.querySelectorAll('.denomination-btns button');
+                for (var i = 0; i < denominationButtons.length; i++) {
+                    denominationButtons[i].classList.remove('active');
+                }
+                document.getElementById('denomination').value = value;
+                var selectedButton = document.getElementById('denomination' + value);
+                selectedButton.classList.add('active');
             }
-            document.getElementById('denomination').value = value;
-            var selectedButton = document.getElementById('denomination' + value);
-            selectedButton.classList.add('active');
-        }
-        function selectSupplier(supplierId) {
+            function selectSupplier(supplierId) {
                 var supplierImages = document.querySelectorAll('.supplier-btns img');
                 var selectedImage = document.getElementById(supplierId);
 
@@ -212,7 +217,7 @@
                 // Set the supplier value in the hidden input field
                 document.getElementById('supplier').value = supplierId;
             }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
 

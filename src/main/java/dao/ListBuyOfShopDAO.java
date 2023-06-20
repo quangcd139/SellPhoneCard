@@ -16,7 +16,7 @@ public class ListBuyOfShopDAO extends DBContext {
     public List<Product> getAllProduct() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT *\n"
-                + "FROM product where status!=0 order by ExpirationDate,Supplier;";
+                + "FROM product order by ExpirationDate,Supplier;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -28,6 +28,7 @@ public class ListBuyOfShopDAO extends DBContext {
                 p.setSupplier(rs.getString("Supplier"));
                 p.setDescription(rs.getString("Description"));
                 p.setCreatedAt(rs.getDate("createdAt"));
+                p.setStatus(rs.getBoolean("status"));
                 list.add(p);
             }
         } catch (SQLException e) {

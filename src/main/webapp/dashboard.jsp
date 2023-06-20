@@ -164,7 +164,7 @@
                                     </div>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="logout">
+                                    <a class="nav-link" href="login">
                                         <span class="no-icon">Log out</span>
                                     </a>
                                 </li>

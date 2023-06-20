@@ -14,7 +14,6 @@
         <title>Body Page</title>
         <link href="img/favicon.ico" rel="icon">
 
-        <!-- Customized Bootstrap Stylesheet -->
         <link href="css/style.css" rel="stylesheet">
         <link href="css/logoCard.css" rel="stylesheet">
         <script type="text/javascript">
@@ -29,7 +28,6 @@
                 // Set the supplier value in the hidden input field
                 document.getElementById('supplier').value = supplierId;
             }
-
 
         </script>
     </head>
@@ -129,9 +127,10 @@
                 <center>
                     <%@include file="buyCard.jsp" %>
                     <button type="submit" onclick="return validateAndShowForm()">show detail</button><br><br>
-                    <h3>${err}</h3>
+                    <h3 id="err">${err}</h3>
                 </center>
                 <%@include file="detailForm.jsp"%>
+                
             </div>
         </div>
         <!-- Featured End -->

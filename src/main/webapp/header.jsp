@@ -195,9 +195,9 @@
                                     <div class="col-lg-9">
                                         <a href="home" class="nav-item nav-link" style="float: left;">Home</a>
                                         <a href="shop" class="nav-item nav-link" style="float: left;">Shopping</a>
-                                        <a href="myshop" class="nav-item nav-link" style="float: left;">My Shop</a>
-                                        <a href="cart" class="nav-item nav-link" style="float: left;">Cart</a>
-                                        <a href="thanhtoan?pids=0" class="nav-item nav-link" style="float: left;">Checkout</a>
+<!--                                        <a href="myshop" class="nav-item nav-link" style="float: left;">My Shop</a>
+                                        <a href="cart" class="nav-item nav-link" style="float: left;">Cart</a>-->
+                                        <a href="home" class="nav-item nav-link" style="float: left;">nap tien</a>
                                         <a href="myhistorybill" class="nav-item nav-link" style="float: left;">History Buy</a>
                                     </div>
 

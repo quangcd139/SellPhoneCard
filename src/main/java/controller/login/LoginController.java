@@ -69,7 +69,6 @@ public class LoginController extends HttpServlet {
             }
             //check if login is valid
             boolean checkAccount = isValidLogin(account, pass);
-
             if (isAcitive && checkAccount && checkCaptcha) {
                 HttpSession session = request.getSession();
                 session.setAttribute("account", account);

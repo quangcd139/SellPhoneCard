@@ -34,7 +34,15 @@ public class Product {
         this.image = image;
     }
 
-    public Product(String supplier, double menhGia, int quantity,int id) {
+    public Product(String supplier, double menhGia, int quantity, int id, boolean status) {
+        this.supplier = supplier;
+        this.amount = quantity;
+        this.sellPrice = menhGia;
+        this.id = id;
+        this.status = status;
+    }
+
+    public Product(String supplier, double menhGia, int quantity, int id) {
         this.supplier = supplier;
         this.amount = quantity;
         this.sellPrice = menhGia;

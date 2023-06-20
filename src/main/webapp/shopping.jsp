@@ -14,27 +14,23 @@
         <title>JSP Page</title>
         <!-- Favicon -->
 
-
-        <script type="text/javascript">
-            function doAddCart(id, name, username) {
-                if (!!username) {
-                    if (confirm("You sure you want add " + name + " to cart ?")) {
-//                    window.location = "check?action=delete&id="+id;
-                        window.location = "addcart?idproc=" + id;
-                        window.alert("Add to cart successful!");
-                    }
-
-                } else {
-                    window.alert("You must login!");
-                    window.location = "login";
-                }
-
-
-            }
-
-        </script>
         <!-- Customized Bootstrap Stylesheet -->
         <link href="css/style.css" rel="stylesheet">
+        <link href="css/logoCard.css" rel="stylesheet">
+        <script type="text/javascript">
+            function selectSupplier(supplierId) {
+                var supplierImages = document.querySelectorAll('.supplier-btns img').;
+                var selectedImage = document.getElementById(supplierId);
+                // Remove 'selected' class from all images
+                supplierImages.forEach(function (img) {
+                    img.classList.remove('selected');
+                });
+                selectedImage.classList.add('selected');
+                // Set the supplier value in the hidden input field
+                document.getElementById('supplier').value = supplierId;
+            }
+        </script>
+
     </head>
     <body>
         <!-- Shop Start -->
@@ -188,61 +184,26 @@
                                 </div>
                             </div>
                         </div>
-                        <c:forEach items="${list}" var="p">
-                            <c:set var="pid" value="${p.id}" />
-                            <c:set var="idproc" value="${p.id}" />
-                            <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+
+                        <c:forEach items="${suppliers}" var="s">
+                            <div class="col-lg-4 col-md-3 col-sm-2 pb-1">
                                 <div class="product-item bg-light mb-4">
                                     <div class="product-img position-relative overflow-hidden">
-                                        <img class="img-fluid w-100" src="${p.image}" alt="">
-                                        <div class="product-action">
-                                            <a class="btn btn-outline-dark btn-square" href="" onclick="doAddCart('${p.id}', '${p.name}', '${sessionScope.infor.username}')"><i class="fa fa-shopping-cart"></i></a>
-                                            <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
-                                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
-                                            <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                        <div class="supplier-btns">
+                                        <img style="height: 100px;width: 100px;" src="imageLogo/${s.image}" onclick="selectSupplier('${s.supplier}')"
+                                             id="${s.supplier}">
+                                        <input type="hidden" id="supplier" name="supplier">
                                         </div>
                                     </div>
-
-                                    <div class="text-center py-4">
-                                        <c:set var="detailid" value="${p.id}" />
-                                        <a class="h6 text-decoration-none text-truncate" href="productdetail?detailid=${p.id}">${p.name}</a>
-                                        <div class="d-flex align-items-center justify-content-center mt-2">
-
-                                            <h5 style="color: #ee4d2d"><s:formatNumber value="${p.price}" type="currency"/></h5>
-                                            <h5 style="margin-left: 5px;">VND</h5>
-                                            <h6 class="text-muted ml-2"></h6> 
-                                            <small>(${p.quantity})</small>
-                                            <!--<del>$123.00</del>-->
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-center mb-1">
-                                            <c:forEach begin="1" end="${p.rate}" step="1" var="i">
-                                                <small class="fa fa-star text-primary mr-1"></small>
-                                            </c:forEach>
-                                            <c:forEach begin="${p.rate}" end="4" step="1" var="i">
-                                                <small class="far fa-star text-primary mr-1"></small>
-                                            </c:forEach>
-
-                                        </div>
-                                    </div>
-
                                 </div>
                             </div>
+                        </c:forEach>           
+                        <%@include file="buyCard.jsp" %>
+                        <button type="submit" onclick="return validateAndShowForm()">show detail</button><br><br>
+                        <h3 id="err">${err}</h3>
+                        <%@include file="detailForm.jsp"%>
 
-                        </c:forEach>                
 
-
-
-                        <div class="col-12">
-                            <nav>
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item disabled"><a class="page-link" href="#">Previous</span></a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                </ul>
-                            </nav>
-                        </div>
                     </div>
                 </div>
                 <!-- Shop Product End -->

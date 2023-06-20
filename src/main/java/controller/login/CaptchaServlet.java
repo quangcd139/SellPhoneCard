@@ -26,35 +26,36 @@ public class CaptchaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CapchaDAO captchaDAO = new CapchaDAO();
         String captcha = captchaDAO.getCapcha();
-        int width = 100, height = 35;
-        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = bufferedImage.createGraphics();
-        graphics.setFont(new Font("Arial", Font.BOLD, 20));
-        graphics.setColor(new Color(210, 180, 140));
-        graphics.fillRect(0, 0, width, height);
-        graphics.setColor(new Color(255, 255, 255));
-        graphics.drawString(captcha, 20, 25);
-        // Apply noise to the captcha image
-        applyNoise(bufferedImage);
-//        
-//        addRandomLines(bufferedImage);
-        Color lineColor = new Color(255, 255, 255);
-        graphics.setColor(lineColor);
-        int strokeWidth = 2;
-        graphics.setStroke(new BasicStroke(strokeWidth));
-        graphics.drawLine(10, 13, 90, 13);
-        graphics.drawLine(10, 22, 90, 22);
-        // Set the response content type
-        response.setContentType("image/jpeg");
-
-        // Write the captcha image to the response output stream
-        OutputStream outputStream = response.getOutputStream();
-        ImageIO.write(bufferedImage, "jpeg", outputStream);
-        outputStream.close();
-
-        // Store the captcha value in the session
-        HttpSession session = request.getSession(true);
-        session.setAttribute("captcha", captcha);
+        if (captcha != null) {
+            int width = 100, height = 35;
+            BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = bufferedImage.createGraphics();
+            graphics.setFont(new Font("Arial", Font.BOLD, 20));
+            graphics.setColor(new Color(210, 180, 140));
+            graphics.fillRect(0, 0, width, height);
+            graphics.setColor(new Color(255, 255, 255));
+            graphics.drawString(captcha, 20, 25);
+            // Apply noise to the captcha image
+            applyNoise(bufferedImage);
+            // addRandomLines(bufferedImage);
+            Color lineColor = new Color(255, 255, 255);
+            graphics.setColor(lineColor);
+            int strokeWidth = 2;
+            graphics.setStroke(new BasicStroke(strokeWidth));
+            graphics.drawLine(10, 13, 90, 13);
+            graphics.drawLine(10, 22, 90, 22);
+            // Set the response content type
+            response.setContentType("image/jpeg");
+            // Write the captcha image to the response output stream
+            OutputStream outputStream = response.getOutputStream();
+            ImageIO.write(bufferedImage, "jpeg", outputStream);
+            outputStream.close();
+            // Store the captcha value in the session
+            HttpSession session = request.getSession(true);
+            session.setAttribute("captcha", captcha);
+        } else {
+            
+        }
     }
 
     private void applyNoise(BufferedImage image) {

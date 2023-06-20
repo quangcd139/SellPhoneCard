@@ -96,9 +96,8 @@
                     </table>
                 </div>
             </form>
-
         </c:forEach>
-        <!--<a style="text-decoration: none" class="return-button" onclick="window.location.href = 'home.jsp'">Return</a>-->
+        <a style="text-decoration: none" class="return-button" onclick="window.location.href = 'myhistorybill'">Return</a>
         <%@include file="footer.jsp" %>
     </body>
 </html>

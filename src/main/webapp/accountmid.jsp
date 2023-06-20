@@ -114,7 +114,7 @@
                         </div>
                         <label class="labels">${requestScope.succ}</label>
                         <div class="col-md-7" style="float: right;">
-                            <h3 style="color: red;">${requestScope.err1}</h3>
+                            <h4 style="color: red;">${requestScope.err1}</h4>
                             <input type="submit" value="Change Password">
                         </div>
 

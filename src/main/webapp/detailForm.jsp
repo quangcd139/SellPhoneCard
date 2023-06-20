@@ -16,6 +16,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"/>
+        <%
+            ListBuyOfShopDAO l = new ListBuyOfShopDAO();
+            List<Product> productList = l.getAllProduct();
+        %>
+
         <script>
             // Define a global variable to hold the product data
             var productList = [];
@@ -24,25 +29,9 @@
             function processProductData(data) {
                 productList = data;
             }
+            processProductData(<%= new Gson().toJson(productList)%>);
         </script>
-        <%
-//            // Retrieve the product data from the server
-            ListBuyOfShopDAO l = new ListBuyOfShopDAO();
-            List<Product> productList = l.getAllProduct();
-//            Product p = null;
-//            
-//            if(request.getParameter("supplier")!=null){
-//                String supplier = request.getParameter("supplier");
-//                double sellPrice = 20000;
-//
-//                for (Product p2 : productList) {
-//                    if (p2.getSupplier().equals(supplier) && p2.getSellPrice() == sellPrice) {
-//                        p = p2;
-//                        break;
-//                    }
-//                }
-//            }
-        %>
+
     </head>
     <body>
         <style>
@@ -118,7 +107,6 @@
                 var supplierInputValue = supplierInput.value;
                 newDenomination.value = denominationInput.value;
 
-                processProductData(<%= new Gson().toJson(productList) %>);
                 var description;
                 var expirationDate;
                 for (var i = 0; i < productList.length; i++) {
@@ -128,7 +116,7 @@
                         var supplier = obj["supplier"];
                         if (sellPrice == denominationInput.value && supplier == supplierInputValue) {
                             description = obj["description"];
-                            expirationDate =obj["expirationDate"];
+                            expirationDate = obj["expirationDate"];
                         }
                     }
                 }
@@ -162,9 +150,44 @@
 
                 return true;
             }
+            function checkStatus() {
+                var supplierInput = document.getElementById("supplier").value;
+                var denominationInput = document.getElementById("denomination").value;
+                var quantityInput = document.getElementById("quantity").value;
+                outerLoop:for (var i = 0; i < productList.length; i++) {
+                    var obj = productList[i];
+                    for (var key in obj) {
+                        var sellPrice = obj["sellPrice"];
+                        var supplier = obj["supplier"];
+                        var expirationDate = obj["expirationDate"];
+                        var amount = obj["amount"];
+                        var status = obj["status"];
+                        var check=false;
+                        if (sellPrice == denominationInput && supplier == supplierInput) {
+                            if (quantityInput >= amount) {
+                                if (amount == 0) {
+                                    alert("san pham het hang");
+                                } else {
+                                    alert("so luong hang trong kho chi con " + amount +
+                                            "vui long nhap lai");
+                                }
+                                return false;
+                            }
+                            check=true;
+                            break outerLoop;
+                        }
+                    }
+                }
+                if(check==false){
+                    alert("san pham chua co trong kho");
+                    return false;
+                }
+                return true;
+            }
             function validateAndShowForm() {
+                var checkStat = checkStatus();
                 var isValid = validateForm();
-                if (isValid) {
+                if (isValid && checkStat) {
                     showAnotherForm();
                 }
                 return isValid;

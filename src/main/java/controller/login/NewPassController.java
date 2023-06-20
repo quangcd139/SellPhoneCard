@@ -2,13 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package controller;
+package controller.login;
 
 import dao.AccountDAO;
-import dao.CardDAO;
-import dao.ListBuyOfShopDAO;
-import dao.ProductDAO;
-import dao.TransactionDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,17 +13,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Account;
-import model.Product;
+import model.Hashing;
 
 /**
  *
- * @author PC
+ * @author Administrator
  */
-@WebServlet(name = "BuyingServlet", urlPatterns = {"/buying"})
-public class BuyingServlet extends HttpServlet {
+@WebServlet(name = "NewPassController", urlPatterns = {"/newPass"})
+public class NewPassController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,10 +42,10 @@ public class BuyingServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet BuyingServlet</title>");
+            out.println("<title>Servlet NewPassController</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet BuyingServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet NewPassController at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -67,51 +63,7 @@ public class BuyingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ListBuyOfShopDAO l = new ListBuyOfShopDAO();
-        //get data form home.jsp
-        HttpSession sess = request.getSession();
-        String supplier = request.getParameter("supplier");
-        String menhGia = request.getParameter("denomination");
-        String quantity = request.getParameter("quantity");
-        //chuyen doi du lieu
-        double giaThe = Double.parseDouble(menhGia);
-        int soLuong = Integer.parseInt(quantity);
-        //lay account dang nhap
-        Account account = (Account) sess.getAttribute("account");
-        //kiem tra tai khoan co du tien mua khong
-        double total = (giaThe * soLuong);
-        if (account.getMoney() < total) {
-            request.setAttribute("suppliers", l.getAllSupplier());
-            request.setAttribute("err", "You don't have enough money");
-            request.getRequestDispatcher("home.jsp").forward(request, response);
-            return;
-        }
-        //tru tien cua tai khoan
-        AccountDAO ad = new AccountDAO();
-        ad.updateMoney(account.getUserName(), total, account.getMoney());
-        //lay product duoc mua
-        ProductDAO p1 = new ProductDAO();
-        Product product = p1.getProductIdBySupplier(supplier,giaThe);
-        //thêm vào transaction table
-        TransactionDAO ts = new TransactionDAO();
-        ts.addTransaction(new Product(supplier, giaThe,
-                soLuong, product.getId()),
-                account.getUserName());
-//        giảm số lượng thẻ trong product table 
-//        và set status = 0 nếu số lượng về 0
-        ProductDAO p = new ProductDAO();
-        p.updateAmount(soLuong, product);
-        //đánh dấu thẻ trong Card table (productId,transactionId)
-        int transactionId = ts.getLastId();
-        CardDAO cd = new CardDAO();
-        cd.updateStatusCard(product.getId(), transactionId,
-                product.getSellPrice(), soLuong);
-
-        //chuyen trang
-        request.setAttribute("suppliers", l.getAllSupplier());
-        request.setAttribute("err", "buy sucess");
-        request.getRequestDispatcher("home.jsp").forward(request, response);
-
+        processRequest(request, response);
     }
 
     /**
@@ -125,7 +77,42 @@ public class BuyingServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        HttpSession sess = request.getSession();
+        Account account = (Account) sess.getAttribute("repassAccount");
+        Account account1 = (Account) sess.getAttribute("account");
+        String newPass = request.getParameter("pass");
+        String rePass = request.getParameter("rePass");
+        AccountDAO acc = new AccountDAO();
+
+        if (newPass.equals(rePass)) {
+            
+            Hashing hashing = new Hashing();
+            String encrytedPass = "";
+            try {
+                encrytedPass = hashing.encrypt(rePass);
+            } catch (Exception ex) {
+                Logger.getLogger(NewPassController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            if (request.getParameter("mode") != null) {
+                acc.updateNewPass(account1.getUserName(), encrytedPass);
+                request.setAttribute("err1", "change password successfull");
+                request.getRequestDispatcher("account.jsp").forward(request, response);
+            } else {
+                acc.updateNewPass(account.getUserName(), encrytedPass);
+                request.setAttribute("err", "change password successfull");
+                request.getRequestDispatcher("login/login.jsp").forward(request, response);
+            }
+        } else {
+            if (request.getParameter("mode") != null) {
+                request.setAttribute("err1", "pass and re-pass not equals");
+                request.getRequestDispatcher("account.jsp").forward(request, response);
+            } else {
+                request.setAttribute("err", "pass and re-pass not equals");
+                request.getRequestDispatcher("login/changePassword.jsp").forward(request, response);
+            }
+        }
+
     }
 
     /**

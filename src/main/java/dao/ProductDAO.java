@@ -42,14 +42,21 @@ public class ProductDAO extends DBContext {
     }
 
     public void updateAmount(int quantity, Product p) {
-        String sql = "UPDATE product\n"
-                + "SET amount= ?\n"
-                + "WHERE id=?;";
+        String sql = "";
+        if (p.getAmount() == quantity) {
+            sql = "UPDATE product\n"
+                    + "SET amount=?, status=0 \n"
+                    + "WHERE id=?;";
+        } else {
+            sql = "UPDATE product\n"
+                    + "SET amount= ?\n"
+                    + "WHERE id=?;";
+        }
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setInt(1, p.getAmount()-quantity);
+            st.setInt(1, p.getAmount() - quantity);
             st.setInt(2, p.getId());
             st.execute();
-            
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -80,11 +87,5 @@ public class ProductDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return list;
-    }
-    public static void main(String[] args) {
-        ProductDAO p =new ProductDAO();
-        for (Product p1 : p.getAllProduct()) {
-            System.out.println(p1.getId());
-        }
     }
 }
