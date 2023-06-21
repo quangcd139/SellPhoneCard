@@ -195,8 +195,8 @@
                                     <div class="col-lg-9">
                                         <a href="home" class="nav-item nav-link" style="float: left;">Home</a>
                                         <a href="shop" class="nav-item nav-link" style="float: left;">Shopping</a>
-<!--                                        <a href="myshop" class="nav-item nav-link" style="float: left;">My Shop</a>
-                                        <a href="cart" class="nav-item nav-link" style="float: left;">Cart</a>-->
+                                        <!--                                        <a href="myshop" class="nav-item nav-link" style="float: left;">My Shop</a>
+                                                                                <a href="cart" class="nav-item nav-link" style="float: left;">Cart</a>-->
                                         <a href="home" class="nav-item nav-link" style="float: left;">nap tien</a>
                                         <a href="myhistorybill" class="nav-item nav-link" style="float: left;">History Buy</a>
                                     </div>
@@ -221,7 +221,10 @@
                     <div style="width: 300px;float: right;">
                         <div style="">
                             <a href="accountinfor" style="float: left;padding: 10px;"><img style="background-color: #ffffff;padding: 10px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptNy43NTMgMTguMzA1Yy0uMjYxLS41ODYtLjc4OS0uOTkxLTEuODcxLTEuMjQxLTIuMjkzLS41MjktNC40MjgtLjk5My0zLjM5My0yLjk0NSAzLjE0NS01Ljk0Mi44MzMtOS4xMTktMi40ODktOS4xMTktMy4zODggMC01LjY0NCAzLjI5OS0yLjQ4OSA5LjExOSAxLjA2NiAxLjk2NC0xLjE0OCAyLjQyNy0zLjM5MyAyLjk0NS0xLjA4NC4yNS0xLjYwOC42NTgtMS44NjcgMS4yNDYtMS40MDUtMS43MjMtMi4yNTEtMy45MTktMi4yNTEtNi4zMSAwLTUuNTE0IDQuNDg2LTEwIDEwLTEwczEwIDQuNDg2IDEwIDEwYzAgMi4zODktLjg0NSA0LjU4My0yLjI0NyA2LjMwNXoiLz48L3N2Zz4="></a>
-                            <h4 style="display:inline; color: rgb(255, 255, 255); font-size: 18px;float: left;padding-top: 20px;">Welcome ${sessionScope.account.userName}</h4>
+                            <h4 style="display:inline; color: rgb(255, 255, 255); font-size: 18px;float: left;padding-top: 20px;">Welcome 
+                                <c:if test="${sessionScope.account.userName==null}">guest</c:if>
+                                <c:if test="${sessionScope.account.userName!=null}">${sessionScope.account.userName}</c:if>
+                                              </h4>
                         </div>
                         <a href="login" style="display: inline-block;float: right;padding: 10px;"><img style="background-color: #ffffff;padding: 10px;" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTYgOXYtNGw4IDctOCA3di00aC04di02aDh6bS0xNi03djIwaDE0di0yaC0xMnYtMTZoMTJ2LTJoLTE0eiIvPjwvc3ZnPg=="></a>
 

@@ -12,7 +12,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import model.Account;
 import model.Product;
 
 /**
@@ -60,6 +62,12 @@ public class ShopServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession sess = request.getSession();
+        Account account1 = (Account) sess.getAttribute("account");
+        if (account1 == null) {
+            response.sendRedirect("login");
+            return;
+        }
         ListBuyOfShopDAO lb = new ListBuyOfShopDAO();
         List<Product> suppliers = lb.getAllSupplier();
         request.setAttribute("suppliers", suppliers);

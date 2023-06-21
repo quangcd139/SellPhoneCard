@@ -70,10 +70,11 @@ public class CardDAO extends DBContext {
         return list;
     }
 
-    public static List<Card> ImportExcel(String path) throws IOException {
+   public static List<Card> ImportExcel(String path) throws IOException {
         List<Card> cards = new ArrayList<Card>();
+        InputStream inp;
         try {
-            InputStream inp = new FileInputStream(path); // format lại tên nhà mạng + price
+            inp = new FileInputStream(path); // format lại tên nhà mạng + price
             HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
             Sheet sheet = wb.getSheetAt(0);
             Row row;
@@ -81,16 +82,17 @@ public class CardDAO extends DBContext {
             for (int i = 1; i < sheet.getLastRowNum(); i++) {
                 row = sheet.getRow(i);
                 if (row != null) {
-                    Cell seriCell = row.getCell(0);
-                    Cell codeCell = row.getCell(1);
-                    Cell priceCell = row.getCell(2);
-                    Cell expirationDateCell = row.getCell(3);
-                    Cell productIdCell = row.getCell(4);
+                    Cell idCell = row.getCell(0);
+                    Cell seriCell = row.getCell(1);
+                    Cell codeCell = row.getCell(2);
+                    Cell priceCell = row.getCell(3);
+                    Cell expirationDateCell = row.getCell(4);
+                    Cell productIdCell = row.getCell(5);
 
-                    if ( seriCell != null && codeCell != null
+                    if (idCell != null && seriCell != null && codeCell != null
                             && priceCell != null && expirationDateCell != null && productIdCell != null) {
 
-//                        int id = (int) idCell.getNumericCellValue();
+                        int id = (int) idCell.getNumericCellValue();
                         String seri = seriCell.getStringCellValue();
                         String code = codeCell.getStringCellValue();
                         double price = priceCell.getNumericCellValue();

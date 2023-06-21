@@ -68,6 +68,10 @@ public class AccountInforServlet extends HttpServlet {
         
         HttpSession sess = request.getSession();
         Account account1 = (Account) sess.getAttribute("account");
+        if(account1==null){
+            response.sendRedirect("login");
+            return;
+        }
 //        String newPass = request.getParameter("pass");
 //        String rePass = request.getParameter("rePass");
 //        AccountDAO acc = new AccountDAO();

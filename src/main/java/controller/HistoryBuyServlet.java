@@ -63,8 +63,14 @@ public class HistoryBuyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        TransactionDAO td = new TransactionDAO();
         HttpSession sess = request.getSession();
+        Account account1 = (Account) sess.getAttribute("account");
+        if(account1==null){
+            response.sendRedirect("login");
+            return;
+        }
+        
+        TransactionDAO td = new TransactionDAO();
         Account account = (Account) sess.getAttribute("account");
         int size = td.getSizeByAccount(account.getUserName());
         int soTrang = (size % 5 == 0) ? (size / 5) : (size / 5 + 1);
