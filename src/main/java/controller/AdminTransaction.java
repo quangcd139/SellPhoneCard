@@ -60,8 +60,13 @@ public class AdminTransaction extends HttpServlet {
     throws ServletException, IOException {
         TransactionDAO pd =new TransactionDAO();
         List<Transaction> transactions = pd.getAllTransaction();
+        int total =0;
+        for (Transaction t : transactions) {
+            total+=t.getBuyAmount()*t.getBuyPrice();
+        }
         request.setAttribute("transactions",transactions );
         request.setAttribute("check", 3);
+        request.setAttribute("total", total);
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     } 
 

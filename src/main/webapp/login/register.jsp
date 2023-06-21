@@ -123,13 +123,13 @@
 
         <form class="form" action="register" method="post">
             <div class="form-control w3layouts"> 
-                <input type="text" id="firstname" name="account" placeholder="Account" title="Please enter your First Name" required="" autocomplete="off">
+                <input value="${requestScope.acc_re}" type="text" id="firstname" name="account" placeholder="Account" title="Please enter your First Name" required="" autocomplete="off">
             </div>
             <div class="form-control agileinfo">	
-                <input type="password" class="lock" name="pass" placeholder="Password" id="password1" required="" autocomplete="off">
+                <input value="${requestScope.pass_re}" type="password" class="lock" name="pass" placeholder="Password" id="password1" required="" autocomplete="off">
             </div>
             <div class="form-control w3layouts">	
-                <input type="email" id="email" name="email" placeholder="mail@example.com" title="Please enter a valid email" required="" autocomplete="off">
+                <input value="${requestScope.email_re}" type="email" id="email" name="email" placeholder="mail@example.com" title="Please enter a valid email" required="" autocomplete="off">
             </div>
              <div class="recap_container">
                     <img id="captchaImg" src="CaptchaServlet" alt="captch"/>
@@ -139,7 +139,7 @@
             <input type="text" name="captcha"><br><br>		
 
             <input type="submit" class="register" value="Register">
-            <h4>${notice}</h4>
+            <h3 style="color:red;text-align: center;" >${notice}</h3>
         </form>
     </body>
 

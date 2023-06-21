@@ -47,6 +47,36 @@
             }
 
         </style>
+        <script>
+            $(document).ready(function () {
+                $('#page-size').change(function () {
+                    var page_size = $(this).val();
+                    var current_url = window.location.href;
+
+                    // Tạo một đối tượng FormData từ form hiện tại
+                    var form_data = new FormData($('#my-form')[0]);
+
+                    // Thêm giá trị limit mới vào FormData
+                    form_data.append('sl', page_size);
+
+                    // Sử dụng AJAX để gửi yêu cầu và nhận kết quả từ phía máy chủ
+                    $.ajax({
+                        url: current_url,
+                        type: 'GET',
+                        data: form_data,
+                        processData: false,
+                        contentType: false,
+                        success: function (result) {
+                            $('#content').html(result);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(textStatus, errorThrown);
+                        }
+                    });
+                });
+            });
+
+        </script>
     </head>
 
     <body>
@@ -92,7 +122,18 @@
                                     </table>
                                     <c:forEach begin="${1}" end="${soTrang}" var="i">
                                         <a class="${i==page?"active":""}" href="myhistorybill?page=${i}"> ${i} </a>
-                                    </c:forEach>
+
+                                    </c:forEach>  
+                                    <form method="GET" id="myForm" onchange="submitForm()" >
+                                        <label for="page-size">Hiển thị:</label>
+                                        <select id="page-size" name="sl">
+                                            <option value="3" ${limit == 3 ? 'selected' : ''}>3</option>
+                                            <option value="5" ${limit == 5 ? 'selected' : ''}>5</option>
+                                            <option value="10" ${limit == 10 ? 'selected' : ''}>10</option>
+                                        </select>
+<!--                                        <input type="submit" value="Áp dụng">-->
+                                        <!--<button type="button" >Submit</button>-->
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -124,5 +165,29 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+                                        function saveSelectedOption() {
+                                            var select = document.getElementById('mySelect');
+                                            var selectedOption = select.value;
+
+                                            // Lưu giá trị vào local storage
+                                            localStorage.setItem('selectedOption', selectedOption);
+                                        }
+
+// Khôi phục giá trị lựa chọn từ local storage khi tải lại trang
+                                        window.onload = function () {
+                                            var select = document.getElementById('mySelect');
+                                            var selectedOption = localStorage.getItem('selectedOption');
+
+                                            if (selectedOption) {
+                                                select.value = selectedOption;
+                                            }
+                                        };
+                                        function submitForm() {
+                                            var form = document.getElementById('myForm');
+                                            form.submit();
+                                        }
+
+    </script>
 </body>
 </html>

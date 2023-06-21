@@ -143,14 +143,14 @@
                     <label for="account"><svg class="icon">
                         <use xlink:href="#icon-user"></use>
                         </svg><span class="hidden">Account</span></label>
-                    <input autocomplete="username" id="login__username" type="text" name="account" class="form__input" placeholder="Username" required>
+                        <input value="${requestScope.acc}" autocomplete="account" id="login__username" type="text" name="account" class="form__input" placeholder="Username" required>
                 </div>
 
                 <div class="form__field">
                     <label for="pass"><svg class="icon">
                         <use xlink:href="#icon-lock"></use>
                         </svg><span class="hidden">Password</span></label>
-                    <input id="login__password" type="password" name="pass" class="form__input" placeholder="Password" required>
+                        <input value="${requestScope.pass}" autocomplete="pass" id="login__password" type="password" name="pass" class="form__input" placeholder="Password" required>
                 </div>
 
                 <div class="recap_container">

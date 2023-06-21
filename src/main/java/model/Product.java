@@ -28,6 +28,8 @@ public class Product {
     private Date deleteAt;
     private boolean status;
     private String accountId;
+    private Date updateAt;
+    
 
     public Product(String supplier, String image) {
         this.supplier = supplier;

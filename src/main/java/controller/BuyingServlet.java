@@ -67,9 +67,14 @@ public class BuyingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession sess = request.getSession();
+        Account account1 = (Account) sess.getAttribute("account");
+        if (account1 == null) {
+            response.sendRedirect("login");
+            return;
+        }
         ListBuyOfShopDAO l = new ListBuyOfShopDAO();
         //get data form home.jsp
-        HttpSession sess = request.getSession();
         String supplier = request.getParameter("supplier");
         String menhGia = request.getParameter("denomination");
         String quantity = request.getParameter("quantity");
@@ -83,12 +88,12 @@ public class BuyingServlet extends HttpServlet {
         if (account.getMoney() < total) {
             request.setAttribute("suppliers", l.getAllSupplier());
             request.setAttribute("err", "You don't have enough money");
-            request.getRequestDispatcher("home.jsp").forward(request, response);
+            request.getRequestDispatcher("shop.jsp").forward(request, response);
             return;
         }
         //tru tien cua tai khoan
         AccountDAO ad = new AccountDAO();
-        ad.updateMoney(account.getUserName(), total, account.getMoney());
+        ad.updateMoney(account.getUserName(), total, account.getMoney(),request);
         //lay product duoc mua
         ProductDAO p1 = new ProductDAO();
         Product product = p1.getProductIdBySupplier(supplier,giaThe);
@@ -106,11 +111,11 @@ public class BuyingServlet extends HttpServlet {
         CardDAO cd = new CardDAO();
         cd.updateStatusCard(product.getId(), transactionId,
                 product.getSellPrice(), soLuong);
-
+        sess.setAttribute("account", account);
         //chuyen trang
         request.setAttribute("suppliers", l.getAllSupplier());
         request.setAttribute("err", "buy sucess");
-        request.getRequestDispatcher("home.jsp").forward(request, response);
+        request.getRequestDispatcher("shop.jsp").forward(request, response);
 
     }
 

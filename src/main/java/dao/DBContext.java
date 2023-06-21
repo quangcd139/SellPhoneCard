@@ -23,8 +23,13 @@ public class DBContext {
             String url = "jdbc:mysql://localhost:3306/swp1";
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, pass);
+            System.out.println("success");
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Connect fail!");
         }
+    }
+            public static void main(String[] args) {
+        DBContext bContext = new DBContext();
+                System.out.println(bContext);
     }
 }

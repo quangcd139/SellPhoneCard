@@ -53,8 +53,36 @@
                     // Redirecting to the login page
                     window.location.href = "logout";
                 }
+                $(document).ready(function () {
+                    // Get the current page URL
+                    var url = window.location.href;
+
+                    // If the URL matches the dashboard link, add the "active" class to its <li> element
+
+                });
+
 
         </script>
+        <style>
+            table {
+                border-collapse: collapse;
+            }
+
+            th,
+            td {
+                padding: 10px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+
+            th {
+                background-color: #f2f2f2;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+        </style>
     </head>
 
     <body>
@@ -72,7 +100,7 @@
                         </a>
                     </div>
                     <ul class="nav">
-                        <li class="nav-item active">
+                        <li class="nav-item ">
                             <a class="nav-link" href="dashboard.jsp">
                                 <i class="nc-icon nc-chart-pie-35"></i>
                                 <p>Dashboard</p>
@@ -109,7 +137,7 @@
                 <!-- Navbar -->
                 <nav class="navbar navbar-expand-lg " color-on-scroll="500">
                     <div class="container-fluid">
-                        <a class="navbar-brand" href="dashboard.jsp"> Dashboard </a>
+                        <a class="navbar-brand" href="dashboard.jsp"> Admin </a>
                         <button href="" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-bar burger-lines"></span>
                             <span class="navbar-toggler-bar burger-lines"></span>
@@ -178,15 +206,15 @@
                 <div class="content">
                     <c:if test="${check==2}">
                         <table border="1">
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
-                            <th>4</th>
-                            <th>5</th>
-                            <th>6</th>
-                            <th>7</th>
-                            <th>8</th>
-                            <c:forEach items="${products}" var="p">
+                            <th>STT</th>
+                            <th>Tên</th>
+                            <th>Mệnh giá</th>
+                            <th>Số lượng</th>
+                            <th>Nhà mạng</th>
+                            <th>Ngày hết hạn</th>
+                            <th>Mô tả</th>
+                            <th>Ngày mua</th>
+                                <c:forEach items="${products}" var="p">
                                 <tr>
                                     <td>${p.id}</td>
                                     <td>${p.name}</td>
@@ -201,14 +229,16 @@
                         </table>
                     </c:if>
                     <c:if test="${check==3}">
+                        <h3 style="color: red;">Total money: ${total}</h3>
                         <table border="1">
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
-                            <th>4</th>
-                            <th>5</th>
-                            <th>6</th>
-                            <c:forEach items="${transactions}" var="p">
+                            <th>STT</th>
+                            <th>Mệnh giá</th>
+                            <th>Số lượng</th>
+                            <th>Ngày mua</th>
+                            <th>Description</th>
+                            <th>Account</th>
+                            <th>Details</th>
+                                <c:forEach items="${requestScope.transactions}" var="p">
                                 <tr>
                                     <td>${p.id}</td>
                                     <td>${p.buyPrice}</td>
@@ -216,10 +246,16 @@
                                     <td>${p.createdAt}</td>
                                     <td>${p.description}</td>
                                     <td>${p.accountId}</td>
+                                    <td><a class="btn btn-primary" href="detailHistory?id=${p.id}">Xem chi tiết</a></td>
                                 </tr>
                             </c:forEach>
                         </table>
+                        
                     </c:if>
+                    <c:forEach begin="${1}" end="${soTrang}" var="i">
+                        <a class="${i==page?"active":""}" href="myhistorybill?page=${i}"> ${i} </a>
+                    </c:forEach>
+
                     <c:if test="${check==1}">
                         <div class="container-fluid">
                             <div class="row">

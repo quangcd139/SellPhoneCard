@@ -53,6 +53,7 @@ public class RegisterController extends HttpServlet {
         String account = request.getParameter("account");
         String pass = request.getParameter("pass");
         String reciveEmail = request.getParameter("email");
+
         String capchaInput = request.getParameter("captcha");
 
         //hashing password
@@ -85,12 +86,20 @@ public class RegisterController extends HttpServlet {
         Account acc = new Account(account, encryptPass, reciveEmail,
                 "", "", 2, 100000.0, d, d, false);
         sess.setAttribute("registerAccount", acc);
-        
 
         //lay captcha tu session
         String capchaAnswer = (String) sess.getAttribute("captcha");
         //check valid captcha
         boolean checkCaptcha = capchaAnswer.equals(capchaInput);
+        if (!checkCaptcha) {
+            request.setAttribute("acc_re", account);
+            request.setAttribute("pass_re", pass);
+            request.setAttribute("email_re", reciveEmail);
+            
+            String notice = "captcha failed ";
+            request.setAttribute("notice", notice);
+            request.getRequestDispatcher("login/register.jsp").forward(request, response);
+        }
         //thong bao sau khi ko thoa man dk
         String notice = "";
         if (checkCaptcha && !checkValid) {

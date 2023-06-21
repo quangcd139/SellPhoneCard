@@ -10,33 +10,18 @@ import java.util.List;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
-import java.io.File;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
         maxFileSize = 1024 * 1024 * 50, // 50MB
         maxRequestSize = 1024 * 1024 * 50) // 50MB
 public class UploadHelper {
-
     // This function will single file or multiple files and return list of file url
     // File must be in the form-data with name "file"
     public static List<String> upload(HttpServletRequest request) {
         String appPath = request.getServletContext().getRealPath("");
-        appPath = appPath.replace('\\', '/');
-        String relativePath = "upload";
+        appPath = appPath.replace('\\', '/'); 
+        String relativePath = "upload" ; 
         String savePath = appPath + relativePath;
-        System.out.println(savePath+" save path");
-        File folder = new File(savePath);
-        if (!folder.exists()) {
-            boolean created = folder.mkdirs(); // Create the folder and any necessary parent directories
-            if (created) {
-                System.out.println("Folder created successfully.");
-            } else {
-                System.out.println("Failed to create the folder.");
-            }
-        } else {
-            System.out.println("Folder already exists.");
-        }
-        
         try {
             // creates the save directory if it does not exists
             java.io.File fileSaveDir = new java.io.File(savePath);

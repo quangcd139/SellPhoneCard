@@ -62,12 +62,7 @@ public class ShopServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession sess = request.getSession();
-        Account account1 = (Account) sess.getAttribute("account");
-        if (account1 == null) {
-            response.sendRedirect("login");
-            return;
-        }
+        
         ListBuyOfShopDAO lb = new ListBuyOfShopDAO();
         List<Product> suppliers = lb.getAllSupplier();
         request.setAttribute("suppliers", suppliers);

@@ -51,6 +51,7 @@ public class LoginController extends HttpServlet {
             //get user input form jsp
             String acc = request.getParameter("account");
             String pass = request.getParameter("pass");
+            
             String captchaInput = request.getParameter("captcha");
             //get captcha from servlet
             HttpSession sess = request.getSession();
@@ -58,6 +59,13 @@ public class LoginController extends HttpServlet {
             boolean checkCaptcha = false;
             if (captcha.equals(captchaInput)) {
                 checkCaptcha = true;
+            } else {
+                request.setAttribute("acc", acc);
+                request.setAttribute("pass", pass);
+                
+                String err = "captcha invalid";
+                request.setAttribute("err", err);
+                request.getRequestDispatcher("login/login.jsp").forward(request, response);
             }
 
             //check activation

@@ -73,31 +73,24 @@
 
                 <div class="table-container">
                     <table class="table">
+                        <th>Số seri:</th>
+                        <th>Mã thẻ:</th>
+                        <th>Mệnh giá:</th>
+                        <th>Ngày hết hạn:</th>
+                        <th>Ngày tạo:</th>
                         <tr>
-                            <th>Seri :</th>
                             <td>${c.seri}</td>
-                        </tr>
-                        <tr>
-                            <th>Mã thẻ:</th>
                             <td>${c.code}</td>
-                        </tr>
-                        <tr>
-                            <th>Giá: </th>
                             <td>${c.price}</td>
-                        </tr>
-                        <tr>
-                            <th>Ngày hết hạn:</th>
                             <td>${c.expirationDate}</td>
-                        </tr>
-                        <tr>
-                            <th>Ngày tạo:</th>
                             <td>${c.createdAt}</td>
                         </tr>
+
+
                     </table>
                 </div>
             </form>
         </c:forEach>
-        <a style="text-decoration: none" class="return-button" onclick="window.location.href = 'myhistorybill'">Return</a>
         <%@include file="footer.jsp" %>
     </body>
 </html>

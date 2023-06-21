@@ -30,6 +30,95 @@
             }
 
         </script>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+            /* Tùy chỉnh đường viền cho các hình ảnh */
+            img {
+                border: none;
+            }
+
+            /* Tùy chỉnh màu nền cho toàn bộ trang web */
+            body {
+                background-color: #f2f2f2;
+            }
+
+            /* Căn giữa tiêu đề chính của trang */
+            h1 {
+                text-align: center;
+                margin-top: 30px;
+                margin-bottom: 50px;
+            }
+
+            /* Tùy chỉnh kiểu chữ và khoảng cách cho chữ Số dư */
+            h6 {
+                font-weight: bold;
+                font-size: 18px;
+                color: red;
+                margin-top: 20px;
+                margin-bottom: 10px;
+                float: right;
+                padding-right: 60px;
+            }
+
+            /* Tùy chỉnh kiểu chữ và khoảng cách cho tiêu đề Choose one supplier */
+            h3 {
+                font-size: 24px;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+
+            /* Tùy chỉnh khoảng cách giữa các nút nhà cung cấp */
+            .col-lg-3 {
+                padding: 0 10px;
+            }
+
+            /* Tùy chỉnh kích thước ảnh nhà cung cấp */
+          
+
+            /* Thêm hiệu ứng khi di chuột qua nút nhà cung cấp */
+            .supplier-btns img:hover {
+                opacity: 0.8;
+            }
+
+            /* Tùy chỉnh khoảng cách giữa các phần tử trong form */
+            .container-fluid > div {
+                margin-bottom: 30px;
+            }
+
+            /* Tùy chỉnh khoảng cách giữa các phần tử trong center */
+            .choose > * {
+                margin-bottom: 20px;
+            }
+
+            /* Tùy chỉnh kích thước button show detail */
+            button[type="submit"] {
+                background-color: blue;
+                color: white;
+                font-size: 18px;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            /* Thêm hiệu ứng hover cho button show detail */
+            button[type="submit"]:hover {
+                background-color: darkblue;
+            }
+
+            /* Tùy chỉnh màu chữ cho thông báo lỗi */
+            #err {
+                color: red;
+            }
+
+            /* Style the "show detail" button */
+
+        </style>
     </head>
 
     <body>
@@ -102,36 +191,7 @@
 
         <!-- Featured Start -->
         <div method="post" action="buying" id="myForm">
-            <h1 style="text-align: center">Phone Card Order</h1>
-            <h4>Số dư: ${sessionScope.account.money}</h4>
-            <div class="container-fluid pt-5">
-                <h3>Choose one supplier</h3>
-                <div class="row px-xl-5 pb-3">
 
-                    <c:forEach items="${suppliers}" var="s">
-                        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-                            <div class="d-flex align-items-center bg-light mb-4" style="padding: 30px;">
-                                <h1 class="fa fa-check text-primary m-0 mr-3">
-                                    <div class="supplier-btns">
-                                        <img src="imageLogo/${s.image}" onclick="selectSupplier('${s.supplier}')"
-                                             id="${s.supplier}">
-                                        <input type="hidden" id="supplier" name="supplier">
-                                    </div>
-                                </h1>
-                            </div>
-                        </div>
-                    </c:forEach>
-
-                </div>
-
-                <center>
-                    <%@include file="buyCard.jsp" %>
-                    <button type="submit" onclick="return validateAndShowForm()">show detail</button><br><br>
-                    <h3 id="err">${err}</h3>
-                </center>
-                <%@include file="detailForm.jsp"%>
-                
-            </div>
         </div>
         <!-- Featured End -->
         <br><br><br>

@@ -4427,13 +4427,13 @@ input[type="button"].btn-block {
 .card-header {
   padding: 0.75rem 1.25rem;
   margin-bottom: 0;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: #009688;
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .card-footer {
   padding: 0.75rem 1.25rem;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: #009688;
   border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
@@ -6166,13 +6166,13 @@ button.bg-light:focus {
 }
 
 .bg-dark {
-  background-color: #3D464D !important;
+  background-color: #009688 !important;
 }
 
 a.bg-dark:hover, a.bg-dark:focus,
 button.bg-dark:hover,
 button.bg-dark:focus {
-  background-color: #262c31 !important;
+  background-color: #009688 !important;
 }
 
 .bg-white {

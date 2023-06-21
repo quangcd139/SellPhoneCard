@@ -14,7 +14,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import model.Card;
+import model.Product;
 
 /**
  *
@@ -45,16 +47,27 @@ public class UploadFile extends HttpServlet {
     // - file: File ( can be multiple )
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //get sellPrice,supplier
+        String supplier = request.getParameter("supplier");
+        String sellPrice_raw = request.getParameter("menhGia");
+        double sellPrice = Double.parseDouble(sellPrice_raw);
+
+        //get productId
+        int productId=0;
+        
+        
         String appPath = request.getServletContext().getRealPath("");
         appPath = appPath.replace('\\', '/');
+        System.out.println(appPath);
         List<String> fileUrls = UploadHelper.upload(request);
         System.out.println(fileUrls.get(0));
-        List<Card> listCard = CardDAO.ImportExcel(appPath + fileUrls.get(0));
+        CardDAO cd =new CardDAO();
+        cd.ImportExcel(appPath + fileUrls.get(0),
+                 sellPrice, supplier);
         
-        for (int i = 0; i < listCard.size(); i++) {
-            System.out.println(listCard.get(i).getSeri());
-            CardDAO.InsertData(listCard.get(i));
-        }
+        //update so luong san pham
+
+        //chuyen trang
         request.getRequestDispatcher("import.jsp").forward(request, response);
     }
 
@@ -71,7 +84,7 @@ public class UploadFile extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         processRequest(request, response);
+        processRequest(request, response);
     }
 
     /**

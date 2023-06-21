@@ -19,7 +19,7 @@
         <link href="css/logoCard.css" rel="stylesheet">
         <script type="text/javascript">
             function selectSupplier(supplierId) {
-                var supplierImages = document.querySelectorAll('.supplier-btns img').;
+                var supplierImages = document.querySelectorAll('.supplier-btns img');
                 var selectedImage = document.getElementById(supplierId);
                 // Remove 'selected' class from all images
                 supplierImages.forEach(function (img) {
@@ -30,7 +30,55 @@
                 document.getElementById('supplier').value = supplierId;
             }
         </script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+                padding: 20px;
+            }
 
+            h1 {
+                color: #333;
+            }
+
+            form {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .supplier-btns {
+                margin-bottom: 10px;
+            }
+
+            .supplier-btns img {
+                margin-right: 10px;
+                width: 150px;
+                height: 150px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            .selected {
+                border: 2px solid #4caf50;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 10px;
+                font-weight: bold;
+            }
+
+            button[type="submit"] {
+                padding: 10px 20px;
+                background-color: #4caf50;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
         <!-- Shop Start -->
@@ -77,79 +125,41 @@
                     <!-- Price End -->
 
                     <!-- Color Start -->
-                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by color</span></h5>
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by supplier</span></h5>
                     <div class="bg-light p-4 mb-30">
                         <form>
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                                 <input type="checkbox" class="custom-control-input" checked id="color-all">
-                                <label class="custom-control-label" for="price-all">All Color</label>
-                                <span class="badge border font-weight-normal">1000</span>
+                                <label class="custom-control-label" for="price-all">All supplier</label>
+                                <span class="badge border font-weight-normal">10</span>
                             </div>
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                                 <input type="checkbox" class="custom-control-input" checked id="color-1">
-                                <label class="custom-control-label" for="color-1">Black</label>
+                                <label class="custom-control-label" for="color-1">Viettel</label>
                                 <span class="badge border font-weight-normal">150</span>
                             </div>
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                                 <input type="checkbox" class="custom-control-input" checked id="color-2">
-                                <label class="custom-control-label" for="color-2">White</label>
+                                <label class="custom-control-label" for="color-2">Mobiphone</label>
                                 <span class="badge border font-weight-normal">295</span>
                             </div>
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                                 <input type="checkbox" class="custom-control-input" checked id="color-3">
-                                <label class="custom-control-label" for="color-3">Red</label>
+                                <label class="custom-control-label" for="color-3">Vinaphone</label>
                                 <span class="badge border font-weight-normal">246</span>
                             </div>
                             <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                                 <input type="checkbox" class="custom-control-input" checked id="color-4">
-                                <label class="custom-control-label" for="color-4">Blue</label>
+                                <label class="custom-control-label" for="color-4">VietNammobile</label>
                                 <span class="badge border font-weight-normal">145</span>
                             </div>
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                                <input type="checkbox" class="custom-control-input" checked id="color-5">
-                                <label class="custom-control-label" for="color-5">Green</label>
-                                <span class="badge border font-weight-normal">168</span>
-                            </div>
+
                         </form>
                     </div>
                     <!-- Color End -->
 
                     <!-- Size Start -->
-                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by size</span></h5>
-                    <div class="bg-light p-4 mb-30">
-                        <form>
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" checked id="size-all">
-                                <label class="custom-control-label" for="size-all">All Size</label>
-                                <span class="badge border font-weight-normal">1000</span>
-                            </div>
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" checked id="size-1">
-                                <label class="custom-control-label" for="size-1">XS</label>
-                                <span class="badge border font-weight-normal">150</span>
-                            </div>
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" checked id="size-2">
-                                <label class="custom-control-label" for="size-2">S</label>
-                                <span class="badge border font-weight-normal">295</span>
-                            </div>
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" checked id="size-3">
-                                <label class="custom-control-label" for="size-3">M</label>
-                                <span class="badge border font-weight-normal">246</span>
-                            </div>
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                                <input type="checkbox" class="custom-control-input" checked id="size-4">
-                                <label class="custom-control-label" for="size-4">L</label>
-                                <span class="badge border font-weight-normal">145</span>
-                            </div>
-                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                                <input type="checkbox" class="custom-control-input" checked id="size-5">
-                                <label class="custom-control-label" for="size-5">XL</label>
-                                <span class="badge border font-weight-normal">168</span>
-                            </div>
-                        </form>
-                    </div>
+
                     <!-- Size End -->
                 </div>
                 <!-- Shop Sidebar End -->
@@ -164,45 +174,31 @@
                                     <button class="btn btn-sm btn-light"><i class="fa fa-th-large"></i></button>
                                     <button class="btn btn-sm btn-light ml-2"><i class="fa fa-bars"></i></button>
                                 </div>
-                                <div class="ml-2">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" href="#">Latest</a>
-                                            <a class="dropdown-item" href="#">Popularity</a>
-                                            <a class="dropdown-item" href="#">Best Rating</a>
-                                        </div>
-                                    </div>
-                                    <div class="btn-group ml-2">
-                                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Showing</button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <a class="dropdown-item" href="#">10</a>
-                                            <a class="dropdown-item" href="#">20</a>
-                                            <a class="dropdown-item" href="#">30</a>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
-
-                        <c:forEach items="${suppliers}" var="s">
-                            <div class="col-lg-4 col-md-3 col-sm-2 pb-1">
-                                <div class="product-item bg-light mb-4">
-                                    <div class="product-img position-relative overflow-hidden">
-                                        <div class="supplier-btns">
-                                        <img style="height: 100px;width: 100px;" src="imageLogo/${s.image}" onclick="selectSupplier('${s.supplier}')"
-                                             id="${s.supplier}">
-                                        <input type="hidden" id="supplier" name="supplier">
-                                        </div>
+                        <div class="row px-xl-5 pb-3">
+                            <h3>Money: ${sessionScope.account.money}</h3>
+                            <c:forEach items="${suppliers}" var="s">
+                                <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                                    <div class="d-flex align-items-center mb-4" style="padding: 30px;">
+                                        <h1 class=" text-primary m-0 mr-3">
+                                            <div class="supplier-btns">
+                                                <img src="imageLogo/${s.image}" onclick="selectSupplier('${s.supplier}')"
+                                                     id="${s.supplier}">
+                                                <input type="hidden" id="supplier" name="supplier">
+                                            </div>
+                                        </h1>
                                     </div>
                                 </div>
-                            </div>
-                        </c:forEach>           
-                        <%@include file="buyCard.jsp" %>
-                        <button type="submit" onclick="return validateAndShowForm()">show detail</button><br><br>
-                        <h3 id="err">${err}</h3>
-                        <%@include file="detailForm.jsp"%>
+                            </c:forEach>
+                            <center style="margin-left:250px;">
+                                <%@include file="buyCard.jsp" %>
+                                <button type="submit" onclick="return validateAndShowForm()">show detail</button><br><br>
+                                <h3 id="err">${err}</h3>
+                            </center>
+                        </div>         
 
+                        <%@include file="detailForm.jsp"%>
 
                     </div>
                 </div>
