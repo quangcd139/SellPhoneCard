@@ -14,46 +14,11 @@ import model.Product;
 
 public class ProductDAO extends DBContext {
 
-    public Product getProductIdBySupplier(String supplier, double sellPrice) {
-        String sql = "SELECT * FROM product where supplier = ? and sellprice = ? order by ExpirationDate limit 1";
-        try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setString(1, supplier);
-            st.setDouble(2, sellPrice);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                Product p = new Product(
-                        rs.getInt("Id"),
-                        rs.getString("name"),
-                        rs.getDouble("SellPrice"),
-                        rs.getInt("Amount"),
-                        rs.getString("supplier"),
-                        rs.getString("image"),
-                        rs.getDate("ExpirationDate"),
-                        rs.getString("Description"),
-                        rs.getDate("createdAt"),
-                        rs.getDate("deleteAt"),
-                        rs.getBoolean("status"),
-                        rs.getString("accountId"),
-                        rs.getDate("updateAt"));
-                return p;
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
     public void updateAmount(int quantity, Product p) {
-        String sql = "";
-        if (p.getAmount() == quantity) {
-            sql = "UPDATE product\n"
-                    + "SET amount=?, status=0 \n"
-                    + "WHERE id=?;";
-        } else {
-            sql = "UPDATE product\n"
-                    + "SET amount= ?\n"
-                    + "WHERE id=?;";
-        }
+        String sql = "UPDATE product\n"
+                + "SET amount= ? "
+                + (p.getAmount() == quantity?",status=0 ":" ")
+                + "WHERE id=?;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setInt(1, p.getAmount() - quantity);
             st.setInt(2, p.getId());
@@ -66,8 +31,10 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getAllProduct() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM product order by ExpirationDate";
+        String sql = "SELECT * FROM swp1.product where status !=0 and ExpirationDate"
+                + " > ?  order by ExpirationDate;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setDate(1, new java.sql.Date((new Date()).getTime()));
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Product p = new Product(
@@ -91,8 +58,14 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+    public static void main(String[] args) {
+        ProductDAO pd =new ProductDAO();
+        for (Product p : pd.getAllProduct()) {
+            System.out.println(p.getExpirationDate());
+        }
+    }
 
-    void addProduct(Product p,Date expirationDate) {
+    void addProduct(Product p, Date expirationDate) {
         String sql = "insert into product (SellPrice,supplier,amount,"
                 + "Image,ExpirationDate,Description,createdAt,status)\n"
                 + "values(?,?,?,?,?,?,?,?);";
@@ -174,4 +147,33 @@ public class ProductDAO extends DBContext {
 //        ProductDAO pd = new ProductDAO();
 //        pd.addProduct(new Product(10, "", 20000, 0, "viettel", "viettel_logo.png", new Date(), "quwenqwe", null, null, false, "", null), new Date());
 //    }
+
+    public Product getProductById(String productId) {
+        String sql = "SELECT * FROM product where id = ?";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            int id = Integer.parseInt(productId);
+            st.setInt(1, id);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                Product p = new Product(
+                        rs.getInt("Id"),
+                        rs.getString("name"),
+                        rs.getDouble("SellPrice"),
+                        rs.getInt("Amount"),
+                        rs.getString("supplier"),
+                        rs.getString("image"),
+                        rs.getDate("ExpirationDate"),
+                        rs.getString("Description"),
+                        rs.getDate("createdAt"),
+                        rs.getDate("deleteAt"),
+                        rs.getBoolean("status"),
+                        rs.getString("accountId"),
+                        rs.getDate("updateAt"));
+                return p;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 }

@@ -48,33 +48,48 @@
 
         </style>
         <script>
-            $(document).ready(function () {
-                $('#page-size').change(function () {
-                    var page_size = $(this).val();
-                    var current_url = window.location.href;
+            function showAnotherForm(event) {
 
-                    // Tạo một đối tượng FormData từ form hiện tại
-                    var form_data = new FormData($('#my-form')[0]);
+                event.preventDefault(); // Prevent the default link behavior
+                var id = $(event.target).data('id'); // Get the ID from the data attribute
+                var url = 'detailHistory?id=' + id; // Construct the URL
 
-                    // Thêm giá trị limit mới vào FormData
-                    form_data.append('sl', page_size);
-
-                    // Sử dụng AJAX để gửi yêu cầu và nhận kết quả từ phía máy chủ
-                    $.ajax({
-                        url: current_url,
-                        type: 'GET',
-                        data: form_data,
-                        processData: false,
-                        contentType: false,
-                        success: function (result) {
-                            $('#content').html(result);
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            console.log(textStatus, errorThrown);
-                        }
-                    });
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (response) {
+                        displayCards(response);
+                        console.log(response);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle any errors that occur during the AJAX request
+                        console.error(error);
+                    }
                 });
-            });
+                function displayCards(response) {
+                    var anotherFormContainer = document.getElementById("anotherFormContainer");
+                    anotherFormContainer.style.display = "block";
+                    var product = response.product;
+                    var listCard = response.listCard;
+                    // Display product details
+
+                    // Display card details
+                    var table = $('#cardTable');
+                    for (var i = 0; i < listCard.length; i++) {
+                        var card = listCard[i];
+                        var row = $('<tr></tr>');
+                        row.append('<td>' + card.seri + '</td>');
+                        row.append('<td>' + card.code + '</td>');
+                        // Add more table cells for additional card properties
+                        table.append(row);
+                    }
+                    $('#menhGia').text(product.sellPrice);
+                    $('#nhaMang').text(product.supplier);
+                    $('#date').text(product.expirationDate);
+                }
+
+            }
+
 
         </script>
     </head>
@@ -114,12 +129,14 @@
                                                     <td>${db.buyAmount}</td>
                                                     <td>${db.createdAt}</td>
                                                     <td>${db.description}</td>
-                                                    <td><a class="btn btn-primary" href="detailHistory?id=${db.id}">Xem chi tiết</a></td>
-
+                                                    <td><a class="btn btn-primary detail-link" data-id="${db.id}" href="#" onclick="showAnotherForm(event)">Xem chi tiết</a>
+                                                    </td>
                                                 </tr>
                                             </c:forEach>
                                         </tbody>
                                     </table>
+                                    <%@include file="historyDetailForm.jsp" %>
+
                                     <c:forEach begin="${1}" end="${soTrang}" var="i">
                                         <a class="${i==page?"active":""}" href="myhistorybill?page=${i}"> ${i} </a>
 
@@ -131,7 +148,7 @@
                                             <option value="5" ${limit == 5 ? 'selected' : ''}>5</option>
                                             <option value="10" ${limit == 10 ? 'selected' : ''}>10</option>
                                         </select>
-<!--                                        <input type="submit" value="Áp dụng">-->
+                                        <!--                                        <input type="submit" value="Áp dụng">-->
                                         <!--<button type="button" >Submit</button>-->
                                     </form>
                                 </div>
@@ -162,10 +179,12 @@
     <script src="lib/tempusdominus/js/moment.min.js"></script>
     <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     <script>
+
                                         function saveSelectedOption() {
                                             var select = document.getElementById('mySelect');
                                             var selectedOption = select.value;

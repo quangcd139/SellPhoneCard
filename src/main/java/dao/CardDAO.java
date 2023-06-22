@@ -40,16 +40,15 @@ import java.util.logging.Logger;
  */
 public class CardDAO extends DBContext {
 
-    public void updateStatusCard(int productId, int transactionId, double price, int soLuong) {
+    public void updateStatusCard(int productId, int transactionId, int soLuong) {
         String sql = "UPDATE card\n"
                 + "SET transactionId = ?, isBuy = 1\n"
-                + "WHERE price=? and productId=? and isBuy = 0\n"
+                + "WHERE productId=? and isBuy = 0\n"
                 + "limit ?;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setInt(1, transactionId);
-            st.setDouble(2, price);
-            st.setInt(3, productId);
-            st.setInt(4, soLuong);
+            st.setInt(2, productId);
+            st.setInt(3, soLuong);
             st.execute();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -67,7 +66,8 @@ public class CardDAO extends DBContext {
                         rs.getString("Code"),
                         rs.getDouble("price"),
                         rs.getDate("ExpirationDate"),
-                        rs.getDate("CreatedAt"));
+                        rs.getDate("CreatedAt"),
+                        rs.getInt("ProductId"));
                 list.add(c);
             }
         } catch (SQLException e) {
@@ -135,7 +135,7 @@ public class CardDAO extends DBContext {
                             p.setSupplier(supplier);
                             p.setDescription("mua the nha mang " + supplier);
                             p.setImage(supplier + "_logo.png");
-                            p.setStatus(false);
+                            p.setStatus(true);
                             p.setCreatedAt(new java.sql.Date((new Date()).getTime()));//get date now
                             pd.addProduct(p,expirationDate);
                             productId = pd.getLastId();

@@ -123,138 +123,146 @@
             </header>
             <div class="modal-body">
                 <form action="buying" method="get">
-                    <h3>Detail information</h2>
-                        <label class="modal-label" for="nhaMang">Nhà mạng:</label>
-                        <input class="modal-input" type="text" id="nhaMang" name="supplier" readonly><br>
+                    <h3>Detail information</h3>
+                    <label class="modal-label" for="nhaMang">Nhà mạng:</label>
+                    <input class="modal-input" type="text" id="nhaMang" name="supplier" readonly><br>
 
-                        <label class="modal-label" for="menhGia">Mệnh giá:</label>
-                        <input class="modal-input" type="text" id="menhGia" name="denomination" readonly><br>
+                    <label class="modal-label" for="menhGia">Mệnh giá:</label>
+                    <input class="modal-input" type="text" id="menhGia" name="denomination" readonly><br>
 
-                        <label class="modal-label" for="soLuong">Số lượng:</label>
-                        <input class="modal-input" type="text" id="soLuong" name="quantity" readonly><br>
+                    <label class="modal-label" for="soLuong">Số lượng:</label>
+                    <input class="modal-input" type="text" id="soLuong" name="quantity" readonly><br>
 
-                        <label class="modal-label" for="mieuTa">Miêu tả:</label>
+                    <label class="modal-label" for="mieuTa">Miêu tả:</label>
 
-                        <input class="modal-input" type="text" id="mieuTa" value="" readonly><br>
-                        <label class="modal-label" for="hetHan">Ngày hết hạn:</label> 
-                        <input class="modal-input" type="text" id="hetHan" value="" readonly><br>
+                    <input class="modal-input" type="text" id="mieuTa" value="" readonly><br>
+                    <label class="modal-label" for="hetHan">Ngày hết hạn:</label> 
+                    <input class="modal-input" type="text" id="hetHan" value="" readonly><br>
+                    <input type="text" id="pId" name="id" hidden=""><br>
 
-                        <input class="submit" type="submit" value="Buy">
-                        </form>
+                    <input class="submit" type="submit" value="Buy">
+                </form>
 
-                        </div>
+            </div>
 
-                        </div>
+        </div>
 
-                        <script>
+        <script>
+            var id;
+            function showAnotherForm() {
+                var anotherFormContainer = document.getElementById("anotherFormContainer");
+                anotherFormContainer.style.display = "block";
+                var supplierInput = document.getElementById("supplier");
+                var newSupplier = document.getElementById("nhaMang");
+                newSupplier.value = supplierInput.value;
 
-                            function showAnotherForm() {
-                                var anotherFormContainer = document.getElementById("anotherFormContainer");
-                                anotherFormContainer.style.display = "block";
-                                var supplierInput = document.getElementById("supplier");
-                                var newSupplier = document.getElementById("nhaMang");
-                                newSupplier.value = supplierInput.value;
+                var denominationInput = document.getElementById("denomination");
+                var newDenomination = document.getElementById("menhGia");
+                var supplierInputValue = supplierInput.value;
+                newDenomination.value = denominationInput.value;
 
-                                var denominationInput = document.getElementById("denomination");
-                                var newDenomination = document.getElementById("menhGia");
-                                var supplierInputValue = supplierInput.value;
-                                newDenomination.value = denominationInput.value;
+                var description;
+                var expirationDate;
 
-                                var description;
-                                var expirationDate;
-                                for (var i = 0; i < productList.length; i++) {
-                                    var obj = productList[i];
-                                    for (var key in obj) {
-                                        var sellPrice = obj["sellPrice"];
-                                        var supplier = obj["supplier"];
-                                        if (sellPrice == denominationInput.value && supplier == supplierInputValue) {
-                                            description = obj["description"];
-                                            expirationDate = obj["expirationDate"];
-                                        }
-                                    }
+                outerLoop:for (var i = 0; i < productList.length; i++) {
+                    var obj = productList[i];
+                    for (var key in obj) {
+                        var sellPrice = obj["sellPrice"];
+                        var supplier = obj["supplier"];
+                        var productId = obj["id"];
+                        if (id == productId) {
+                            description = obj["description"];
+                            expirationDate = obj["expirationDate"];
+                            break outerLoop;
+                        }
+                    }
+                }
+
+                var quantityInput = document.getElementById("quantity");
+                var newQuantity = document.getElementById("soLuong");
+                newQuantity.value = quantityInput.value;
+
+                var description1 = document.getElementById("mieuTa");
+                description1.value = description;
+                var hetHan = document.getElementById("hetHan");
+                hetHan.value = expirationDate;
+                var pid = document.getElementById("pId");
+                pid.value = id;
+
+            }
+            function validateForm() {
+                var selectedSupplier = document.getElementById('supplier').value;
+                if (selectedSupplier === '') {
+                    alert('Chọn nhà mạng trước khi submit.');
+                    return false;
+                }
+                var selectedDenomination = document.getElementById('denomination').value;
+                if (selectedDenomination === '') {
+                    alert('Chọn mệnh giá trước khi submit.');
+                    return false;
+                }
+                var quantity = document.getElementById('quantity').value;
+                if (quantity === '') {
+                    alert('Chọn số lượng trước khi submit.');
+                    return false;
+                }
+
+                return true;
+            }
+            function checkStatus() {
+                var supplierInput = document.getElementById("supplier").value;
+                var denominationInput = document.getElementById("denomination").value;
+                var quantityInput = document.getElementById("quantity").value;
+                outerLoop:for (var i = 0; i < productList.length; i++) {
+                    var obj = productList[i];
+                    for (var key in obj) {
+                        var sellPrice = obj["sellPrice"];
+                        var supplier = obj["supplier"];
+                        var expirationDate = obj["expirationDate"];
+                        var amount = obj["amount"];
+                        var status = obj["status"];
+                        var pId = obj["id"];
+                        var check = false;
+                        if (sellPrice == denominationInput && supplier == supplierInput) {
+                            if (quantityInput > amount) {
+                                if (amount == 0) {
+                                    alert("san pham het hang");
+                                } else {
+                                    alert("so luong hang trong kho chi con " + amount +
+                                            "vui long nhap lai");
                                 }
-
-                                var quantityInput = document.getElementById("quantity");
-                                var newQuantity = document.getElementById("soLuong");
-                                newQuantity.value = quantityInput.value;
-
-                                var description1 = document.getElementById("mieuTa");
-                                description1.value = description;
-                                var hetHan = document.getElementById("hetHan");
-                                hetHan.value = expirationDate;
-
+                                return false;
                             }
-                            function validateForm() {
-                                var selectedSupplier = document.getElementById('supplier').value;
-                                if (selectedSupplier === '') {
-                                    alert('Chọn nhà mạng trước khi submit.');
-                                    return false;
-                                }
-                                var selectedDenomination = document.getElementById('denomination').value;
-                                if (selectedDenomination === '') {
-                                    alert('Chọn mệnh giá trước khi submit.');
-                                    return false;
-                                }
-                                var quantity = document.getElementById('quantity').value;
-                                if (quantity === '') {
-                                    alert('Chọn số lượng trước khi submit.');
-                                    return false;
-                                }
+                            id = pId;
+                            check = true;
+                            break outerLoop;
+                        }
+                    }
+                }
+                if (check == false) {
+                    alert("san pham chua co trong kho");
+                    return false;
+                }
+                return true;
+            }
+            function validateAndShowForm() {
+                var checkStat = checkStatus();
+                var isValid = validateForm();
+                if (isValid && checkStat) {
+                    showAnotherForm();
+                }
+                return isValid;
+            }
 
-                                return true;
-                            }
-                            function checkStatus() {
-                                var supplierInput = document.getElementById("supplier").value;
-                                var denominationInput = document.getElementById("denomination").value;
-                                var quantityInput = document.getElementById("quantity").value;
-                                outerLoop:for (var i = 0; i < productList.length; i++) {
-                                    var obj = productList[i];
-                                    for (var key in obj) {
-                                        var sellPrice = obj["sellPrice"];
-                                        var supplier = obj["supplier"];
-                                        var expirationDate = obj["expirationDate"];
-                                        var amount = obj["amount"];
-                                        var status = obj["status"];
-                                        var check = false;
-                                        if (sellPrice == denominationInput && supplier == supplierInput) {
-                                            if (quantityInput >= amount) {
-                                                if (amount == 0) {
-                                                    alert("san pham het hang");
-                                                } else {
-                                                    alert("so luong hang trong kho chi con " + amount +
-                                                            "vui long nhap lai");
-                                                }
-                                                return false;
-                                            }
-                                            check = true;
-                                            break outerLoop;
-                                        }
-                                    }
-                                }
-                                if (check == false) {
-                                    alert("san pham chua co trong kho");
-                                    return false;
-                                }
-                                return true;
-                            }
-                            function validateAndShowForm() {
-                                var checkStat = checkStatus();
-                                var isValid = validateForm();
-                                if (isValid && checkStat) {
-                                    showAnotherForm();
-                                }
-                                return isValid;
-                            }
-
-                            function closeForm() {
-                                var overlay = document.getElementById("overlay");
-                                var formContainer = document.getElementById("anotherFormContainer");
-                                overlay.style.display = "none";
-                                formContainer.style.display = "none";
-                            }
+            function closeForm() {
+                var overlay = document.getElementById("overlay");
+                var formContainer = document.getElementById("anotherFormContainer");
+                overlay.style.display = "none";
+                formContainer.style.display = "none";
+            }
 
 
 
-                        </script>
-                        </body>
-                        </html>
+        </script>
+    </body>
+</html>

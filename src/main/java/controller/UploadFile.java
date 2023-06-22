@@ -52,13 +52,9 @@ public class UploadFile extends HttpServlet {
         String sellPrice_raw = request.getParameter("menhGia");
         double sellPrice = Double.parseDouble(sellPrice_raw);
 
-        //get productId
-        int productId=0;
-        
         
         String appPath = request.getServletContext().getRealPath("");
         appPath = appPath.replace('\\', '/');
-        System.out.println(appPath);
         List<String> fileUrls = UploadHelper.upload(request);
         System.out.println(fileUrls.get(0));
         CardDAO cd =new CardDAO();

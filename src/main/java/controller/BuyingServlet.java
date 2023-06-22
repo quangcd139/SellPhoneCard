@@ -68,8 +68,8 @@ public class BuyingServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession sess = request.getSession();
-        Account account1 = (Account) sess.getAttribute("account");
-        if (account1 == null) {
+        Account account = (Account) sess.getAttribute("account");
+        if (account == null) {
             response.sendRedirect("login");
             return;
         }
@@ -78,40 +78,35 @@ public class BuyingServlet extends HttpServlet {
         String supplier = request.getParameter("supplier");
         String menhGia = request.getParameter("denomination");
         String quantity = request.getParameter("quantity");
+        String productId = request.getParameter("id");
         //chuyen doi du lieu
         double giaThe = Double.parseDouble(menhGia);
-        int soLuong = Integer.parseInt(quantity);
-        //lay account dang nhap
-        Account account = (Account) sess.getAttribute("account");
+        int soLuongMua = Integer.parseInt(quantity);
         //kiem tra tai khoan co du tien mua khong
-        double total = (giaThe * soLuong);
+        double total = (giaThe * soLuongMua);
         if (account.getMoney() < total) {
             request.setAttribute("suppliers", l.getAllSupplier());
             request.setAttribute("err", "You don't have enough money");
             request.getRequestDispatcher("shop.jsp").forward(request, response);
             return;
         }
-        //tru tien cua tai khoan
+        //tru tien cua tai khoan and set account session money
         AccountDAO ad = new AccountDAO();
         ad.updateMoney(account.getUserName(), total, account.getMoney(),request);
         //lay product duoc mua
         ProductDAO p1 = new ProductDAO();
-        Product product = p1.getProductIdBySupplier(supplier,giaThe);
+        Product product = p1.getProductById(productId);
         //thêm vào transaction table
         TransactionDAO ts = new TransactionDAO();
-        ts.addTransaction(new Product(supplier, giaThe,
-                soLuong, product.getId()),
+        int transactionId = ts.addTransaction(new Product(supplier, giaThe, soLuongMua,product.getId()),
                 account.getUserName());
 //        giảm số lượng thẻ trong product table 
 //        và set status = 0 nếu số lượng về 0
         ProductDAO p = new ProductDAO();
-        p.updateAmount(soLuong, product);
+        p.updateAmount(soLuongMua, product);
         //đánh dấu thẻ trong Card table (productId,transactionId)
-        int transactionId = ts.getLastId();
         CardDAO cd = new CardDAO();
-        cd.updateStatusCard(product.getId(), transactionId,
-                product.getSellPrice(), soLuong);
-        sess.setAttribute("account", account);
+        cd.updateStatusCard(product.getId(), transactionId,soLuongMua);
         //chuyen trang
         request.setAttribute("suppliers", l.getAllSupplier());
         request.setAttribute("err", "buy sucess");

@@ -10,6 +10,7 @@ import java.util.Date;
 import model.Product;
 import dao.ProductDAO;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Transaction;
@@ -21,12 +22,13 @@ import org.apache.poi.poifs.crypt.dsig.services.TSPTimeStampService;
  */
 public class TransactionDAO extends DBContext {
 
-    public void addTransaction(Product p, String account) {
+    public int addTransaction(Product p, String account) {
 
         String sql = "iNSERT INTO `swp1`.`transaction` ( "
                 + "`BuyPrice`, `BuyAmount`, `createdAt`, `ProductId`,`accountId`,`Description`)\n"
                 + " VALUES (?,?,?,?,?,?);";
-        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+        try ( PreparedStatement st = connection.prepareStatement(sql
+        ,Statement.RETURN_GENERATED_KEYS)) {
             st.setDouble(1, p.getSellPrice());
             st.setInt(2, p.getAmount());
             Date d = new Date();
@@ -35,24 +37,19 @@ public class TransactionDAO extends DBContext {
             st.setInt(4, p.getId());
             st.setString(5, account);
             st.setString(6, "The dien thoai " + p.getSupplier());
-            st.execute();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public int getLastId() {
-        String sql = "select Id from transaction order by id desc limit 1;";
-        try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
+            st.executeUpdate();
+            
+            ResultSet generatedKeys = st.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                int transactionId = generatedKeys.getInt(1);
+                return transactionId;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return 0;
     }
+
 
     public List<Transaction> getAllByAccount(String account) {
         List<Transaction> list = new ArrayList<>();
@@ -106,7 +103,7 @@ public class TransactionDAO extends DBContext {
             st.setString(1, account);
             st.setInt(2, limit);
             st.setInt(3, offset);
-            
+
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Transaction t = new Transaction(
