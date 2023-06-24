@@ -7,6 +7,7 @@ package dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,11 +66,12 @@ public class ProductDAO extends DBContext {
         }
     }
 
-    void addProduct(Product p, Date expirationDate) {
+    int addProduct(Product p, Date expirationDate) {
         String sql = "insert into product (SellPrice,supplier,amount,"
                 + "Image,ExpirationDate,Description,createdAt,status)\n"
                 + "values(?,?,?,?,?,?,?,?);";
-        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+        try ( PreparedStatement st = connection.prepareStatement(sql
+        ,Statement.RETURN_GENERATED_KEYS)) {
             st.setDouble(1, p.getSellPrice());
             st.setString(2, p.getSupplier());
             st.setInt(3, 0);
@@ -80,10 +82,16 @@ public class ProductDAO extends DBContext {
             st.setDate(7, new java.sql.Date((new Date()).getTime()));
             st.setBoolean(8, p.isStatus());
             st.execute();
-
+            
+            ResultSet rs = st.getGeneratedKeys();
+            if (rs.next()) {
+                int productId = rs.getInt(1);
+                return productId;
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        return 0;
     }
 
     void updateDateProduct(int productId) {

@@ -61,9 +61,9 @@ public class UploadFile extends HttpServlet {
         cd.ImportExcel(appPath + fileUrls.get(0),
                  sellPrice, supplier);
         
-        //update so luong san pham
 
         //chuyen trang
+        request.setAttribute("err", "sucess");
         request.getRequestDispatcher("import.jsp").forward(request, response);
     }
 

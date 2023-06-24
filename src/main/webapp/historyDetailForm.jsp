@@ -114,7 +114,6 @@
                             <tr>
                                 <th>Card seri</th>
                                 <th>Card code</th>
-                                <!-- Add more table headers as needed -->
                             </tr>
                         </thead>
                         <tbody>

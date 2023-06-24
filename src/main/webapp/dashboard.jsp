@@ -34,11 +34,9 @@
             showNotification: function (from, align) {
                 var type = ['success', 'info', 'warning', 'danger'];
                 var color = Math.floor((Math.random() * 4) + 1);
-
                 $.notify({
                     icon: "nc-icon nc-app",
                     message: "Welcome to <b>Sell card phone</b> - an online phone card sales system."
-
                 }, {
                     type: type[color],
                     timer: 8000,
@@ -213,7 +211,7 @@
                             <th>Nhà mạng</th>
                             <th>Ngày hết hạn</th>
                             <th>Mô tả</th>
-                            <th>Ngày mua</th>
+                            <th>Ngày bắt đầu bán</th>
                                 <c:forEach items="${products}" var="p">
                                 <tr>
                                     <td>${p.id}</td>
@@ -246,11 +244,13 @@
                                     <td>${p.createdAt}</td>
                                     <td>${p.description}</td>
                                     <td>${p.accountId}</td>
-                                    <td><a class="btn btn-primary" href="detailHistory?id=${p.id}">Xem chi tiết</a></td>
+                                    <td><a class="btn btn-primary detail-link" data-id="${p.id}" href="#" onclick="showAnotherForm(event)">Xem chi tiết</a></td>
+
                                 </tr>
                             </c:forEach>
                         </table>
-                        
+                        <%@include file="historyDetailForm.jsp" %>
+
                     </c:if>
                     <c:forEach begin="${1}" end="${soTrang}" var="i">
                         <a class="${i==page?"active":""}" href="myhistorybill?page=${i}"> ${i} </a>
@@ -509,13 +509,51 @@
     <script src="assets/js/light-bootstrap-dashboard.js" type="text/javascript"></script>
     <script src="assets/js/demo.js"></script>
     <script type="text/javascript">
-                $(document).ready(function () {
-                    // Javascript method's body can be found in assets/js/demos.js
-                    demo.initDashboardPageCharts();
+                                            $(document).ready(function () {
+                                                // Javascript method's body can be found in assets/js/demos.js
+                                                demo.initDashboardPageCharts();
 
-                    demo.showNotification();
+                                                demo.showNotification();
 
-                });
+                                            });
+                                            function showAnotherForm(event) {
+                                                event.preventDefault(); // Prevent the default link behavior
+                                                var id = $(event.target).data('id'); // Get the ID from the data attribute
+                                                var url = 'detailHistory?id=' + id; // Construct the URL
+                                                $.ajax({
+                                                    url: url,
+                                                    type: 'GET',
+                                                    success: function (response) {
+                                                        displayCards(response);
+                                                        console.log(response);
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        // Handle any errors that occur during the AJAX request
+                                                        console.error(error);
+                                                    }
+                                                });
+                                                function displayCards(response) {
+                                                    var anotherFormContainer = document.getElementById("anotherFormContainer");
+                                                    anotherFormContainer.style.display = "block";
+                                                    var product = response.product;
+                                                    var listCard = response.listCard;
+                                                    // Display product details
+
+                                                    // Display card details
+                                                    var table = $('#cardTable');
+                                                    for (var i = 0; i < listCard.length; i++) {
+                                                        var card = listCard[i];
+                                                        var row = $('<tr></tr>');
+                                                        row.append('<td>' + card.seri + '</td>');
+                                                        row.append('<td>' + card.code + '</td>');
+                                                        // Add more table cells for additional card properties
+                                                        table.append(row);
+                                                    }
+                                                    $('#menhGia').text(product.sellPrice);
+                                                    $('#nhaMang').text(product.supplier);
+                                                    $('#date').text(product.expirationDate);
+                                                }
+                                            }
     </script>
 
 </html>

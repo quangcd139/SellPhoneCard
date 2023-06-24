@@ -99,15 +99,16 @@ public class CardDAO extends DBContext {
             for (int i = 1; i < sheet.getLastRowNum(); i++) {
                 row = sheet.getRow(i);
                 if (row != null) {
+                    //get data form cell
                     Cell seriCell = row.getCell(0);
                     Cell codeCell = row.getCell(1);
                     Cell expirationDateCell = row.getCell(2);
 
                     if (seriCell != null && codeCell != null
                             && expirationDateCell != null) {
-                        
-                        String seri = seriCell.getStringCellValue()+"";
-                        String code = codeCell.getStringCellValue()+"";
+                        //covert data from cell to datatype in java
+                        String seri = seriCell.getStringCellValue() + "";
+                        String code = codeCell.getStringCellValue() + "";
                         String expiration = expirationDateCell.getStringCellValue();
                         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                         Date expirationDate = null;
@@ -116,31 +117,42 @@ public class CardDAO extends DBContext {
                         } catch (ParseException ex) {
                             Logger.getLogger(CardDAO.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                        //defined productId, amount
                         int productId = 0;
+                        int amount=0;
                         boolean check = false;
+                        // để kiểm tra có tồn tại sản phẩm nào có expirationDate trong database ko
+                        //nếu có thì lấy ra pId và amount
                         for (Product p : products) {
                             if (p.getExpirationDate().equals(expirationDate)
                                     && p.getSellPrice() == sellPrice
                                     && p.getSupplier().equals(supplier)) {
                                 productId = p.getId();
+                                amount = p.getAmount();
                                 //set updateAt product
                                 pd.updateDateProduct(productId);
                                 check = true;
                                 break;
                             }
                         }
+                        //nếu ko có sp nào thì tạo mới 1 sản phẩm
                         if (!check) {
                             Product p = new Product();
                             p.setSellPrice(sellPrice);
                             p.setSupplier(supplier);
+                            p.setAmount(0);
                             p.setDescription("mua the nha mang " + supplier);
                             p.setImage(supplier + "_logo.png");
                             p.setStatus(true);
                             p.setCreatedAt(new java.sql.Date((new Date()).getTime()));//get date now
-                            pd.addProduct(p,expirationDate);
-                            productId = pd.getLastId();
-                            products = pd.getAllProduct();
+                            p.setExpirationDate(new java.sql.Date(expirationDate.getTime()));//get date now
+                            //lấy pId vừa add
+                            productId = pd.addProduct(p, expirationDate);
+                            p.setId(productId);
+                            //thêm p vào list để duyệt sang row tiếp theo trong excel
+                            products.add(p);
                         }
+                        
                         Card card = new Card();
                         card.setSeri(seri);
                         card.setCode(code);
@@ -148,13 +160,13 @@ public class CardDAO extends DBContext {
                         card.setIsBuy(false);
                         card.setExpirationDate(expirationDate);
                         card.setProductId(productId);
-                        cd.InsertData(card,expirationDate);
-                        int amount = pd.getAmountById(productId);
+                        //thêm card vào database
+                        cd.InsertData(card, expirationDate);
+                        // update số lượng thẻ của product
                         pd.updateAmountProduct(productId, amount);
                     }
                 }
                 wb.close();
-
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -164,7 +176,7 @@ public class CardDAO extends DBContext {
     }
     // upload file java servlet từ máy
 
-    public static void InsertData(Card card,Date expirationDate) {
+    public static void InsertData(Card card, Date expirationDate) {
         String sql = "insert into swp1.card(Seri,Code,price,isBuy,ExpirationDate,CreatedAt,ProductId) values(?,?,?,?,?,?,?)";
         try {
             Connection cnn = (new DBContext()).connection;
@@ -182,13 +194,8 @@ public class CardDAO extends DBContext {
             ptmt.setDate(6, new java.sql.Date(createdAt.getTime()));
 
             ptmt.setInt(7, card.getProductId());
-            int kt = ptmt.executeUpdate();
-            if (kt != 0) {
-                System.out.println("success");
-            } else {
-                System.out.println("fail");
-            }
-            ptmt.close();
+            ptmt.executeUpdate();
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
