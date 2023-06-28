@@ -14,6 +14,7 @@ import java.util.Date;
 @lombok.Getter
 @lombok.Setter
 @lombok.NoArgsConstructor
+@lombok.ToString
 public class Product {
 
     private int id;
@@ -27,7 +28,6 @@ public class Product {
     private Date createdAt;
     private Date deleteAt;
     private boolean status;
-    private String accountId;
     private Date updateAt;
     
 

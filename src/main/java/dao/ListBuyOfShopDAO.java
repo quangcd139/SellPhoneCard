@@ -54,5 +54,20 @@ public class ListBuyOfShopDAO extends DBContext {
         return list;
     }
     
+    public List<String> getAllPrice() {
+        List<String> list = new ArrayList<>();
+        String sql = "select distinct SellPrice from product;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                int x = (int)rs.getDouble(1);
+                String k = x+"";
+                list.add(k);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
 
 }

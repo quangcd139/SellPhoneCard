@@ -121,8 +121,8 @@
                 <i class="modal-heading-icon ti-bag"></i>
                 Sell Phone Card
             </header>
-            <div class="modal-body">
-                <form action="buying" method="get">
+            <div class="modal-body" style="overflow-y: scroll;height:500px">
+                <form action="buying" method="post">
                     <h3>Detail information</h3>
                     <label class="modal-label" for="nhaMang">Nhà mạng:</label>
                     <input class="modal-input" type="text" id="nhaMang" name="supplier" readonly><br>
@@ -142,11 +142,8 @@
 
                     <input class="submit" type="submit" value="Buy">
                 </form>
-
             </div>
-
         </div>
-
         <script>
             var id;
             function showAnotherForm() {
@@ -260,7 +257,6 @@
                 overlay.style.display = "none";
                 formContainer.style.display = "none";
             }
-
 
 
         </script>

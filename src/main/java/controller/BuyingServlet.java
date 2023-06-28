@@ -9,6 +9,7 @@ import dao.CardDAO;
 import dao.ListBuyOfShopDAO;
 import dao.ProductDAO;
 import dao.TransactionDAO;
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,10 +18,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import model.Account;
 import model.Product;
+import model.Transaction;
 
 /**
  *
@@ -29,48 +34,22 @@ import model.Product;
 @WebServlet(name = "BuyingServlet", urlPatterns = {"/buying"})
 public class BuyingServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet BuyingServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet BuyingServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    private Queue<Transaction> buyQueue = new LinkedList<>();
+    private ScheduledExecutorService executorService;
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("shop").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession sess = request.getSession();
         Account account = (Account) sess.getAttribute("account");
         if (account == null) {
-            response.sendRedirect("login");
+            request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
         ListBuyOfShopDAO l = new ListBuyOfShopDAO();
@@ -90,52 +69,112 @@ public class BuyingServlet extends HttpServlet {
             request.getRequestDispatcher("shop.jsp").forward(request, response);
             return;
         }
-        //tru tien cua tai khoan and set account session money
-        AccountDAO ad = new AccountDAO();
-        ad.updateMoney(account.getUserName(), total, account.getMoney(),request);
-        //lay product duoc mua
-        ProductDAO p1 = new ProductDAO();
-        Product product = p1.getProductById(productId);
-        //thêm vào transaction table
+
+        Transaction t1 = Transaction.builder()
+                .accountId(account.getUserName())
+                .buyPrice(giaThe)
+                .buyAmount(soLuongMua)
+                .productId(Integer.parseInt(productId)).build();
+
+        synchronized (buyQueue) {
+            buyQueue.add(t1);
+        }
+        //chuyen trang
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().println("Buy request has been added to the queue.");
+
+        // Lên lịch trả kết quả cho người dùng sau 5 giây
+        scheduleResponse(account.getUserName(), request,response);
+        request.setAttribute("err", "buy sucess");
+        request.setAttribute("suppliers", l.getAllSupplier());
+        request.getRequestDispatcher("shop.jsp").forward(request, response);
+    }
+
+    @Override
+    public void init() throws ServletException {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+
+        // Tạo một luồng riêng biệt để xử lý hàng đợi
+        Thread processingThread = new Thread(() -> {
+            while (true) {
+                Transaction t;
+
+                synchronized (buyQueue) {
+                    // Lấy yêu cầu từ hàng đợi
+                    if (buyQueue.isEmpty()) {
+                        // Lên lịch kiểm tra xem có yêu cầu nào sau 2 giây
+                        executorService.schedule(this::processPendingRequests, 2, TimeUnit.SECONDS);
+                        try {
+                            buyQueue.wait(); // Chờ đợi khi hàng đợi rỗng
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        continue; // Tiếp tục vòng lặp
+                    }
+
+                    t = buyQueue.poll();
+                }
+
+                // Xử lý yêu cầu mua hàng
+                processTransaction(t);
+            }
+        });
+
+        processingThread.start();
+    }
+
+    private void processTransaction(Transaction t1) {
         TransactionDAO ts = new TransactionDAO();
-        int transactionId = ts.addTransaction(new Product(supplier, giaThe, soLuongMua,product.getId()),
-                account.getUserName());
+        int transactionId = ts.addTransaction(t1);
+        // Thực hiện xử lý yêu cầu mua hàng ở đây
+        //lay tien cua tai khoan
+        AccountDAO ad = new AccountDAO();
+        double money = ad.getMoney(t1.getAccountId());
+        ad.updateMoney(t1.getAccountId(), t1.getBuyPrice() * t1.getBuyAmount(), money);
 //        giảm số lượng thẻ trong product table 
 //        và set status = 0 nếu số lượng về 0
-        ProductDAO p = new ProductDAO();
-        p.updateAmount(soLuongMua, product);
+        ProductDAO pd = new ProductDAO();
+        pd.updateAmount(t1.getBuyAmount(), t1.getProductId());
         //đánh dấu thẻ trong Card table (productId,transactionId)
         CardDAO cd = new CardDAO();
-        cd.updateStatusCard(product.getId(), transactionId,soLuongMua);
-        //chuyen trang
-        request.setAttribute("suppliers", l.getAllSupplier());
-        request.setAttribute("err", "buy sucess");
-        request.getRequestDispatcher("shop.jsp").forward(request, response);
+        cd.updateStatusCard(t1.getProductId(), transactionId, t1.getBuyAmount());
 
+        // Gửi thông báo cho người dùng
+        // ...
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        
-    }
+    private void scheduleResponse(String userId, HttpServletRequest request, HttpServletResponse response) {
+        executorService.schedule(() -> {
+            // Tìm kiếm kết quả của người dùng dựa trên userId
+            // ...
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
+            // Gửi phản hồi với kết quả cho người dùng
+            try {
+                // Set attributes to be passed to the JSP page
+                request.setAttribute("err", "Buy request processed successfully. Result: ...");
+
+                // Forward the request to the JSP page
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/shop");
+                dispatcher.forward(request, response);
+            } catch (IOException | ServletException e) {
+                e.printStackTrace();
+            }
+        }, 5, TimeUnit.SECONDS);
+    }
+    
+    private void processPendingRequests() {
+        synchronized (buyQueue) {
+            if (buyQueue.isEmpty()) {
+                System.out.println("No buy requests found after 2 seconds.");
+                // Process the pending requests here or take any necessary action
+            }
+            buyQueue.notifyAll(); // Notify the waiting thread
+        }
+    }
+    
     @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    public void destroy() {
+        executorService.shutdown();
+    }
 
 }

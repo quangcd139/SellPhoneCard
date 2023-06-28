@@ -4,6 +4,7 @@
     Author     : PC
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -127,7 +128,7 @@
             .denomination-btns button:hover {
                 background-color: #23527c;
             }
-            
+
             .denomination-btns button.active {
                 background-color: #4caf50;
                 color: greenyellow;
@@ -170,17 +171,17 @@
 
             </style>
         </head>
-        
+
         <body>
         <center>
             <div class="form">
                 <h3>Choose one denomination</h3>
                 <div class="denomination-btns">
-                    <button type="button" onclick="selectDenomination(20000)" id="denomination20000">20k</button>
-                    <button type="button" onclick="selectDenomination(50000)" id="denomination50000">50k</button><br><br>
-                    <button type="button" onclick="selectDenomination(100000)" id="denomination100000">100k</button>
-                    <button type="button" onclick="selectDenomination(200000)" id="denomination200000">200k</button>
-                    <button type="button" onclick="selectDenomination(500000)" id="denomination500000">500k</button>
+                    <c:forEach items="${listPrice}" var="p">
+                        <button type="button" onclick="selectDenomination(${p})" id="denomination${p}">
+                            ${p}
+                        </button>
+                    </c:forEach>
                     <input type="hidden" id="denomination" name="denomination">
                 </div>
                 <br>

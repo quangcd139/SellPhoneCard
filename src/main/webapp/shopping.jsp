@@ -176,8 +176,10 @@
                                 </div>
                             </div>
                         </div>
+                        <h3>Money: ${sessionScope.account.money}</h3>
+
                         <div class="row px-xl-5 pb-3">
-                            <h3>Money: ${sessionScope.account.money}</h3>
+
                             <c:forEach items="${suppliers}" var="s">
                                 <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                                     <div class="d-flex align-items-center mb-4" style="padding: 30px;">
@@ -194,7 +196,12 @@
                             <center style="margin-left:250px;">
                                 <%@include file="buyCard.jsp" %>
                                 <button type="submit" onclick="return validateAndShowForm()">show detail</button><br><br>
-                                <h3 id="err">${err}</h3>
+                                <script>
+                                    var err = <%=request.getAttribute("err")%>
+                                    if(err!==null){
+                                        alert(err);
+                                    }
+                                </script>
                             </center>
                         </div>         
 

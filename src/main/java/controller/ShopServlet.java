@@ -65,6 +65,8 @@ public class ShopServlet extends HttpServlet {
         
         ListBuyOfShopDAO lb = new ListBuyOfShopDAO();
         List<Product> suppliers = lb.getAllSupplier();
+        List<String> price = lb.getAllPrice();
+        request.setAttribute("listPrice", price);
         request.setAttribute("suppliers", suppliers);
         request.getRequestDispatcher("shop.jsp").forward(request, response);
     }

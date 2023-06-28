@@ -67,26 +67,26 @@ public class detailHistoryServlet extends HttpServlet {
         String transactionId = request.getParameter("id");
         CardDAO c = new CardDAO();
         List<Card> listCard = c.getCardByTranId(Integer.parseInt(transactionId));
-        for (Card c1 : listCard) {
-            System.out.println(c1.getProductId());
-        }
         int id = listCard.get(0).getProductId();
-        Product product = (new ProductDAO()).getProductById(id + "");
-        
-        // Create a custom response object
+        Product product = (new ProductDAO()).getProductById(String.valueOf(id));
+
+// Create a custom response object
         CustomResponse customResponse = new CustomResponse();
         customResponse.setListCard(listCard);
         customResponse.setProduct(product);
 
-        // Serialize the custom response to JSON
+// Serialize the custom response to JSON
         Gson gson = new Gson();
         String json = gson.toJson(customResponse);
 
-        // Set the response content type to JSON
+// Set the JSON object to request.setAttribute()
+        request.setAttribute("yourAttributeKey", json);
+
+// Set the response content type to JSON
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // Write the JSON response
+// Write the JSON response
         PrintWriter out = response.getWriter();
         out.print(json);
         out.flush();

@@ -65,18 +65,17 @@ public class AccountInforServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        
         HttpSession sess = request.getSession();
         Account account1 = (Account) sess.getAttribute("account");
-        if(account1==null){
-            response.sendRedirect("login");
+        if (account1 == null) {
+            request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
 //        String newPass = request.getParameter("pass");
 //        String rePass = request.getParameter("rePass");
 //        AccountDAO acc = new AccountDAO();
         Hashing has = new Hashing();
-        
+
         String password = account1.getPassword();
 
         try {

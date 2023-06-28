@@ -59,9 +59,6 @@ public class ProductBuyServlet extends HttpServlet {
     throws ServletException, IOException {
         ListBuyOfShopDAO lb = new ListBuyOfShopDAO();
         List<Product> suppliers = lb.getAllSupplier();
-        for (Product s : suppliers) {
-            System.out.println(s.getSupplier());
-        }
         request.setAttribute("suppliers", suppliers);
         request.getRequestDispatcher("home.jsp").forward(request, response);
     } 

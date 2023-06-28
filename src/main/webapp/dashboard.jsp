@@ -4,6 +4,11 @@
     Author     : dell
 --%>
 
+<%@page import="model.Product"%>
+<%@page import="model.Card"%>
+<%@page import="java.util.List"%>
+<%@page import="model.CustomResponse"%>
+<%@page import="com.google.gson.Gson"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
@@ -59,6 +64,35 @@
 
                 });
 
+        </script>
+        <script>
+                $(document).ready(function () {
+                    $('#page-size').change(function () {
+                        var page_size = $(this).val();
+                        var current_url = window.location.href;
+
+                        // Tạo một đối tượng FormData từ form hiện tại
+                        var form_data = new FormData($('#my-form')[0]);
+
+                        // Thêm giá trị limit mới vào FormData
+                        form_data.append('sl', page_size);
+
+                        // Sử dụng AJAX để gửi yêu cầu và nhận kết quả từ phía máy chủ
+                        $.ajax({
+                            url: current_url,
+                            type: 'GET',
+                            data: form_data,
+                            processData: false,
+                            contentType: false,
+                            success: function (result) {
+                                $('#content').html(result);
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log(textStatus, errorThrown);
+                            }
+                        });
+                    });
+                });
 
         </script>
         <style>
@@ -172,7 +206,7 @@
                             </ul>
                             <ul class="navbar-nav ml-auto">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#pablo">
+                                    <a class="nav-link" href="accountinfor">
                                         <span class="no-icon">Account</span>
                                     </a>
                                 </li>
@@ -227,16 +261,15 @@
                         </table>
                     </c:if>
                     <c:if test="${check==3}">
-                        <h3 style="color: red;">Total money: ${total}</h3>
                         <table border="1">
-                            <th>STT</th>
-                            <th>Mệnh giá</th>
-                            <th>Số lượng</th>
-                            <th>Ngày mua</th>
-                            <th>Description</th>
-                            <th>Account</th>
+                            <th>id</th>
+                            <th>buyPrice</th>
+                            <th>buyAmount</th>
+                            <th>createdAt</th>
+                            <th>description</th>
+                            <th>accountId</th>
                             <th>Details</th>
-                                <c:forEach items="${requestScope.transactions}" var="p">
+                                <c:forEach items="${transactions}" var="p">
                                 <tr>
                                     <td>${p.id}</td>
                                     <td>${p.buyPrice}</td>
@@ -247,14 +280,24 @@
                                     <td><a class="btn btn-primary detail-link" data-id="${p.id}" href="#" onclick="showAnotherForm(event)">Xem chi tiết</a></td>
 
                                 </tr>
-                            </c:forEach>
+                            </c:forEach>           
                         </table>
+                        <c:forEach begin="${1}" end="${soTrang}" var="i">
+                            <a class="${i==page?"active":""}" href="adminTransaction?page=${i}"> ${i} </a>
+                        </c:forEach>                
+                        <form method="GET" id="myForm" onchange="submitForm()" >
+                            <label for="page-size">Hiển thị:</label>
+                            <select id="page-size" name="sl">
+                                <option value="3" ${limit == 3 ? 'selected' : ''}>3</option>
+                                <option value="5" ${limit == 5 ? 'selected' : ''}>5</option>
+                                <option value="10" ${limit == 10 ? 'selected' : ''}>10</option>
+                            </select>
+                            <!--                                        <input type="submit" value="Áp dụng">-->
+                            <!--<button type="button" >Submit</button>-->
+                        </form>
                         <%@include file="historyDetailForm.jsp" %>
 
                     </c:if>
-                    <c:forEach begin="${1}" end="${soTrang}" var="i">
-                        <a class="${i==page?"active":""}" href="myhistorybill?page=${i}"> ${i} </a>
-                    </c:forEach>
 
                     <c:if test="${check==1}">
                         <div class="container-fluid">
@@ -509,51 +552,77 @@
     <script src="assets/js/light-bootstrap-dashboard.js" type="text/javascript"></script>
     <script src="assets/js/demo.js"></script>
     <script type="text/javascript">
-                                            $(document).ready(function () {
-                                                // Javascript method's body can be found in assets/js/demos.js
-                                                demo.initDashboardPageCharts();
+                                $(document).ready(function () {
+                                    // Javascript method's body can be found in assets/js/demos.js
+                                    demo.initDashboardPageCharts();
 
-                                                demo.showNotification();
+                                    demo.showNotification();
 
-                                            });
-                                            function showAnotherForm(event) {
-                                                event.preventDefault(); // Prevent the default link behavior
-                                                var id = $(event.target).data('id'); // Get the ID from the data attribute
-                                                var url = 'detailHistory?id=' + id; // Construct the URL
-                                                $.ajax({
-                                                    url: url,
-                                                    type: 'GET',
-                                                    success: function (response) {
-                                                        displayCards(response);
-                                                        console.log(response);
-                                                    },
-                                                    error: function (xhr, status, error) {
-                                                        // Handle any errors that occur during the AJAX request
-                                                        console.error(error);
-                                                    }
-                                                });
-                                                function displayCards(response) {
-                                                    var anotherFormContainer = document.getElementById("anotherFormContainer");
-                                                    anotherFormContainer.style.display = "block";
-                                                    var product = response.product;
-                                                    var listCard = response.listCard;
-                                                    // Display product details
+                                });
+    </script>
+    <script>
+            function showAnotherForm(event) {
+                event.preventDefault(); // Prevent the default link behavior
+                var id = $(event.target).data('id'); // Get the ID from the data attribute
+                var url = 'detailHistory?id=' + id; // Construct the URL
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (response) {
+                        displayCards(response);
+                        console.log(response);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle any errors that occur during the AJAX request
+                        console.error(error);
+                    }
+                });
+                function displayCards(response) {
+                    var anotherFormContainer = document.getElementById("anotherFormContainer");
+                    anotherFormContainer.style.display = "block";
+                    var product = response.product;
+                    var listCard = response.listCard;
+                    // Display product details
 
-                                                    // Display card details
-                                                    var table = $('#cardTable');
-                                                    for (var i = 0; i < listCard.length; i++) {
-                                                        var card = listCard[i];
-                                                        var row = $('<tr></tr>');
-                                                        row.append('<td>' + card.seri + '</td>');
-                                                        row.append('<td>' + card.code + '</td>');
-                                                        // Add more table cells for additional card properties
-                                                        table.append(row);
-                                                    }
-                                                    $('#menhGia').text(product.sellPrice);
-                                                    $('#nhaMang').text(product.supplier);
-                                                    $('#date').text(product.expirationDate);
-                                                }
-                                            }
+                    // Display card details
+                    var table = $('#cardTable');
+                    for (var i = 0; i < listCard.length; i++) {
+                        var card = listCard[i];
+                        var row = $('<tr></tr>');
+                        row.append('<td>' + card.seri + '</td>');
+                        row.append('<td>' + card.code + '</td>');
+                        // Add more table cells for additional card properties
+                        table.append(row);
+                    }
+                    
+                    $('#menhGia').text(product.sellPrice);
+                    $('#nhaMang').text(product.supplier);
+                    $('#date').text(product.expirationDate);
+                }
+            }
+
+            function saveSelectedOption() {
+                var select = document.getElementById('mySelect');
+                var selectedOption = select.value;
+
+                // Lưu giá trị vào local storage
+                localStorage.setItem('selectedOption', selectedOption);
+            }
+
+            // Khôi phục giá trị lựa chọn từ local storage khi tải lại trang
+            window.onload = function () {
+                var select = document.getElementById('mySelect');
+                var selectedOption = localStorage.getItem('selectedOption');
+
+                if (selectedOption) {
+                    select.value = selectedOption;
+                }
+            };
+            function submitForm() {
+                var form = document.getElementById('myForm');
+                form.submit();
+            }
+
     </script>
 
 </html>

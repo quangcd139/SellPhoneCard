@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import model.Account;
 import model.Transaction;
-import static org.apache.poi.hssf.usermodel.HeaderFooter.page;
 
 /**
  *

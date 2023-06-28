@@ -14,7 +14,6 @@
     </head>
     <body>
         <style>
-            /* CSS for the overlapping form container */
             .blur {
                 filter: blur(5px); /* Adjust the blur amount as desired */
                 pointer-events: none; /* Prevents the blurred content from receiving pointer events */
@@ -60,6 +59,7 @@
             }
             .modal-close i {
                 font-size: 15px;
+                color:#fff;
             }
             .modal-body {
                 padding: 16px;
@@ -89,6 +89,34 @@
                 cursor: pointer;
                 opacity: 0.9;
             }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 40px;
+                table-layout: fixed;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            th {
+                background-color: #009688;
+                color: white;
+                font-weight: bold;
+                font-size: 16px;
+                text-align: center;
+                padding: 8px;
+                border: 1px solid #ddd;
+            }
+
+            td {
+                text-align: center;
+                padding: 10px;
+                border: 1px solid #ddd;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
         </style>
 
         <div id="overlay"></div>
@@ -100,20 +128,22 @@
                 <i class="modal-heading-icon ti-bag"></i>
                 Sell Phone Card
             </header>
-            <div class="modal-body">
+            <div class="modal-body" style="overflow-y: scroll;height:500px">
                 <form action="buying" method="get">
                     <h1>History Buy</h1>
                     Menh gia
                     <p id="menhGia"></p>
                     Nha mang
                     <p id="nhaMang"></p>
-                    Ngày hết hạn của toàn bộ thẻ
+                    Ngày hết hạn cua thẻ
                     <p id="date"></p>
                     <table id="cardTable">
                         <thead>
                             <tr>
-                                <th>Card seri</th>
-                                <th>Card code</th>
+                                <td>Card seri</td>
+                                <td>Card code</td>
+                            </tr>
+                            <tr id="data">
                             </tr>
                         </thead>
                         <tbody>
@@ -134,13 +164,12 @@
                 formContainer.style.display = "none";
                 clearTable();
             }
+
             function clearTable() {
                 var table = document.getElementById("cardTable");
                 var rows = table.getElementsByTagName("tr");
-
                 for (var i = 0; i < rows.length; i++) {
                     var cells = rows[i].getElementsByTagName("td");
-
                     for (var j = 0; j < cells.length; j++) {
                         cells[j].textContent = ""; // Clear the text content of each cell
                     }

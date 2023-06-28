@@ -86,11 +86,12 @@ public class CardDAO extends DBContext {
         return date1;
     }
 
-    public void ImportExcel(String path, double sellPrice, String supplier) {
+    public List<Card> ImportExcel(String path, double sellPrice, String supplier) {
         InputStream inp;
         ProductDAO pd = new ProductDAO();
         CardDAO cd = new CardDAO();
         List<Product> products = pd.getAllProduct();
+        List<Card> listErr = new ArrayList<>();
         try {
             inp = new FileInputStream(path); // format lại tên nhà mạng + price
             HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
@@ -119,7 +120,7 @@ public class CardDAO extends DBContext {
                         }
                         //defined productId, amount
                         int productId = 0;
-                        int amount=0;
+                        int amount = 0;
                         boolean check = false;
                         // để kiểm tra có tồn tại sản phẩm nào có expirationDate trong database ko
                         //nếu có thì lấy ra pId và amount
@@ -128,7 +129,8 @@ public class CardDAO extends DBContext {
                                     && p.getSellPrice() == sellPrice
                                     && p.getSupplier().equals(supplier)) {
                                 productId = p.getId();
-                                amount = p.getAmount();
+                                amount = p.getAmount()+1;
+                                p.setAmount(amount);
                                 //set updateAt product
                                 pd.updateDateProduct(productId);
                                 check = true;
@@ -140,7 +142,8 @@ public class CardDAO extends DBContext {
                             Product p = new Product();
                             p.setSellPrice(sellPrice);
                             p.setSupplier(supplier);
-                            p.setAmount(0);
+                            amount = 1;
+                            p.setAmount(amount);
                             p.setDescription("mua the nha mang " + supplier);
                             p.setImage(supplier + "_logo.png");
                             p.setStatus(true);
@@ -152,7 +155,7 @@ public class CardDAO extends DBContext {
                             //thêm p vào list để duyệt sang row tiếp theo trong excel
                             products.add(p);
                         }
-                        
+
                         Card card = new Card();
                         card.setSeri(seri);
                         card.setCode(code);
@@ -161,9 +164,14 @@ public class CardDAO extends DBContext {
                         card.setExpirationDate(expirationDate);
                         card.setProductId(productId);
                         //thêm card vào database
-                        cd.InsertData(card, expirationDate);
+
+                        boolean checkExsit = cd.InsertData(card, expirationDate);
                         // update số lượng thẻ của product
-                        pd.updateAmountProduct(productId, amount);
+                        if (checkExsit) {
+                            pd.updateAmountProduct(productId, amount);
+                        } else {
+                            listErr.add(card);
+                        }
                     }
                 }
                 wb.close();
@@ -173,11 +181,13 @@ public class CardDAO extends DBContext {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+        return listErr; 
+   }
     // upload file java servlet từ máy
 
-    public static void InsertData(Card card, Date expirationDate) {
-        String sql = "insert into swp1.card(Seri,Code,price,isBuy,ExpirationDate,CreatedAt,ProductId) values(?,?,?,?,?,?,?)";
+    public static boolean InsertData(Card card, Date expirationDate) {
+        String sql = "insert into swp1.card(Seri,Code,price,isBuy,ExpirationDate,"
+                + "CreatedAt,ProductId) values(?,?,?,?,?,?,?)";
         try {
             Connection cnn = (new DBContext()).connection;
             PreparedStatement ptmt = cnn.prepareStatement(sql);
@@ -195,9 +205,11 @@ public class CardDAO extends DBContext {
 
             ptmt.setInt(7, card.getProductId());
             ptmt.executeUpdate();
-            
+            ptmt.close();
+            return true;
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            return false;
         }
     }
 

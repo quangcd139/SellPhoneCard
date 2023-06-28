@@ -4,8 +4,6 @@
  */
 package dao;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import model.Account;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -155,7 +153,7 @@ public class AccountDAO {
         }
     }
     
-    public void updateMoney(String userName, double total, double money, HttpServletRequest request) {
+    public void updateMoney(String userName, double total, double money) {
         try {
             String strSelect = "UPDATE account\n"
                     + "SET money = ?\n"
@@ -163,15 +161,27 @@ public class AccountDAO {
             Connection cnn = (new DBContext()).connection;
             PreparedStatement pstm = cnn.prepareStatement(strSelect);
             pstm.setDouble(1, money - total);
-            HttpSession sess = request.getSession();
-            Account account = (Account) sess.getAttribute("account");
-            account.setMoney(money - total);
-            sess.setAttribute("account",account);
             pstm.setString(2, userName);
             pstm.execute();
             
         } catch (Exception e) {
             System.out.println("updateMoney: " + e.getMessage());
         }
+    }
+
+    public double getMoney(String accountId) {
+        try {
+            String strSelect = "select money from account where account=?";
+            Connection cnn = (new DBContext()).connection;
+            PreparedStatement pstm = cnn.prepareStatement(strSelect);
+            pstm.setString(1, accountId);
+            ResultSet rs = pstm.executeQuery();
+            if(rs.next()){
+                return rs.getDouble("money");
+            }
+        } catch (Exception e) {
+             System.out.println("updateMoney: " + e.getMessage());
+        }
+        return 0;
     }
 }

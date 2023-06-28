@@ -62,8 +62,6 @@
             }
 
 
-
-
         </style>
     </head>
     <body>
@@ -85,8 +83,6 @@
                             <td>${c.expirationDate}</td>
                             <td>${c.createdAt}</td>
                         </tr>
-
-
                     </table>
                 </div>
             </form>

@@ -22,21 +22,21 @@ import org.apache.poi.poifs.crypt.dsig.services.TSPTimeStampService;
  */
 public class TransactionDAO extends DBContext {
 
-    public int addTransaction(Product p, String account) {
+    public int addTransaction(Transaction t) {
 
         String sql = "iNSERT INTO `swp1`.`transaction` ( "
                 + "`BuyPrice`, `BuyAmount`, `createdAt`, `ProductId`,`accountId`,`Description`)\n"
                 + " VALUES (?,?,?,?,?,?);";
         try ( PreparedStatement st = connection.prepareStatement(sql
         ,Statement.RETURN_GENERATED_KEYS)) {
-            st.setDouble(1, p.getSellPrice());
-            st.setInt(2, p.getAmount());
+            st.setDouble(1, t.getBuyPrice());
+            st.setInt(2, t.getBuyAmount());
             Date d = new Date();
             java.sql.Date createdAt = new java.sql.Date(d.getTime());
             st.setDate(3, createdAt);
-            st.setInt(4, p.getId());
-            st.setString(5, account);
-            st.setString(6, "The dien thoai " + p.getSupplier());
+            st.setInt(4, t.getProductId());
+            st.setString(5, t.getAccountId());
+            st.setString(6, "The dien thoai " );
             st.executeUpdate();
             
             ResultSet generatedKeys = st.getGeneratedKeys();
@@ -121,6 +121,7 @@ public class TransactionDAO extends DBContext {
         }
         return list;
     }
+    
 
     public List<Transaction> getAllTransaction() {
         List<Transaction> list = new ArrayList<>();
@@ -143,11 +144,49 @@ public class TransactionDAO extends DBContext {
         }
         return list;
     }
+    
+    public List<Transaction> getAllTransaction(int limit, int offset) {
+        List<Transaction> list = new ArrayList<>();
+        String sql = "SELECT * FROM swp1.transaction limit ? offset ?;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, limit);
+            st.setInt(2, offset);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Transaction t = new Transaction(
+                        rs.getInt("Id"),
+                        rs.getDouble("BuyPrice"),
+                        rs.getInt("BuyAmount"),
+                        rs.getDate("createdAt"),
+                        rs.getString("Description"),
+                        rs.getString("AccountId")
+                );
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
 
+    }
+    
     public int getSizeByAccount(String userName) {
         String sql = "SELECT count(*) FROM transaction WHERE accountID = ?";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setString(1, userName);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+    
+    public int getSizeTransaction() {
+        String sql = "SELECT count(*) FROM transaction";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);

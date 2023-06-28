@@ -6,6 +6,7 @@ package model;
 
 import java.util.Date;
 import jxl.write.DateTime;
+import lombok.Builder;
 
 /**
  *
@@ -15,6 +16,7 @@ import jxl.write.DateTime;
 @lombok.Getter
 @lombok.Setter
 @lombok.NoArgsConstructor
+@Builder
 public class Transaction {
 
     private int id;

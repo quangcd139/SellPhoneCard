@@ -1,3 +1,8 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.google.gson.Gson"%>
+<%@page import="model.Card"%>
+<%@page import="java.util.List"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -15,6 +20,7 @@
         <!-- CSS Files -->
         <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
         <link href="assets/css/light-bootstrap-dashboard.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gson/2.8.8/gson.min.js"></script>
         <!-- CSS Just for demo purpose, don't include it in your project -->
         <link href="assets/css/demo.css" rel="stylesheet" />
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -50,8 +56,6 @@
                 text-align: center;
 
             }
-
-
 
             form {
 
@@ -93,8 +97,42 @@
             }
 
         </style>
+        <%
+            List<Card> cardList = new ArrayList<Card>();
+            if (request.getAttribute("listErr") != null) {
+                cardList = (List<Card>) request.getAttribute("listErr");
+            }
+        %>
+
+
     </head>
     <body>
+        <script>
+            // Define a global variable to hold the product data
+            var cardList = [];
+            var c = {};
+            // Function to process the product data
+            function processProductData(data) {
+                cardList = data;
+            }
+            processProductData(<%= new Gson().toJson(cardList)%>);
+        </script>
+
+        <script>
+            if (cardList.length == 0) {
+                alter("import sucess");
+            } else {
+                var x = "";
+                for (var i = 0; i < cardList.length; i++) {
+                    var obj = cardList[i];
+                    for (var key in obj) {
+                        x += obj["seri"];
+                    }
+                }
+                alter(x);
+            }
+        </script>
+
         <div class="wrapper">
             <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
                 <!--

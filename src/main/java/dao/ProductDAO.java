@@ -15,10 +15,12 @@ import model.Product;
 
 public class ProductDAO extends DBContext {
 
-    public void updateAmount(int quantity, Product p) {
+    public void updateAmount(int quantity, int productId) {
+        ProductDAO pd= new ProductDAO();
+        Product p = pd.getProductById(productId+"");
         String sql = "UPDATE product\n"
                 + "SET amount= ? "
-                + (p.getAmount() == quantity?",status=0 ":" ")
+                + (p.getAmount() == quantity ? ",status=0 " : " ")
                 + "WHERE id=?;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setInt(1, p.getAmount() - quantity);
@@ -50,7 +52,6 @@ public class ProductDAO extends DBContext {
                         rs.getDate("createdAt"),
                         rs.getDate("deleteAt"),
                         rs.getBoolean("status"),
-                        rs.getString("accountId"),
                         rs.getDate("updateAt"));
                 list.add(p);
             }
@@ -59,19 +60,14 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
-    public static void main(String[] args) {
-        ProductDAO pd =new ProductDAO();
-        for (Product p : pd.getAllProduct()) {
-            System.out.println(p.getExpirationDate());
-        }
-    }
+
 
     int addProduct(Product p, Date expirationDate) {
         String sql = "insert into product (SellPrice,supplier,amount,"
                 + "Image,ExpirationDate,Description,createdAt,status)\n"
                 + "values(?,?,?,?,?,?,?,?);";
-        try ( PreparedStatement st = connection.prepareStatement(sql
-        ,Statement.RETURN_GENERATED_KEYS)) {
+        try ( PreparedStatement st = connection.prepareStatement(sql,
+                 Statement.RETURN_GENERATED_KEYS)) {
             st.setDouble(1, p.getSellPrice());
             st.setString(2, p.getSupplier());
             st.setInt(3, 0);
@@ -82,7 +78,7 @@ public class ProductDAO extends DBContext {
             st.setDate(7, new java.sql.Date((new Date()).getTime()));
             st.setBoolean(8, p.isStatus());
             st.execute();
-            
+
             ResultSet rs = st.getGeneratedKeys();
             if (rs.next()) {
                 int productId = rs.getInt(1);
@@ -109,27 +105,13 @@ public class ProductDAO extends DBContext {
         }
     }
 
-    int getLastId() {
-        String sql = "select Id from product order by id desc limit 1";
-        try ( PreparedStatement st = connection.prepareStatement(sql)) {
-
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return 0;
-    }
-
     void updateAmountProduct(int productId, int amount) {
         String sql = "update product \n"
                 + "set amount=?\n"
                 + "where Id=?";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
 
-            st.setInt(1, ++amount);
+            st.setInt(1, amount);
             st.setInt(2, productId);
             st.execute();
 
@@ -175,7 +157,6 @@ public class ProductDAO extends DBContext {
                         rs.getDate("createdAt"),
                         rs.getDate("deleteAt"),
                         rs.getBoolean("status"),
-                        rs.getString("accountId"),
                         rs.getDate("updateAt"));
                 return p;
             }
