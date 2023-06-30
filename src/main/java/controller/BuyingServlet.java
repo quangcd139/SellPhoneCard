@@ -11,7 +11,7 @@ import dao.ProductDAO;
 import dao.TransactionDAO;
 import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,8 +64,10 @@ public class BuyingServlet extends HttpServlet {
         int soLuongMua = Integer.parseInt(quantity);
         //kiem tra tai khoan co du tien mua khong
         double total = (giaThe * soLuongMua);
-        if (account.getMoney() < total) {
+        double money = new AccountDAO().getMoney(account.getUserName());
+        if (money < total) {
             request.setAttribute("suppliers", l.getAllSupplier());
+            request.setAttribute("listPrice", l.getAllPrice());
             request.setAttribute("err", "You don't have enough money");
             request.getRequestDispatcher("shop.jsp").forward(request, response);
             return;
@@ -79,14 +82,16 @@ public class BuyingServlet extends HttpServlet {
         synchronized (buyQueue) {
             buyQueue.add(t1);
         }
+        account.setMoney(money - total);
         //chuyen trang
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().println("Buy request has been added to the queue.");
 
         // Lên lịch trả kết quả cho người dùng sau 5 giây
-        scheduleResponse(account.getUserName(), request,response);
+        scheduleResponse(account.getUserName(), request, response);
         request.setAttribute("err", "buy sucess");
         request.setAttribute("suppliers", l.getAllSupplier());
+        request.setAttribute("listPrice", l.getAllPrice());
         request.getRequestDispatcher("shop.jsp").forward(request, response);
     }
 
@@ -119,7 +124,6 @@ public class BuyingServlet extends HttpServlet {
                 processTransaction(t);
             }
         });
-
         processingThread.start();
     }
 
@@ -139,8 +143,6 @@ public class BuyingServlet extends HttpServlet {
         CardDAO cd = new CardDAO();
         cd.updateStatusCard(t1.getProductId(), transactionId, t1.getBuyAmount());
 
-        // Gửi thông báo cho người dùng
-        // ...
     }
 
     private void scheduleResponse(String userId, HttpServletRequest request, HttpServletResponse response) {
@@ -161,7 +163,7 @@ public class BuyingServlet extends HttpServlet {
             }
         }, 5, TimeUnit.SECONDS);
     }
-    
+
     private void processPendingRequests() {
         synchronized (buyQueue) {
             if (buyQueue.isEmpty()) {
@@ -171,7 +173,7 @@ public class BuyingServlet extends HttpServlet {
             buyQueue.notifyAll(); // Notify the waiting thread
         }
     }
-    
+
     @Override
     public void destroy() {
         executorService.shutdown();

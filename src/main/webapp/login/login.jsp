@@ -132,10 +132,18 @@
             }
 
         </script>
+
     </head>
 
     <body class="align">
-
+        <script>
+            window.onload = function () {
+                var successMessage = '<%= session.getAttribute("successMessage")%>';
+                if (successMessage && successMessage !== "null") {
+                    alert(successMessage);
+                }
+            };
+        </script>
         <div class="grid">
             <form action="login" method="post" class="form login">
 
@@ -143,14 +151,14 @@
                     <label for="account"><svg class="icon">
                         <use xlink:href="#icon-user"></use>
                         </svg><span class="hidden">Account</span></label>
-                        <input value="${requestScope.acc}" autocomplete="account" id="login__username" type="text" name="account" class="form__input" placeholder="Username" required>
+                    <input value="${requestScope.acc}" autocomplete="account" id="login__username" type="text" name="account" class="form__input" placeholder="Username" required>
                 </div>
 
                 <div class="form__field">
                     <label for="pass"><svg class="icon">
                         <use xlink:href="#icon-lock"></use>
                         </svg><span class="hidden">Password</span></label>
-                        <input value="${requestScope.pass}" autocomplete="pass" id="login__password" type="password" name="pass" class="form__input" placeholder="Password" required>
+                    <input value="${requestScope.pass}" autocomplete="pass" id="login__password" type="password" name="pass" class="form__input" placeholder="Password" required>
                 </div>
 
                 <div class="recap_container">
@@ -169,7 +177,6 @@
                 <div class="form__field">
                     <a href="login?forgotPass=1">Forgot password?</a>
                 </div>
-                <h3 style="color: red;">${requestScope.err}</h3>
                 <div class="form__field">
                     <input type="submit" name="login" value="Sign In">
                 </div>
@@ -195,6 +202,7 @@
     </svg>
 
     <script>
+
         function refreshCaptcha() {
             fetch('/SWP/CaptchaServlet', {
                 method: 'POST'
@@ -212,6 +220,6 @@
 
 
 
-
+    <% session.removeAttribute("successMessage");%>
 </body>
 </html>

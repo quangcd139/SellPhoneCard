@@ -163,7 +163,7 @@
             }
 
             window.onload = function () {
-                var duration = 60; // Duration in seconds (e.g., 5 minutes)
+                var duration = 30; // Duration in seconds (e.g., 5 minutes)
                 var display = document.querySelector('#timer');
                 startTimer(duration, display);
             };

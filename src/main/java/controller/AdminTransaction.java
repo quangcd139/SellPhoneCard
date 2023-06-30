@@ -95,7 +95,7 @@ public class AdminTransaction extends HttpServlet {
         } catch (NumberFormatException e) {
         }
         int page = Math.min(soTrang, Math.max(1, xpage));
-
+        page = Math.min(soTrang, Math.max(1, page));
         int offset = (page - 1) * limit;
 
         List<Transaction> list = pd.getAllTransaction(limit, offset);

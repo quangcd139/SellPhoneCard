@@ -17,14 +17,14 @@ public class ProductDAO extends DBContext {
 
     public void updateAmount(int quantity, int productId) {
         ProductDAO pd= new ProductDAO();
-        Product p = pd.getProductById(productId+"");
+        int amount = pd.getAmountById(productId);
         String sql = "UPDATE product\n"
                 + "SET amount= ? "
-                + (p.getAmount() == quantity ? ",status=0 " : " ")
+                + (amount == quantity ? ",status=0 " : "")
                 + "WHERE id=?;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setInt(1, p.getAmount() - quantity);
-            st.setInt(2, p.getId());
+            st.setInt(1, amount - quantity);
+            st.setInt(2, productId);
             st.execute();
 
         } catch (SQLException e) {
@@ -35,7 +35,7 @@ public class ProductDAO extends DBContext {
     public List<Product> getAllProduct() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM swp1.product where status !=0 and ExpirationDate"
-                + " > ?  order by ExpirationDate;";
+                + " > ?  order by Supplier,ExpirationDate;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setDate(1, new java.sql.Date((new Date()).getTime()));
             ResultSet rs = st.executeQuery();

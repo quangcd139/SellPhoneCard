@@ -93,7 +93,7 @@ public class AuthenticationServlet extends HttpServlet {
         String err = "";
         if (!maXacThuc.equals(xacThuc)) {
             //neu ma xac thuc sai tra lai trang cu
-            err = "ma xac thuc sai";
+            err = "Mã xác thực sai";
             request.setAttribute("err", err);
             request.getRequestDispatcher("login/authentication.jsp").forward(request, response);
             return;
@@ -102,7 +102,7 @@ public class AuthenticationServlet extends HttpServlet {
         AccountDAO a = new AccountDAO();
         Account acc = (Account) sess.getAttribute("registerAccount");
         a.updateStatusAccount(acc.getUserName());
-        request.setAttribute("err", "Xac thuc thanh cong");
+        sess.setAttribute("successMessage", "Xác thực thành công");
         request.getRequestDispatcher("login/login.jsp").forward(request, response);
     }
 

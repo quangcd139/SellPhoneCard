@@ -63,56 +63,59 @@ public class HistoryBuyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String slParam = request.getParameter("sl");
-        int limit = 3; // giá trị mặc định cho limit
-        HttpSession sess = request.getSession();
-        Account account = (Account) sess.getAttribute("account");
-        if(account==null){
+         String slParam = request.getParameter("sl");
+        int limit = 3; // Giá trị mặc định cho limit
+
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+
+        if (account == null) {
             request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
+
         if (slParam != null && !slParam.isEmpty()) {
             try {
                 limit = Integer.parseInt(slParam);
-                // lưu giá trị limit mới vào session của người dùng để sử dụng trong các yêu cầu tiếp theo
-                sess.setAttribute("limit", limit);
+                // Lưu giá trị limit mới vào session của người dùng để sử dụng trong các yêu cầu tiếp theo
+                session.setAttribute("limit", limit);
             } catch (NumberFormatException e) {
-                // giá trị của limit không hợp lệ, sử dụng giá trị lưu trong session hoặc giá trị mặc định
-                Integer sessionLimit = (Integer) sess.getAttribute("limit");
+                // Giá trị của limit không hợp lệ, sử dụng giá trị lưu trong session hoặc giá trị mặc định
+                Integer sessionLimit = (Integer) session.getAttribute("limit");
                 if (sessionLimit != null) {
                     limit = sessionLimit;
                 }
             }
         } else {
-            // nếu không có giá trị limit mới được gửi đến, sử dụng giá trị lưu trong session hoặc giá trị mặc định
-            Integer sessionLimit = (Integer) sess.getAttribute("limit");
+            // Nếu không có giá trị limit mới được gửi đến, sử dụng giá trị lưu trong session hoặc giá trị mặc định
+            Integer sessionLimit = (Integer) session.getAttribute("limit");
             if (sessionLimit != null) {
                 limit = sessionLimit;
             }
         }
 
         TransactionDAO td = new TransactionDAO();
-
         int size = td.getSizeByAccount(account.getUserName());
         int soTrang = (size % limit == 0) ? (size / limit) : (size / limit + 1);
 
-        // kiểm tra xem trang hiện tại có nằm ngoài phạm vi mới không, nếu có thì điều chỉnh lại giá trị của page
+        // Kiểm tra xem trang hiện tại có nằm ngoài phạm vi mới không, nếu có thì điều chỉnh lại giá trị của page
         int xpage = 1;
         try {
             xpage = Integer.parseInt(request.getParameter("page"));
         } catch (NumberFormatException e) {
         }
         int page = Math.min(soTrang, Math.max(1, xpage));
-
+        page = Math.min(soTrang, Math.max(1, page));
         int offset = (page - 1) * limit;
 
         List<Transaction> list = td.getAllByAccount(account.getUserName(), limit, offset);
         request.setAttribute("list", list);
         request.setAttribute("soTrang", soTrang);
-        request.setAttribute("limit", limit); // thêm thuộc tính limit vào request để sử dụng trong JSP
+        request.setAttribute("limit", limit); // Thêm thuộc tính limit vào request để sử dụng trong JSP
 
         request.getRequestDispatcher("historybuy.jsp").forward(request, response);
     }
+
 
     /**
      * Handles the HTTP <code>POST</code> method.

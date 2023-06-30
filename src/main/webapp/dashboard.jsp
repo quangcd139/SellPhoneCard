@@ -282,18 +282,27 @@
                                 </tr>
                             </c:forEach>           
                         </table>
-                        <c:forEach begin="${1}" end="${soTrang}" var="i">
-                            <a class="${i==page?"active":""}" href="adminTransaction?page=${i}"> ${i} </a>
-                        </c:forEach>                
-                        <form method="GET" id="myForm" onchange="submitForm()" >
+                        <form method="GET" id="pageSizeForm" onchange="submitForm()">
                             <label for="page-size">Hiển thị:</label>
                             <select id="page-size" name="sl">
                                 <option value="3" ${limit == 3 ? 'selected' : ''}>3</option>
                                 <option value="5" ${limit == 5 ? 'selected' : ''}>5</option>
                                 <option value="10" ${limit == 10 ? 'selected' : ''}>10</option>
                             </select>
-                            <!--                                        <input type="submit" value="Áp dụng">-->
-                            <!--<button type="button" >Submit</button>-->
+                        </form>
+
+
+
+                        <form method="GET" id="pageNumberForm" onchange="submitForm()">
+                            <label for="page-number">Trang:</label>
+                            <input type="text" id="page-number" name="page" value="${page}" onkeydown="handlePageNumber(event)">
+                            <span>/</span>
+                            <span>${soTrang}</span>
+                            <input type="hidden" name="sl" value="${limit}">
+
+                            <a class="${i == page ? 'active' : ''}" href="adminTransaction?page=${i}">${i}</a>
+
+
                         </form>
                         <%@include file="historyDetailForm.jsp" %>
 
@@ -552,13 +561,13 @@
     <script src="assets/js/light-bootstrap-dashboard.js" type="text/javascript"></script>
     <script src="assets/js/demo.js"></script>
     <script type="text/javascript">
-                                $(document).ready(function () {
-                                    // Javascript method's body can be found in assets/js/demos.js
-                                    demo.initDashboardPageCharts();
+                                    $(document).ready(function () {
+                                        // Javascript method's body can be found in assets/js/demos.js
+                                        demo.initDashboardPageCharts();
 
-                                    demo.showNotification();
+                                        demo.showNotification();
 
-                                });
+                                    });
     </script>
     <script>
             function showAnotherForm(event) {
@@ -594,7 +603,7 @@
                         // Add more table cells for additional card properties
                         table.append(row);
                     }
-                    
+
                     $('#menhGia').text(product.sellPrice);
                     $('#nhaMang').text(product.supplier);
                     $('#date').text(product.expirationDate);
@@ -618,10 +627,27 @@
                     select.value = selectedOption;
                 }
             };
+         
+            var pageNumberValue = localStorage.getItem("pageNumberValue");
+            if (pageNumberValue) {
+                document.getElementById("page-number").value = pageNumberValue;
+            }
             function submitForm() {
-                var form = document.getElementById('myForm');
+                document.getElementById("pageSizeForm").submit();
+                document.getElementById("pageNumberForm").submit;
                 form.submit();
             }
+
+            function handlePageNumber(event) {
+                if (event.keyCode === 13) { // Kiểm tra nếu phím nhấn là Enter
+                    var pageNumber = document.getElementById("page-number").value;
+                    localStorage.setItem("pageNumberValue", pageNumber); // Lưu giá trị vào Local Storage
+                    var pageNumberForm = document.getElementById("pageNumberForm");
+                    pageNumberForm.action = "adminTransaction?page=" + pageNumber;
+                    pageNumberForm.submit();
+                }
+            }
+
 
     </script>
 
