@@ -16,7 +16,7 @@ import model.Product;
 public class ProductDAO extends DBContext {
 
     public void updateAmount(int quantity, int productId) {
-        ProductDAO pd= new ProductDAO();
+        ProductDAO pd = new ProductDAO();
         int amount = pd.getAmountById(productId);
         String sql = "UPDATE product\n"
                 + "SET amount= ? "
@@ -61,13 +61,12 @@ public class ProductDAO extends DBContext {
         return list;
     }
 
-
     int addProduct(Product p, Date expirationDate) {
         String sql = "insert into product (SellPrice,supplier,amount,"
                 + "Image,ExpirationDate,Description,createdAt,status)\n"
                 + "values(?,?,?,?,?,?,?,?);";
         try ( PreparedStatement st = connection.prepareStatement(sql,
-                 Statement.RETURN_GENERATED_KEYS)) {
+                Statement.RETURN_GENERATED_KEYS)) {
             st.setDouble(1, p.getSellPrice());
             st.setString(2, p.getSupplier());
             st.setInt(3, 0);
@@ -164,5 +163,16 @@ public class ProductDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    void removeProduct(int productId) {
+        String sql = "delete from product where id = ? ;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, productId);
+            st.execute();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

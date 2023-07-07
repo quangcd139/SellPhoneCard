@@ -104,7 +104,6 @@ public class CardDAO extends DBContext {
                     Cell seriCell = row.getCell(0);
                     Cell codeCell = row.getCell(1);
                     Cell expirationDateCell = row.getCell(2);
-
                     if (seriCell != null && codeCell != null
                             && expirationDateCell != null) {
                         //covert data from cell to datatype in java
@@ -129,7 +128,7 @@ public class CardDAO extends DBContext {
                                     && p.getSellPrice() == sellPrice
                                     && p.getSupplier().equals(supplier)) {
                                 productId = p.getId();
-                                amount = p.getAmount()+1;
+                                amount = p.getAmount() + 1;
                                 p.setAmount(amount);
                                 //set updateAt product
                                 pd.updateDateProduct(productId);
@@ -138,8 +137,8 @@ public class CardDAO extends DBContext {
                             }
                         }
                         //nếu ko có sp nào thì tạo mới 1 sản phẩm
+                        Product p = new Product();
                         if (!check) {
-                            Product p = new Product();
                             p.setSellPrice(sellPrice);
                             p.setSupplier(supplier);
                             amount = 1;
@@ -170,7 +169,10 @@ public class CardDAO extends DBContext {
                         if (checkExsit) {
                             pd.updateAmountProduct(productId, amount);
                         } else {
+                            pd.removeProduct(productId);
+                            products.remove(p);
                             listErr.add(card);
+                            continue;
                         }
                     }
                 }
@@ -181,8 +183,8 @@ public class CardDAO extends DBContext {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return listErr; 
-   }
+        return listErr;
+    }
     // upload file java servlet từ máy
 
     public static boolean InsertData(Card card, Date expirationDate) {

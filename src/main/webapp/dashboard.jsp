@@ -151,7 +151,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link" href="import.jsp">
+                            <a class="nav-link" href="importServlet">
                                 <i class="nc-icon nc-bell-55"></i>
                                 <p>Import excel file</p>
                             </a>

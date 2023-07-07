@@ -4,7 +4,6 @@
  */
 package controller;
 
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.List;
 import dao.*;
@@ -15,9 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import model.Card;
-import model.Product;
 
 /**
  *
@@ -51,24 +48,35 @@ public class UploadFile extends HttpServlet {
         //get sellPrice,supplier
         String supplier = request.getParameter("supplier");
         String sellPrice_raw = request.getParameter("menhGia");
+
+        //check admin choose new supplier or price
+        if (!request.getParameter("newSupplier").isEmpty()) {
+            supplier = request.getParameter("newSupplier").toLowerCase();
+        }
+        if (!request.getParameter("customMenhGia").isEmpty()) {
+            sellPrice_raw = request.getParameter("customMenhGia").replace(",", "");
+        }
         double sellPrice = Double.parseDouble(sellPrice_raw);
+        //get file excel name
 
         String appPath = request.getServletContext().getRealPath("");
         appPath = appPath.replace('\\', '/');
         List<String> fileUrls = UploadHelper.upload(request);
-        System.out.println(fileUrls.get(0));
+        //import card
         CardDAO cd = new CardDAO();
         List<Card> listErr = cd.ImportExcel(appPath + fileUrls.get(0),
                 sellPrice, supplier);
-
+        //response list seri error
         if (listErr.size() == 0) {
             request.setAttribute("err", "sucess");
         } else {
             request.setAttribute("listErr", listErr);
-
         }
 
         //chuyen trang
+        ListBuyOfShopDAO lb = new ListBuyOfShopDAO();
+        request.setAttribute("suppliers",lb.getAllSupplier() );
+        request.setAttribute("prices", lb.getAllPrice());
         request.getRequestDispatcher("import.jsp").forward(request, response);
     }
 

@@ -82,11 +82,11 @@ public class BuyingServlet extends HttpServlet {
         synchronized (buyQueue) {
             buyQueue.add(t1);
         }
-        account.setMoney(money - total);
         //chuyen trang
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().println("Buy request has been added to the queue.");
-
+        //lay tien hien tai cua tai khoan
+        account.setMoney(new AccountDAO().getMoney(account.getUserName()));
         // Lên lịch trả kết quả cho người dùng sau 5 giây
         scheduleResponse(account.getUserName(), request, response);
         request.setAttribute("err", "buy sucess");
@@ -98,12 +98,10 @@ public class BuyingServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         executorService = Executors.newSingleThreadScheduledExecutor();
-
         // Tạo một luồng riêng biệt để xử lý hàng đợi
         Thread processingThread = new Thread(() -> {
             while (true) {
                 Transaction t;
-
                 synchronized (buyQueue) {
                     // Lấy yêu cầu từ hàng đợi
                     if (buyQueue.isEmpty()) {
@@ -154,7 +152,6 @@ public class BuyingServlet extends HttpServlet {
             try {
                 // Set attributes to be passed to the JSP page
                 request.setAttribute("err", "Buy request processed successfully. Result: ...");
-
                 // Forward the request to the JSP page
                 RequestDispatcher dispatcher = request.getRequestDispatcher("/shop");
                 dispatcher.forward(request, response);

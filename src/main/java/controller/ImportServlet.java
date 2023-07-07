@@ -3,24 +3,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package process;
+package controller;
 
+import dao.ListBuyOfShopDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.util.List;
-//import Model.Cart;
-//import Model.InforUser;
 
 /**
  *
- * @author asus
+ * @author caoqu
  */
-public class DeleteProcFromCart extends HttpServlet {
+@WebServlet(name="ImportServlet", urlPatterns={"/importServlet"})
+public class ImportServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -37,10 +36,10 @@ public class DeleteProcFromCart extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet DeleteProcFromCart</title>");  
+            out.println("<title>Servlet ImportServlet</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet DeleteProcFromCart at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet ImportServlet at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -57,21 +56,10 @@ public class DeleteProcFromCart extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-//        HttpSession session = request.getSession();
-//        InforUser iu = (InforUser) session.getAttribute("infor");
-//        String id_raw = request.getParameter("pid");
-//        CartDAO cdb = new CartDAO();
-//        int id;
-//        try {
-//            id = Integer.parseInt(id_raw);
-//            CartDAO d = new CartDAO();
-//            d.deleteCart(id);
-//            List<Cart> cart = cdb.getCart(iu.username);
-//            session.setAttribute("sizecart", cart.size());
-//            response.sendRedirect("cart");
-//        } catch (NumberFormatException e) {
-//            System.out.println(e);
-//        }
+        ListBuyOfShopDAO lb = new ListBuyOfShopDAO();
+        request.setAttribute("suppliers",lb.getAllSupplier() );
+        request.setAttribute("prices", lb.getAllPrice());
+        request.getRequestDispatcher("/import.jsp").forward(request, response);
     } 
 
     /** 

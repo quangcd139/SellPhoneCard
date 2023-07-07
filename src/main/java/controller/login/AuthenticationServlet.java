@@ -102,7 +102,7 @@ public class AuthenticationServlet extends HttpServlet {
         AccountDAO a = new AccountDAO();
         Account acc = (Account) sess.getAttribute("registerAccount");
         a.updateStatusAccount(acc.getUserName());
-        sess.setAttribute("successMessage", "Xác thực thành công");
+        request.setAttribute("err", "Xác thực thành công");
         request.getRequestDispatcher("login/login.jsp").forward(request, response);
     }
 

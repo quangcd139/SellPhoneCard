@@ -138,7 +138,7 @@
     <body class="align">
         <script>
             window.onload = function () {
-                var successMessage = '<%= session.getAttribute("successMessage")%>';
+                var successMessage = '<%= request.getAttribute("err")%>';
                 if (successMessage && successMessage !== "null") {
                     alert(successMessage);
                 }

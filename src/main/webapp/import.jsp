@@ -5,6 +5,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -95,6 +97,45 @@
             .network{
                 padding: 0 20px;
             }
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 50%;
+                height: 100%;
+                overflow: auto;
+            }
+
+            .modal-content {
+                background-color: white;
+                margin: 0 auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 500px; /* adjust the maximum width as needed */
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-height: 80vh; /* set a maximum height for the modal content */
+                overflow-y: auto; /* enable vertical scrolling */
+            }
+
+            .close {
+                color: black;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
 
         </style>
         <%
@@ -104,34 +145,61 @@
             }
         %>
 
-
     </head>
     <body>
         <script>
             // Define a global variable to hold the product data
             var cardList = [];
             var c = {};
+            var x = "null";
+            var x1 = "";
             // Function to process the product data
             function processProductData(data) {
                 cardList = data;
+                if ('<%=request.getAttribute("err")%>' !== "null") {
+                    x = "Thẻ đã được thêm <a href='manageProduct'>tại đây</a>";
+                    x1 = "Import thành công";
+                }
+
+                if (cardList.length != 0) {
+                    x1 = "Import thất bại</br></br>Vui lòng kiểm tra lại các seri này";
+                    x = "";
+                    for (var i = 0; i < cardList.length; i++) {
+                        var obj = cardList[i];
+                        var seri = obj.seri; // Access the "seri" property of the object
+                        x = x + seri + "</br>";
+                    }
+                }
             }
             processProductData(<%= new Gson().toJson(cardList)%>);
         </script>
 
         <script>
-            if (cardList.length == 0) {
-                alter("import sucess");
-            } else {
-                var x = "";
-                for (var i = 0; i < cardList.length; i++) {
-                    var obj = cardList[i];
-                    for (var key in obj) {
-                        x += obj["seri"];
-                    }
+            window.onload = function () {
+                if (x !== "null") {
+                    document.getElementById("seriErr").innerHTML = x1;
+                    document.getElementById("errorContent").innerHTML = x;
+                    // Show the modal
+                    var modal = document.getElementById("errorModal");
+                    modal.style.display = "block";
+
+                    // Close the modal when the user clicks on the close button
+                    var closeButton = document.getElementsByClassName("close")[0];
+                    closeButton.onclick = function () {
+                        modal.style.display = "none";
+                    };
                 }
-                alter(x);
-            }
+
+            };
         </script>
+
+        <div id="errorModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3 id="seriErr"></h3>
+                <p style="color: black;" id="errorContent"></p>
+            </div>
+        </div>
 
         <div class="wrapper">
             <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
@@ -166,7 +234,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="nav-link" href="import.jsp">
+                            <a class="nav-link" href="importServlet">
                                 <i class="nc-icon nc-bell-55"></i>
                                 <p>Import excel file</p>
                             </a>
@@ -249,34 +317,41 @@
                 </nav>
                 <div>
                     <div class="myform">
-                        <form  action="UploadFile" method="post" enctype="multipart/form-data" >
+                        <form action="UploadFile" method="post" enctype="multipart/form-data" onsubmit="return validateForm()" >
                             <header class="header">
                                 <h2>Import Excel</h2>
                             </header>
                             <div class="network">
                                 Chọn nhà mạng:
-                                <select name="supplier">
-                                    <option value="viettel">Viettel</option>
-                                    <option value="mobifone">Mobifone</option>
-                                    <option value="vinaphone">Vinaphone</option>
-                                    <option value="vietnamobile">Vietnamobile</option>
+                                <select name="supplier" id="supplierSelect" onchange="handleSelectChange('supplierSelect', 'newSupplierInput')">
+                                    <c:forEach items="${suppliers}" var="p">
+                                        <option value="${p.supplier}">${p.supplier}</option>
+                                    </c:forEach>
+                                    <option value="other">Nhà mạng khác</option>
                                 </select>
+                                <input type="text" name="newSupplier" id="newSupplierInput" placeholder="Nhà mạng khác" style="display: none;">
+
                                 <br/><br/>
                                 Chọn mệnh giá
-                                <select name="menhGia">
-                                    <option value="20000">20,000 VND</option>
-                                    <option value="50000">50,000 VND</option>
-                                    <option value="50000">100,000 VND</option>
-                                    <option value="50000">200,000 VND</option>
-                                    <option value="50000">500,000 VND</option>
+                                <select name="menhGia" id="menhGiaSelect" onchange="handleSelectChange('menhGiaSelect', 'customMenhGiaInput')">
+                                    <fmt:setLocale value="en_US" />
+                                    <c:forEach items="${prices}" var="p">
+                                        <option value="${p}">
+                                            <fmt:formatNumber value="${p}" pattern="#,##0" /> VND
+                                        </option>
+                                    </c:forEach>
+
+                                    <option value="other">Số tiền khác</option>
                                 </select>
+                                <input type="text" name="customMenhGia" id="customMenhGiaInput" placeholder="Nhập số tiền khác" style="display: none;">
+
                                 <br/><br/>
 
-                                File to Upload: <input type="file" name="file" accept=".xlsx, .xls">
+                                File to Upload: <input type="file" name="file" accept=".xlsx, .xls" required="">
                                 <input class="submit" type="submit" value="Import">
+
+                                <h4 style="color: red;">${fileErr}</h4>
                             </div>
-
-
 
                         </form>
                     </div>
@@ -286,6 +361,31 @@
 
 
         </div>
+        <script>
+            function handleSelectChange(selectId, inputId) {
+                var selectElement = document.getElementById(selectId);
+                var inputElement = document.getElementById(inputId);
 
+                var selectedValue = selectElement.value;
+
+                if (selectedValue === "other") {
+                    inputElement.style.display = "inline-block";
+                    inputElement.setAttribute("required", "required");
+                } else {
+                    inputElement.style.display = "none";
+                    inputElement.removeAttribute("required");
+                }
+            }
+
+            function validateForm() {
+                var price = document.getElementById("customMenhGiaInput").value;
+                var regex = /^\d{1,3}(,\d{3})*$/;
+                if (!regex.test(price)) {
+                    alert("Nhập mệnh giá theo format xxx,xxx");
+                    return false;
+                }
+                return true;
+            }
+        </script>
     </body>
 </html>
