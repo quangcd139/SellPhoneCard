@@ -380,6 +380,11 @@
             function validateForm() {
                 var price = document.getElementById("customMenhGiaInput").value;
                 var regex = /^\d{1,3}(,\d{3})*$/;
+
+                if (price.trim() === "") {
+                    return true; // Trả về true nếu không có giá trị nhập vào
+                }
+
                 if (!regex.test(price)) {
                     alert("Nhập mệnh giá theo format xxx,xxx");
                     return false;
