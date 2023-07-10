@@ -49,5 +49,5 @@ jobs:
         with:
           app-name: 'BanThe'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_745F767918024DDEA05DD52494AEAAD8 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_ACB8B53A90BA46F8A7B99770D71C247C }}
           package: '*.war'
