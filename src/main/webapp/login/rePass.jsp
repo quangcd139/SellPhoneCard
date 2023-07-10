@@ -126,7 +126,7 @@
 
         <script>
             function refreshCaptcha() {
-                fetch('/SWP/CaptchaServlet', {
+                fetch('/CaptchaServlet', {
 
                     method: 'POST'
                 })

@@ -1,3 +1,4 @@
+
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="model.Card"%>
@@ -6,6 +7,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@page isELIgnored="false" %>
 
 <!DOCTYPE html>
 <html>
@@ -323,14 +325,15 @@
                             </header>
                             <div class="network">
                                 Chọn nhà mạng:
-                                <select name="supplier" id="supplierSelect" onchange="handleSelectChange('supplierSelect', 'newSupplierInput')">
+                                <select name="supplier" id="supplierSelect" onchange="handleSelectChange('supplierSelect', 'newSupplierInput', 'imageInput')">
                                     <c:forEach items="${suppliers}" var="p">
-                                        <option value="${p.supplier}">${p.supplier}</option>
+                                        <option value="${p.supplier}" data-image="${p.image}">${p.supplier}</option>
                                     </c:forEach>
                                     <option value="other">Nhà mạng khác</option>
                                 </select>
                                 <input type="text" name="newSupplier" id="newSupplierInput" placeholder="Nhà mạng khác" style="display: none;">
-
+                                <input type="file" name="image" id="imageInput" style="display: none;" accept=".png, .jpg">
+                                <img id="selectedImage" src="" alt="Selected Image" style="display: none; max-width: 100px; max-height: 100px;">
                                 <br/><br/>
                                 Chọn mệnh giá
                                 <select name="menhGia" id="menhGiaSelect" onchange="handleSelectChange('menhGiaSelect', 'customMenhGiaInput')">
@@ -362,18 +365,30 @@
 
         </div>
         <script>
-            function handleSelectChange(selectId, inputId) {
+            function handleSelectChange(selectId, inputId, imageInputId) {
                 var selectElement = document.getElementById(selectId);
                 var inputElement = document.getElementById(inputId);
+                var imageInputElement = document.getElementById(imageInputId);
+                var selectedImageElement = document.getElementById("selectedImage");
 
                 var selectedValue = selectElement.value;
 
                 if (selectedValue === "other") {
                     inputElement.style.display = "inline-block";
                     inputElement.setAttribute("required", "required");
+                    imageInputElement.setAttribute("required", "required");
+                    imageInputElement.style.display = "inline-block";
+//                    selectedImageElement.style.display = "inline-block";
+
                 } else {
                     inputElement.style.display = "none";
                     inputElement.removeAttribute("required");
+                    imageInputElement.style.display = "none";
+//                    selectedImageElement.style.display = "none";
+
+                    var selectedOption = selectElement.options[selectElement.selectedIndex];
+                    var selectedImage = selectedOption.getAttribute("data-image");
+                    selectedImageElement.src = selectedImage;
                 }
             }
 

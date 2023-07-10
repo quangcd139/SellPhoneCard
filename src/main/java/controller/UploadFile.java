@@ -58,14 +58,22 @@ public class UploadFile extends HttpServlet {
         }
         double sellPrice = Double.parseDouble(sellPrice_raw);
         //get file excel name
-
         String appPath = request.getServletContext().getRealPath("");
         appPath = appPath.replace('\\', '/');
-        List<String> fileUrls = UploadHelper.upload(request);
+        List<String> fileUrls = UploadHelper.upload(request, supplier);
+
         //import card
         CardDAO cd = new CardDAO();
-        List<Card> listErr = cd.ImportExcel(appPath + fileUrls.get(0),
-                sellPrice, supplier);
+        //index = 0 là file ảnh
+        String imageName = "";
+        int index = 0;
+        if (fileUrls.size() == 2) {
+            //index = 1 là file excel
+            imageName = fileUrls.get(0);
+            index = 1;
+        }
+        List<Card> listErr = cd.ImportExcel(appPath + fileUrls.get(index),
+                sellPrice, supplier, imageName);
         //response list seri error
         if (listErr.size() == 0) {
             request.setAttribute("err", "sucess");
@@ -75,7 +83,7 @@ public class UploadFile extends HttpServlet {
 
         //chuyen trang
         ListBuyOfShopDAO lb = new ListBuyOfShopDAO();
-        request.setAttribute("suppliers",lb.getAllSupplier() );
+        request.setAttribute("suppliers", lb.getAllSupplier());
         request.setAttribute("prices", lb.getAllPrice());
         request.getRequestDispatcher("import.jsp").forward(request, response);
     }

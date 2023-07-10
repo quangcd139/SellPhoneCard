@@ -86,7 +86,7 @@ public class CardDAO extends DBContext {
         return date1;
     }
 
-    public List<Card> ImportExcel(String path, double sellPrice, String supplier) {
+    public List<Card> ImportExcel(String path, double sellPrice, String supplier, String imageName) {
         InputStream inp;
         ProductDAO pd = new ProductDAO();
         CardDAO cd = new CardDAO();
@@ -144,7 +144,11 @@ public class CardDAO extends DBContext {
                             amount = 1;
                             p.setAmount(amount);
                             p.setDescription("mua the nha mang " + supplier);
-                            p.setImage(supplier + "_logo.png");
+                            if (imageName.isEmpty()) {
+                                p.setImage(supplier+"_logo.png");
+                            } else {
+                                p.setImage(imageName.split("/")[1]);
+                            }
                             p.setStatus(true);
                             p.setCreatedAt(new java.sql.Date((new Date()).getTime()));//get date now
                             p.setExpirationDate(new java.sql.Date(expirationDate.getTime()));//get date now

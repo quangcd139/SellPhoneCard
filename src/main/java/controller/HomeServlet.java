@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author asus
  */
-@WebServlet("/home")
+@WebServlet(urlPatterns = {"/home",""})
 public class HomeServlet extends HttpServlet {
    
     /** 
