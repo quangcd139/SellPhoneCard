@@ -192,7 +192,7 @@
                                         <a href="shop" class="nav-item nav-link" style="float: left;">Shopping</a>
 <!--                                        <a href="myshop" class="nav-item nav-link" style="float: left;">My Shop</a>
                                         <a href="cart" class="nav-item nav-link" style="float: left;">Cart</a>-->
-                                        <a href="home" class="nav-item nav-link" style="float: left;">Load Money</a>
+                                        <a href="vnpay_pay.jsp" class="nav-item nav-link" style="float: left;">Load Money</a>
                                         <a href="myhistorybill" class="nav-item nav-link" style="float: left;">History Buy</a>
                                     </div>
 
