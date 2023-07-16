@@ -4,10 +4,6 @@
  */
 package dao;
 
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,21 +12,19 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import model.Card;
 import model.Product;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.ExcelStyleDateFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -92,6 +86,7 @@ public class CardDAO extends DBContext {
         CardDAO cd = new CardDAO();
         List<Product> products = pd.getAllProduct();
         List<Card> listErr = new ArrayList<>();
+        Map<Integer, Integer> mapList = new HashMap<>();
         try {
             inp = new FileInputStream(path); // format lại tên nhà mạng + price
             HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(inp));
@@ -145,7 +140,7 @@ public class CardDAO extends DBContext {
                             p.setAmount(amount);
                             p.setDescription("mua the nha mang " + supplier);
                             if (imageName.isEmpty()) {
-                                p.setImage(supplier+"_logo.png");
+                                p.setImage(supplier + "_logo.png");
                             } else {
                                 p.setImage(imageName.split("/")[1]);
                             }
@@ -171,7 +166,7 @@ public class CardDAO extends DBContext {
                         boolean checkExsit = cd.InsertData(card, expirationDate);
                         // update số lượng thẻ của product
                         if (checkExsit) {
-                            pd.updateAmountProduct(productId, amount);
+                            mapList.put(productId, amount);
                         } else {
                             pd.removeProduct(productId);
                             products.remove(p);
@@ -181,6 +176,9 @@ public class CardDAO extends DBContext {
                     }
                 }
                 wb.close();
+            }
+            for (Map.Entry<Integer, Integer> entry : mapList.entrySet()) {
+                pd.updateAmountProduct(entry.getKey(),entry.getValue());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
