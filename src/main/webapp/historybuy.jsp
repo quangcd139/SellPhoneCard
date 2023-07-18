@@ -204,7 +204,7 @@
 
                                     <form method="GET" id="pageNumberForm" onchange="submitForm()">
                                         <label for="page-number">Trang:</label>
-                                        <input type="text" id="page-number" name="page" value="${page}" onkeydown="handlePageNumber(event)">
+                                        <input type="text" id="page-number" name="page" value="${page}" oninput="handlePageNumber(event)">
                                         <span>/</span>
                                         <span>${soTrang}</span>
                                         <input type="hidden" name="sl" value="${limit}">

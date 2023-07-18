@@ -119,6 +119,7 @@ public class HistoryBuyServlet extends HttpServlet {
         request.setAttribute("soTrang", soTrang);
         request.setAttribute("limit", limit); // Thêm thuộc tính limit vào request để sử dụng trong JSP
         request.setAttribute("prices", prices);
+        request.setAttribute("page", page);
         request.setAttribute("suppliers", suppliers);
         request.getRequestDispatcher("historybuy.jsp").forward(request, response);
     }

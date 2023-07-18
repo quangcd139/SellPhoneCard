@@ -178,7 +178,7 @@
                             </div>
                         </div>
                         <h3>Money: <fmt:formatNumber value="${sessionScope.account.money}" pattern="#,##0" /> VND</h3>
-                        
+
 
                         <div class="row px-xl-5 pb-3">
 
@@ -200,7 +200,7 @@
                                 <button type="submit" onclick="return validateAndShowForm()">show detail</button><br><br>
                                 <script>
                                     var err = <%=request.getAttribute("err")%>
-                                    if(err!==null){
+                                    if (err !== null) {
                                         alert(err);
                                     }
                                 </script>
@@ -221,7 +221,16 @@
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
+        <script>
+            window.onload = function () {
+                var successMessage = '<%= request.getAttribute("err")%>';
+                if (successMessage !== "null") {
+                    alert('Thẻ đã mua thành công');
+window.location.href = 'myhistorybill';
+                    //alert('Thẻ đã mua thành công <a href="myhistorybill">xem chi tiết</a>');
+                }
+            };
+        </script>
 
         <!-- JavaScript Libraries -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

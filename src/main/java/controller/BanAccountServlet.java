@@ -62,7 +62,7 @@ public class BanAccountServlet extends HttpServlet {
         AccountDAO acc = new AccountDAO();
         acc.banAccount(account,ban);
         request.setAttribute("check", 4);
-        request.setAttribute("userList", new AccountDAO().listAll());
+        request.setAttribute("list", new AccountDAO().listAll());
         RequestDispatcher rd = request.getRequestDispatcher("dashboard.jsp");
         rd.forward(request, response);
     } 
