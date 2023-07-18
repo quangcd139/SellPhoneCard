@@ -14,7 +14,6 @@ import java.util.Date;
 @lombok.Getter
 @lombok.Setter
 @lombok.NoArgsConstructor
-@lombok.ToString
 public class Product {
 
     private int id;
@@ -29,8 +28,8 @@ public class Product {
     private Date deleteAt;
     private boolean status;
     private Date updateAt;
-    
 
+    
     public Product(String supplier, String image) {
         this.supplier = supplier;
         this.image = image;
@@ -50,5 +49,30 @@ public class Product {
         this.sellPrice = menhGia;
         this.id = id;
     }
+//        Product product = new Product(productName, sellPrice, supplier, image, description, status);
 
+    public Product(String name, double sellPrice, String supplier, String image, String description, boolean status) {
+        this.name = name;
+        this.sellPrice = sellPrice;
+        this.supplier = supplier;
+        this.image = image;
+        this.description = description;
+        this.status = status;
+    }
+
+//    public Product(String proname, String proprice, String proamount, String prosupplier, String proexpire) {
+//        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//    }
+    
+    public Product(String name, double sellPrice, int amount, String supplier, Date expirationDate) {
+        this.name = name;
+        this.sellPrice = sellPrice;
+        this.amount = amount;
+        this.supplier = supplier;
+        this.expirationDate = expirationDate;
+    }
+
+    
+    
+    
 }

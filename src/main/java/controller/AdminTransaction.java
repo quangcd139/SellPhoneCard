@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.ListBuyOfShopDAO;
 import dao.TransactionDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,14 +14,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
+import model.Product;
 import model.Transaction;
 
 /**
  *
  * @author PC
  */
-@WebServlet(name = "AdminTransaction", urlPatterns = {"/adminTransaction"})
+    @WebServlet(name = "AdminTransaction", urlPatterns = {"/adminTransaction"})
 public class AdminTransaction extends HttpServlet {
 
     /**
@@ -62,6 +65,8 @@ public class AdminTransaction extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String slParam = request.getParameter("sl");
+        List<String> prices = new ListBuyOfShopDAO().getAllPrice();
+        List<Product> suppliers = new ListBuyOfShopDAO().getAllSupplier();
         int limit = 3;
         HttpSession sess = request.getSession();
         TransactionDAO pd = new TransactionDAO();
@@ -97,13 +102,17 @@ public class AdminTransaction extends HttpServlet {
         int page = Math.min(soTrang, Math.max(1, xpage));
         page = Math.min(soTrang, Math.max(1, page));
         int offset = (page - 1) * limit;
-
-        List<Transaction> list = pd.getAllTransaction(limit, offset);
+        String accountName = request.getParameter("accountName")!=null?request.getParameter("accountName"):"";
+        List<Transaction> list = getListByFilter(accountName, prices, suppliers, limit, offset, request);
         request.setAttribute("list", list);
         request.setAttribute("soTrang", soTrang);
+        request.setAttribute("page", page);
         request.setAttribute("limit", limit);
         request.setAttribute("transactions", list);
+        request.setAttribute("prices", prices);
+        request.setAttribute("suppliers", suppliers);
         request.setAttribute("check", 3);
+        request.setAttribute("accountName", accountName);
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
@@ -126,9 +135,28 @@ public class AdminTransaction extends HttpServlet {
      *
      * @return a String containing servlet description
      */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    public List<Transaction> getListByFilter(String account, List<String> prices, List<Product> suppliers, int limit, int offset, HttpServletRequest request) {
+        TransactionDAO td = new TransactionDAO();
+        List<Transaction> list = new ArrayList<>();
+        List<String> priceFilter = new ArrayList<>();
+        List<Product> supplierFilter = new ArrayList<>();
+        for (String p : prices) {
+            if (request.getParameter(p) != null) {
+                priceFilter.add(p);
+            }
+        }
+        for (Product s : suppliers) {
+            if (request.getParameter(s.getSupplier()) != null) {
+                supplierFilter.add(s);
+            }
+        }
+        if (priceFilter.size() == 0 && supplierFilter.size() == 0 && account.isEmpty()) {
+            list = td.getAllTransaction(limit, offset);
+        }else{
+            list = td.getAllByAccountFilter(account, limit, offset,priceFilter,supplierFilter);
+        }
+
+        return list;
+    }
 
 }

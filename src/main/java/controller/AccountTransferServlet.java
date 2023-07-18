@@ -4,8 +4,6 @@
  */
 package controller;
 
-import dao.ListBuyOfShopDAO;
-import dao.TransactionDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,42 +11,35 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import dao.AccountDAO;
+import dao.ProductDAO;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import model.Account;
+import model.Hashing;
 import model.Product;
-import model.Transaction;
 
 /**
  *
- * @author asus
+ * @author Knagzaoh
  */
-@WebServlet("/myhistorybill")
-public class HistoryBuyServlet extends HttpServlet {
+@WebServlet(name = "AccountTransferServlet", urlPatterns = {"/AccountTransferServlet"})
+public class AccountTransferServlet extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
+        try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet HistoryBuyServlet</title>");
+            out.println("<title>Servlet AccountTransferServlet</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet HistoryBuyServlet at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet AccountTransferServlet at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -66,18 +57,17 @@ public class HistoryBuyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        String slParam = request.getParameter("sl");
+        int limit = 3; // Giá trị mặc định cho limit
 
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-        List<String> prices = new ListBuyOfShopDAO().getAllPrice();
-        List<Product> suppliers = new ListBuyOfShopDAO().getAllSupplier();
 
         if (account == null) {
             request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
-        String slParam = request.getParameter("sl");
-        int limit = 3; // Giá trị mặc định cho limit
 
         if (slParam != null && !slParam.isEmpty()) {
             try {
@@ -99,8 +89,8 @@ public class HistoryBuyServlet extends HttpServlet {
             }
         }
 
-        TransactionDAO td = new TransactionDAO();
-        int size = td.getSizeByAccount(account.getUserName());
+        AccountDAO ad = new AccountDAO();
+        int size = ad.getAccountCount();
         int soTrang = (size % limit == 0) ? (size / limit) : (size / limit + 1);
 
         // Kiểm tra xem trang hiện tại có nằm ngoài phạm vi mới không, nếu có thì điều chỉnh lại giá trị của page
@@ -112,15 +102,16 @@ public class HistoryBuyServlet extends HttpServlet {
         int page = Math.min(soTrang, Math.max(1, xpage));
         page = Math.min(soTrang, Math.max(1, page));
         int offset = (page - 1) * limit;
-
-//        List<Transaction> list = td.getAllByAccount(account.getUserName(), limit, offset);
-        List<Transaction> list = getListByFilter(account.getUserName(), prices, suppliers, limit, offset, request);
+        
+        List<Account> list = ad.getAllAccount(limit, offset);
         request.setAttribute("list", list);
         request.setAttribute("soTrang", soTrang);
-        request.setAttribute("limit", limit); // Thêm thuộc tính limit vào request để sử dụng trong JSP
-        request.setAttribute("prices", prices);
-        request.setAttribute("suppliers", suppliers);
-        request.getRequestDispatcher("historybuy.jsp").forward(request, response);
+        request.setAttribute("limit", limit);
+        request.setAttribute("page", page);
+        request.setAttribute("check", 4);
+
+        request.getRequestDispatcher("dashboard.jsp").forward(request, response);
+
     }
 
     /**
@@ -134,30 +125,24 @@ public class HistoryBuyServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    }
-
-    public List<Transaction> getListByFilter(String account, List<String> prices, List<Product> suppliers, int limit, int offset, HttpServletRequest request) {
-        TransactionDAO td = new TransactionDAO();
-        List<Transaction> list = new ArrayList<>();
-        List<String> priceFilter = new ArrayList<>();
-        List<Product> supplierFilter = new ArrayList<>();
-        for (String p : prices) {
-            if (request.getParameter(p) != null) {
-                priceFilter.add(p);
-            }
+        try {
+            String fromAccount = request.getParameter("fromAccount");
+            String toAccount = request.getParameter("toAccount");
+            String type = request.getParameter("type");
+            double amount = Double.parseDouble(request.getParameter("amount"));
+            AccountDAO dao = new AccountDAO();
+            // transfer money
+            dao.transferMoney(fromAccount, toAccount, amount,type);
+            // redirect to history transfer
+            response.sendRedirect("AccountTransferServlet");
+            // in ra thong bao
+//            PrintWriter out = response.getWriter();
+//            out.println("<script type=\"text/javascript\">");
+//            out.println("alert('Transfer money successfully');");
+        } catch (Exception e) {
+            System.out.println("doPost: " + e.getMessage()); 
         }
-        for (Product s : suppliers) {
-            if (request.getParameter(s.getSupplier()) != null) {
-                supplierFilter.add(s);
-            }
-        }
-        if (priceFilter.size() == 0 && supplierFilter.size() == 0) {
-            list = td.getAllByAccount(account, limit, offset);
-        } else {
-            list = td.getAllByAccountFilter(account, limit, offset, priceFilter, supplierFilter);
-        }
-
-        return list;
+        processRequest(request, response);
     }
 
     /**
@@ -165,4 +150,9 @@ public class HistoryBuyServlet extends HttpServlet {
      *
      * @return a String containing servlet description
      */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }

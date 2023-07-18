@@ -25,13 +25,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import model.Account;
-import model.Product;
 import model.Transaction;
 
 /**
  *
  * @author PC
  */
+
 @WebServlet(name = "BuyingServlet", urlPatterns = {"/buying"})
 public class BuyingServlet extends HttpServlet {
 

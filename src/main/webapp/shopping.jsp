@@ -6,6 +6,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="s" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html>
@@ -176,7 +177,8 @@
                                 </div>
                             </div>
                         </div>
-                        <h3>Money: ${sessionScope.account.money}</h3>
+                        <h3>Money: <fmt:formatNumber value="${sessionScope.account.money}" pattern="#,##0" /> VND</h3>
+                        
 
                         <div class="row px-xl-5 pb-3">
 

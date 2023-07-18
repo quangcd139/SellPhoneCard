@@ -27,8 +27,8 @@ public class TransactionDAO extends DBContext {
         String sql = "iNSERT INTO `swp1`.`transaction` ( "
                 + "`BuyPrice`, `BuyAmount`, `createdAt`, `ProductId`,`accountId`,`Description`)\n"
                 + " VALUES (?,?,?,?,?,?);";
-        try ( PreparedStatement st = connection.prepareStatement(sql
-        ,Statement.RETURN_GENERATED_KEYS)) {
+        try ( PreparedStatement st = connection.prepareStatement(sql,
+                Statement.RETURN_GENERATED_KEYS)) {
             st.setDouble(1, t.getBuyPrice());
             st.setInt(2, t.getBuyAmount());
             Date d = new Date();
@@ -36,9 +36,9 @@ public class TransactionDAO extends DBContext {
             st.setDate(3, createdAt);
             st.setInt(4, t.getProductId());
             st.setString(5, t.getAccountId());
-            st.setString(6, "The dien thoai " );
+            st.setString(6, "The dien thoai ");
             st.executeUpdate();
-            
+
             ResultSet generatedKeys = st.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int transactionId = generatedKeys.getInt(1);
@@ -49,7 +49,6 @@ public class TransactionDAO extends DBContext {
         }
         return 0;
     }
-
 
     public List<Transaction> getAllByAccount(String account) {
         List<Transaction> list = new ArrayList<>();
@@ -121,7 +120,6 @@ public class TransactionDAO extends DBContext {
         }
         return list;
     }
-    
 
     public List<Transaction> getAllTransaction() {
         List<Transaction> list = new ArrayList<>();
@@ -144,7 +142,7 @@ public class TransactionDAO extends DBContext {
         }
         return list;
     }
-    
+
     public List<Transaction> getAllTransaction(int limit, int offset) {
         List<Transaction> list = new ArrayList<>();
         String sql = "SELECT * FROM swp1.transaction limit ? offset ?;";
@@ -169,7 +167,7 @@ public class TransactionDAO extends DBContext {
         return list;
 
     }
-    
+
     public int getSizeByAccount(String userName) {
         String sql = "SELECT count(*) FROM transaction WHERE accountID = ?";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
@@ -183,7 +181,7 @@ public class TransactionDAO extends DBContext {
         }
         return 0;
     }
-    
+
     public int getSizeTransaction() {
         String sql = "SELECT count(*) FROM transaction";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
@@ -195,6 +193,68 @@ public class TransactionDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return 0;
+    }
+
+    public List<Transaction> getAllByAccountFilter(String account, int limit, int offset, List<String> priceFilter, List<Product> supplierFilter) {
+        List<Transaction> list = new ArrayList<>();
+        String price = "";
+        for (String s : priceFilter) {
+            price += "BuyPrice= " + s + " or ";
+        }
+        if (!price.isEmpty()) {
+            price = price.substring(0, price.length() - 3);
+            price = "(" + price;
+            price += ") ";
+        }
+
+        String supplier = "";
+        for (Product p : supplierFilter) {
+            supplier += "Supplier= '" + p.getSupplier() + "' or ";
+        }
+        if (!supplier.isEmpty()) {
+            supplier = supplier.substring(0, supplier.length() - 3);
+            supplier = "(" + supplier;
+            if (!price.isEmpty()) {
+                supplier += ") and ";
+            }else{
+                supplier += ") ";
+            }
+        }
+        String accountId = "";
+        if (!account.isEmpty()) {
+            if (priceFilter.size() == 0 && supplierFilter.size() == 0) {
+                accountId = "accountId = ? ";
+            } else {
+                accountId = "accountId = ? and ";
+            }
+        }
+        String sql = "select t.* from transaction t join product p on t.ProductID=p.Id\n"
+                + "where " + accountId + supplier + price;
+        System.out.println(sql);
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            if (!account.isEmpty()) {
+                st.setString(1, account);
+            }
+//            st.setInt(2, limit);
+//            st.setInt(3, offset);
+
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Transaction t = new Transaction(
+                        rs.getInt("Id"),
+                        rs.getDouble("BuyPrice"),
+                        rs.getInt("BuyAmount"),
+                        rs.getDate("createdAt"),
+                        rs.getString("Description"),
+                        rs.getString("accountId")
+                );
+
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 
 }

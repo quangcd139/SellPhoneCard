@@ -177,6 +177,7 @@ public class CardDAO extends DBContext {
                 }
                 wb.close();
             }
+            
             for (Map.Entry<Integer, Integer> entry : mapList.entrySet()) {
                 pd.updateAmountProduct(entry.getKey(),entry.getValue());
             }

@@ -213,40 +213,50 @@
                 <div class="sidebar-wrapper">
                     <div class="logo">
                         <a href="" class="simple-text">
-                            Admin sell card
+                            Quản trị thẻ
                         </a>
                     </div>
                     <ul class="nav">
-                        <li class="nav-item">
+                        <li class="nav-item ">
                             <a class="nav-link" href="dashboard.jsp">
                                 <i class="nc-icon nc-chart-pie-35"></i>
-                                <p>Dashboard</p>
+                                <p>Trang chủ</p>
                             </a>
                         </li>
                         <li>
                             <a class="nav-link" href="manageProduct">
                                 <i class="nc-icon nc-circle-09"></i>
-                                <p>Manage Product</p>
+                                <p>Quản lý sản phẩm</p>
                             </a>
                         </li>
                         <li>
                             <a class="nav-link" href="adminTransaction">
                                 <i class="nc-icon nc-notes"></i>
-                                <p>Transaction history</p>
+                                <p>Lịch sử mua hàng</p>
                             </a>
                         </li>
+
+                        <li>
+                            <a class="nav-link" href="AccountTransferServlet">
+                                <i class="nc-icon nc-bell-55"></i>
+                                <p>Quản lý tài khoản</p>
+                            </a>
+                        </li>
+                        
                         <li>
                             <a class="nav-link" href="importServlet">
                                 <i class="nc-icon nc-bell-55"></i>
-                                <p>Import excel file</p>
+                                <p>Lịch sử giao dịch</p>
                             </a>
                         </li>
-                        <li class="nav-item active active-pro">
-                            <a class="nav-link active" href="upgrade.jsp">
-                                <i class="nc-icon nc-alien-33"></i>
-                                <p>Upgrade to PRO</p>
+                        
+                        <li>
+                            <a class="nav-link" href="importServlet">
+                                <i class="nc-icon nc-bell-55"></i>
+                                <p>Thêm thẻ từ file excel</p>
                             </a>
                         </li>
+
                     </ul>
                 </div>
             </div>

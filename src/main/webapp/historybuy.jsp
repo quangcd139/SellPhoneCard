@@ -128,6 +128,31 @@
         <%@include file="header.jsp" %>
         <div class="container-xxl position-relative bg-white d-flex p-0">
 
+            <form action="myhistorybill" method="get" style="margin-left: 100px;">
+                <h5>Lọc theo mệnh giá mua</h5>
+                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                    <input type="checkbox" value="Tất cả giá">Tất cả giá
+                    <br>
+                    <c:forEach items="${prices}" var="p">
+                        <input type="checkbox" id="${p}" name="${p}" value="${p}">${p}<br>
+                    </c:forEach>
+                </div>
+                <h5>Lọc theo ngày mua</h5>
+                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                    <input type="checkbox" class="custom-control-input" checked id="price-all">
+                    <label class="custom-control-label" for="price-all">Tất cả ngày</label>
+
+                </div>
+                <h5>Lọc theo nhà mạng</h5>
+                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                    <input type="checkbox">Tất cả nhà mạng
+
+                    <c:forEach items="${suppliers}" var="p">
+                        <br><input type="checkbox" id="${p.supplier}" name="${p.supplier}" value="${p.supplier}">${p.supplier}
+                    </c:forEach>
+                </div>
+                <input type="submit" value="Lọc">
+            </form>
 
             <!-- Content Start -->
             <div class="content" style="margin-left: 120px;">
@@ -138,7 +163,7 @@
 
                         <div class="col-12">
                             <div class="bg-light rounded h-100 p-4">
-                                <h6 class="mb-4">My All Bill >> Have ${requestScope.sizemybill} bills</h6>
+                                <h6 class="mb-4">My All Bill Have ${requestScope.sizemybill} bills</h6>
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -225,40 +250,42 @@
                                             function saveSelectedOption() {
                                                 var select = document.getElementById('mySelect');
                                                 var selectedOption = select.value;
-
                                                 // Lưu giá trị vào local storage
                                                 localStorage.setItem('selectedOption', selectedOption);
                                             }
 
-// Khôi phục giá trị lựa chọn từ local storage khi tải lại trang
+                                            // Khôi phục giá trị lựa chọn từ local storage khi tải lại trang
                                             window.onload = function () {
                                                 var select = document.getElementById('mySelect');
                                                 var selectedOption = localStorage.getItem('selectedOption');
-
                                                 if (selectedOption) {
                                                     select.value = selectedOption;
                                                 }
                                             };
-                                            var pageNumberValue = localStorage.getItem("pageNumberValue");
+
                                             if (pageNumberValue) {
                                                 document.getElementById("page-number").value = pageNumberValue;
-
                                             }
-
                                             function submitForm() {
                                                 document.getElementById("pageSizeForm").submit();
                                                 document.getElementById("pageNumberForm").submit;
-                                                form.submit();
+                                                localStorage.setItem('pageNumber', pageNumber);
                                             }
 
+
+
                                             function handlePageNumber(event) {
-                                                if (event.keyCode === 13) { // Kiểm tra nếu phím nhấn là Enter
-                                                    var pageNumber = document.getElementById("page-number").value;
-                                                    localStorage.setItem("pageNumberValue", pageNumber); // Lưu giá trị vào Local Storage
-                                                    var pageNumberForm = document.getElementById("pageNumberForm");
-                                                    pageNumberForm.action = "myhistorybill?page=" + pageNumber;
-                                                    pageNumberForm.submit();
+                                                const pageNumberInput = document.getElementById('page-number');
+                                                let pageNumber = parseInt(pageNumberInput.value);
+                                                const maxPage = parseInt('${soTrang}');
+
+                                                if (isNaN(pageNumber) || pageNumber < 1) {
+                                                    pageNumber = 1;
+                                                } else if (pageNumber > maxPage) {
+                                                    pageNumber = maxPage;
                                                 }
+
+                                                pageNumberInput.value = pageNumber;
                                             }
 
     </script>

@@ -3,4 +3,12 @@
     <session-config>
         <session-timeout>120</session-timeout>
     </session-config>
+     <servlet>
+        <servlet-name>EditServlet</servlet-name>
+        <servlet-class>controller.EditServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditServlet</servlet-name>
+        <url-pattern>/edit</url-pattern>
+    </servlet-mapping>
 </web-app>
