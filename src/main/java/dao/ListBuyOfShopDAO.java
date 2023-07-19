@@ -36,6 +36,30 @@ public class ListBuyOfShopDAO extends DBContext {
         }
         return list;
     }
+    
+    public List<Product> getAllProductOrder() {
+        List<Product> list = new ArrayList<>();
+        String sql = "SELECT * FROM product where status!=0 and amount>0 order by ExpirationDate,Supplier;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Product p = new Product();
+                p.setId(rs.getInt("Id"));
+//                int price = Integer.parseInt(rs.getDouble("SellPrice")+);
+                p.setSellPrice(rs.getDouble("SellPrice"));
+                p.setAmount(rs.getInt("Amount"));
+                p.setExpirationDate(rs.getDate("ExpirationDate"));
+                p.setSupplier(rs.getString("Supplier"));
+                p.setDescription(rs.getString("Description"));
+                p.setCreatedAt(rs.getDate("createdAt"));
+                p.setStatus(rs.getBoolean("status"));
+                list.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
+    }
 
     public List<Product> getAllSupplier() {
         List<Product> list = new ArrayList<>();

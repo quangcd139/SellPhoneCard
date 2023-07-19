@@ -114,6 +114,56 @@
             tr:nth-child(even) {
                 background-color: #f2f2f2;
             }
+            .form-container {
+                /*max-width: 300px;*/
+                margin: 0 auto;
+                border: 2px solid #ccc;
+                padding: 10px;
+                margin-bottom: 20px;
+                border-radius: 10px;
+            }
+
+            h5 {
+                margin-top: 10px;
+                margin-bottom: 5px
+            }
+
+            .custom-control {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+
+            .custom-checkbox input[type="checkbox"] {
+                margin-right: 5px;
+            }
+
+            .custom-checkbox label {
+                margin-left: 5px;
+            }
+
+            .custom-checkbox input[type="text"] {
+                width: 100%;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+            input[type="submit"] {
+                display: block;
+                width: 100%;
+                padding: 10px;
+                background-color: #009688;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            input[typesubmit"]:hover {
+            background-color: #45a049;
+            }
         </style>
     </head>
 
@@ -338,7 +388,7 @@
                                 </c:forEach>
                             </tbody>
                         </table>
-<!--                        <form method="GET" id="pageSizeForm" onchange="submitForm()">
+                        <form method="GET" id="pageSizeForm" onchange="submitForm()">
                             <label for="page-size">Hiển thị:</label>
                             <select id="page-size" name="sl">
                                 <option value="3" ${limit == 3 ? 'selected' : ''}>3</option>
@@ -359,10 +409,45 @@
                             <a class="${i == page ? 'active' : ''}" href="AccountTransferServlet?page=${i}">${i}</a>
 
 
-                        </form>-->
+                        </form>
                     </c:if>
 
                     <c:if test="${check==2}">
+                        <div class="form-container">
+                            <form action="manageProduct" method="get">
+                                <h5>Lọc theo mệnh giá mua</h5>
+                                <hr  width="100%" align="center" />
+                                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                                    <input type="checkbox" value="Tất cả giá" checked>Tất cả giá
+                                    <c:forEach items="${prices}" var="p">
+                                        <input type="checkbox" id="${p}" name="${p}" value="${p}" 
+                                               <c:if test="${selectedPrices.contains(p)}">checked</c:if>
+                                                   >
+                                               <label for="${p}">${p}</label>
+                                    </c:forEach>
+
+                                </div>
+                                <h5>Lọc theo nhà mạng</h5>
+                                <hr  width="100%" align="center" />
+                                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                                    <input type="checkbox" value="Tất cả giá" checked>Tất cả nhà mạng
+                                    <c:forEach items="${suppliers}" var="p">
+                                        <br>
+                                        <input type="checkbox" id="${p.supplier}" name="${p.supplier}" value="${p.supplier}" 
+                                               <c:if test="${selectedSuppliers.contains(p.supplier)}">checked</c:if>
+                                                   >
+                                               <label for="${p.supplier}">${p.supplier}</label>
+                                    </c:forEach>
+                                </div>
+
+                                <h5>Lọc tên sản phẩm</h5>
+                                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                                    <input type="text" name="pName" value="${name}">
+
+                                </div>
+                                <input type="submit" value="Lọc">
+                            </form>
+                        </div>
                         <table border="1">
                             <th>STT</th>
                             <th>Tên</th>
@@ -407,30 +492,36 @@
                             <a class="${i == page ? 'active' : ''}" href="manageProduct?page=${i}">${i}</a>
                         </c:if>
                         <c:if test="${check==3}">
-                            <form action="adminTransaction" method="get">
-                                <h5>Lọc theo mệnh giá mua</h5>
-                                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
-                                    <input type="checkbox" value="Tất cả giá" checked>Tất cả giá
-                                    <c:forEach items="${prices}" var="p">
-                                        <input type="checkbox" id="${p}" name="${p}" value="${p}">${p}
-                                    </c:forEach>
-                                </div>
-                                <h5>Lọc theo nhà mạng</h5>
-                                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
-                                    <input type="checkbox" checked>Tất cả nhà mạng
+                             <div class="form-container">
+                                <form action="adminTransaction" method="get">
+                                    <h5>Lọc theo mệnh giá mua</h5>
+                                    <hr  width="100%" align="center" />
 
-                                    <c:forEach items="${suppliers}" var="p">
-                                        <br><input type="checkbox" id="${p.supplier}" name="${p.supplier}" value="${p.supplier}">${p.supplier}
-                                    </c:forEach>
-                                </div>
-                                
-                                <h5>Lọc tên tài khoản</h5>
-                                <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
-                                    <input type="text" name="accountName" value="${accountName}">
+                                    <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                                        <input type="checkbox" value="Tất cả giá" checked>Tất cả giá
+                                        <c:forEach items="${prices}" var="p">
+                                            <input type="checkbox" id="${p}" name="${p}" value="${p}">${p}
+                                        </c:forEach>
+                                    </div>
+                                    <h5>Lọc theo nhà mạng</h5>
+                                    <hr  width="100%" align="center" />
 
-                                </div>
-                                <input type="submit" value="Lọc">
-                            </form>
+                                    <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                                        <input type="checkbox" checked>Tất cả nhà mạng
+
+                                        <c:forEach items="${suppliers}" var="p">
+                                            <br><input type="checkbox" id="${p.supplier}" name="${p.supplier}" value="${p.supplier}">${p.supplier}
+                                        </c:forEach>
+                                    </div>
+
+                                    <h5>Lọc tên tài khoản</h5>
+                                    <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
+                                        <input type="text" name="accountName" value="${accountName}">
+
+                                    </div>
+                                    <input type="submit" value="Lọc">
+                                </form>
+                            </div>
 
                             <table border="1">
                                 <th>id</th>

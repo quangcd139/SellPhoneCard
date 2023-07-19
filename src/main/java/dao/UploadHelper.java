@@ -10,6 +10,7 @@ import java.util.List;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
+import java.io.File;
 
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB
         maxFileSize = 1024 * 1024 * 50, // 50MB
@@ -22,6 +23,7 @@ public class UploadHelper {
         appPath = appPath.replace('\\', '/');
         String relativePath = "upload";
         String savePath = appPath + "/" + relativePath;
+        System.out.println(appPath);
         try {
             // creates the save directory if it does not exists
             java.io.File fileSaveDir = new java.io.File(savePath);

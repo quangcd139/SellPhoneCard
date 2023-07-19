@@ -13,6 +13,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+import model.Account;
+import model.Transfer;
 
 /**
  *
@@ -57,7 +61,57 @@ public class HistoryTranfer extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         
-        request.setAttribute("list", new TransferDAO().getList());
+        String slParam = request.getParameter("sl");
+        int limit = 3; // Giá trị mặc định cho limit
+
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+
+        if (account == null) {
+            request.getRequestDispatcher("login/login.jsp").forward(request, response);
+            return;
+        }
+
+        if (slParam != null && !slParam.isEmpty()) {
+            try {
+                limit = Integer.parseInt(slParam);
+                // Lưu giá trị limit mới vào session của người dùng để sử dụng trong các yêu cầu tiếp theo
+                session.setAttribute("limit", limit);
+            } catch (NumberFormatException e) {
+                // Giá trị của limit không hợp lệ, sử dụng giá trị lưu trong session hoặc giá trị mặc định
+                Integer sessionLimit = (Integer) session.getAttribute("limit");
+                if (sessionLimit != null) {
+                    limit = sessionLimit;
+                }
+            }
+        } else {
+            // Nếu không có giá trị limit mới được gửi đến, sử dụng giá trị lưu trong session hoặc giá trị mặc định
+            Integer sessionLimit = (Integer) session.getAttribute("limit");
+            if (sessionLimit != null) {
+                limit = sessionLimit;
+            }
+        }
+
+        TransferDAO td = new TransferDAO();
+        int size = td.getTransferCount();
+        int soTrang = (size % limit == 0) ? (size / limit) : (size / limit + 1);
+
+        // Kiểm tra xem trang hiện tại có nằm ngoài phạm vi mới không, nếu có thì điều chỉnh lại giá trị của page
+        int xpage = 1;
+        try {
+            xpage = Integer.parseInt(request.getParameter("page"));
+        } catch (NumberFormatException e) {
+        }
+        int page = Math.min(soTrang, Math.max(1, xpage));
+        page = Math.min(soTrang, Math.max(1, page));
+        int offset = (page - 1) * limit;
+
+        List<Transfer> list = td.getAllTransfer(limit, offset);
+        
+        request.setAttribute("soTrang", soTrang);
+        request.setAttribute("limit", limit);
+        request.setAttribute("page", page);
+        request.setAttribute("list", list);
         request.setAttribute("check", 5);
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     } 

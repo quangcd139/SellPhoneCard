@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css"/>
         <%
             ListBuyOfShopDAO l = new ListBuyOfShopDAO();
-            List<Product> productList = l.getAllProduct();
+            List<Product> productList = l.getAllProductOrder();
         %>
 
         <script>
@@ -185,7 +185,6 @@
                 hetHan.value = expirationDate;
                 var pid = document.getElementById("pId");
                 pid.value = id;
-
             }
             function validateForm() {
                 var selectedSupplier = document.getElementById('supplier').value;
@@ -219,11 +218,13 @@
                         var amount = obj["amount"];
                         var status = obj["status"];
                         var pId = obj["id"];
-                        var check = false;
+                        var check1 = false;
+                        var check2=false;
+                        var check3=false;
                         if (sellPrice == denominationInput && supplier == supplierInput) {
                             if (quantityInput > amount) {
                                 if (amount == 0) {
-                                    alert("san pham het hang");
+                                    check2=true;
                                 } else {
                                     alert("so luong hang trong kho chi con " + amount +
                                             "vui long nhap lai");
@@ -231,12 +232,12 @@
                                 return false;
                             }
                             id = pId;
-                            check = true;
+                            check1 = true;
                             break outerLoop;
                         }
                     }
                 }
-                if (check == false) {
+                if (check1 == false) {
                     alert("san pham chua co trong kho");
                     return false;
                 }

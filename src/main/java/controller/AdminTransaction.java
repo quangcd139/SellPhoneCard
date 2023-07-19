@@ -153,6 +153,8 @@ public class AdminTransaction extends HttpServlet {
         if (priceFilter.size() == 0 && supplierFilter.size() == 0 && account.isEmpty()) {
             list = td.getAllTransaction(limit, offset);
         }else{
+            request.setAttribute("selectedPrices", prices);
+            request.setAttribute("selectedSuppliers", supplierFilter);
             list = td.getAllByAccountFilter(account, limit, offset,priceFilter,supplierFilter);
         }
 

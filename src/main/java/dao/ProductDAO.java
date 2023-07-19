@@ -60,6 +60,7 @@ public class ProductDAO extends DBContext {
         }
         return list;
     }
+
     public List<Product> getListProduct() {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM product Where deleteAt IS NULL;";
@@ -117,6 +118,7 @@ public class ProductDAO extends DBContext {
         }
         return 0;
     }
+
     public void insertProduct(Product p) {
         String sql = "insert into product (SellPrice,supplier,amount,"
                 + "Image,ExpirationDate,Description,createdAt,status,name)\n"
@@ -153,6 +155,7 @@ public class ProductDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+
     void updateAmountProduct(int productId, int amount) {
         String sql = "update product \n"
                 + "set amount=?\n"
@@ -179,12 +182,8 @@ public class ProductDAO extends DBContext {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return 0;
+        return -1;
     }
-//    public static void main(String[] args) {
-//        ProductDAO pd = new ProductDAO();
-//        pd.addProduct(new Product(10, "", 20000, 0, "viettel", "viettel_logo.png", new Date(), "quwenqwe", null, null, false, "", null), new Date());
-//    }
 
     public Product getProductById(String productId) {
         String sql = "SELECT * FROM product where id = ?";
@@ -213,6 +212,7 @@ public class ProductDAO extends DBContext {
         }
         return null;
     }
+
     public void delete(int id) {
         String sql = "update product \n"
                 + "set deleteAt=?\n"
@@ -237,6 +237,7 @@ public class ProductDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
+
     public boolean updateCard(String id, String name, String description) {
         String sql = "UPDATE product\n"
                 + "SET name = ?, description = ?\n"
@@ -252,6 +253,7 @@ public class ProductDAO extends DBContext {
             return false;
         }
     }
+
     public List<Product> getAllProducts(int limit, int offset) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT * FROM product WHERE status != 0 AND ExpirationDate > ? ORDER BY Supplier, ExpirationDate LIMIT ? OFFSET ?";
@@ -295,12 +297,79 @@ public class ProductDAO extends DBContext {
         }
         return 0;
     }
-    
+
     public int getIdMax() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     public int insert(Product q) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public List<Product> getListFilterProduct(List<String> priceFilter, List<String> supplierFilter, String name, int limit, int offset) {
+        List<Product> list = new ArrayList<>();
+        String price = "";
+        for (String s : priceFilter) {
+            price += "SellPrice= " + s + " or ";
+        }
+        if (!price.isEmpty()) {
+            price = price.substring(0, price.length() - 3);
+            price = "(" + price;
+            price += ") ";
+        }
+
+        String supplier = "";
+        for (String p : supplierFilter) {
+            supplier += "Supplier= '" + p + "' or ";
+        }
+        if (!supplier.isEmpty()) {
+            supplier = supplier.substring(0, supplier.length() - 3);
+            supplier = "(" + supplier;
+            if (!price.isEmpty()) {
+                supplier += ") and ";
+            } else {
+                supplier += ") ";
+            }
+        }
+        String nameQuery = "";
+        if (!name.isEmpty()) {
+            if (priceFilter.size() == 0 && supplierFilter.size() == 0) {
+                nameQuery = " name like ? ";
+            } else {
+                nameQuery = "and name like ? ";
+            }
+        }
+        String sql = "select * from swp1.product where "  + supplier + price + nameQuery+" limit ? offset ?";
+        System.out.println(sql);
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            int i=1;
+            if (!name.isEmpty()) {
+                st.setString(i, "%"+name+"%");
+                i++;
+            }
+            st.setInt(i, limit);
+            st.setInt(i+1, offset);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Product t = new Product(
+                        rs.getInt("Id"),
+                        rs.getString("name"),
+                        rs.getDouble("SellPrice"),
+                        rs.getInt("Amount"),
+                        rs.getString("supplier"),
+                        rs.getString("image"),
+                        rs.getDate("ExpirationDate"),
+                        rs.getString("Description"),
+                        rs.getDate("createdAt"),
+                        rs.getDate("deleteAt"),
+                        rs.getBoolean("status"),
+                        rs.getDate("updateAt")
+                );
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 }

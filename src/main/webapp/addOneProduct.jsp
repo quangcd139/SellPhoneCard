@@ -242,36 +242,39 @@
                             <div class="col-12">
                                 <div class="bg-light rounded h-100 p-4">
                                     <h6 class="mb-4">Add New</h6>
-                                    <table class="table table-bordered" style="width: 100%;">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Product Name</th>
-                                                <th scope="col">Sell Price</th>
-                                                <th scope="col">Amount</th>
-                                                <th scope="col">Supplier</th>
-                                                <th scope="col">Expiration Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <form action="addNewProduct" method="post">
-                                            <tr>
-                                                <td><input type="text" name="proname" required maxlength="40"></td>
-                                                <td><input type="text" name="proprice" required></td>
-                                                <td><input type="text" name="proamount" required></td>
-                                                <td><input type="text" name="prosupplier" required></td>
-                                                <td><input type="text" name="proexpire" ></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="7" align="right">
-                                                    <input type="submit" style="background-color: #4bb3fc;" name="result" value="ADD">
-                                                    <a href="myshop">
-                                                        <div type="" style="background-color: #aec2d1;margin-top: 10px;color: black;width: 72px;text-align: center;">Cancel</div>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </form>
-                                        </tbody>
-                                    </table>
+                                    <form action="addNewProduct" method="post" enctype="multipart/form-data">
+                                        <table class="table table-bordered" style="width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Product Name</th>
+                                                    <th scope="col">Sell Price</th>
+                                                    <th scope="col">Image</th>
+                                                    <th scope="col">Supplier</th>
+                                                    <th scope="col">Expiration Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                <tr>
+                                                    <td><input type="text" name="pname" required maxlength="40"></td>
+                                                    <td><input type="text" name="pprice" required></td>
+                                                    <td><input type="file" name="imageFile"  accept=".jpg, .png" required></td>
+                                                    <td><input type="text" name="psupplier" required></td>
+                                                    <td><input type="text" name="pexpire" ></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="7" align="right">
+                                                        <input type="submit" style="background-color: #4bb3fc;" name="result" value="ADD">
+                                                        <a href="manageProduct">
+                                                            <div type="" style="background-color: #aec2d1;margin-top: 10px;color: black;width: 72px;text-align: center;">Cancel</div>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                        <h4>${notice}</h4>
+                                    </form>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -283,35 +286,12 @@
                                                 <th scope="col">#</th>
                                                 <th scope="col">Product Name</th>
                                                 <th scope="col">Sell Price</th>
-                                                <th scope="col">Amount</th>
+                                                <th scope="col">Image</th>
                                                 <th scope="col">Supplier</th>
                                                 <th scope="col">Expiration Date</th>
 
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <%-- Iterate over the product list retrieved from the database --%>
-                                            <c:forEach items="${requestScope.myproc}" var="m">
-                                                <tr>
-                                                    <th scope="row">#ID${m.id}</th>
-                                                    <td>${m.name}</td>
-                                                    <td>${m.sellPrice}</td>
-                                                    <td>${m.amount}</td>
-                                                    <td>${m.supplier}</td>
-                                                    <td>${m.expirationDate}</td>
-                                                    <!--                                                    <td>
-                                                                                                            <a href="editproduct?productId=" class="edit-item" title="Edit">
-                                                                                                                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTYuNTk4IDEzLjA5MWwtNS42OS01LjY4OCA3LjQwMi03LjQwMyA1LjY5IDUuNjg5LTcuNDAyIDcuNDAyem0tMTYuNTk4IDEwLjkwOWw3LjEyNi0xLjQzNi01LjY4OC01LjY4OS0xLjQzOCA3LjEyNXptMS45ODQtMjAuNTY4bDYuNDQ5IDYuNDQ2LTUuNTgyIDUuNTgyIDUuNjg5IDUuNjkgNS41ODMtNS41ODMgNi40OTIgNi40OSAxLjQtMS40MjgtMTguNjMxLTE4LjYyNS0xLjQgMS40Mjh6Ii8+PC9zdmc+"></a>
-                                                                                                        </td>-->
-                                                    <td>
-                                                        <a href="DeleteOneProduct?Idx=${m.id}" class="remove-item" title="Remove" style="float: right;">
-                                                            <img style="width: 35px ;height: 35px;"
-                                                                 src="data:image/svg+xml;base64,PHN2ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtMTIuMDAyIDIuMDA1YzUuNTE4IDAgOS45OTggNC40OCA5Ljk5OCA5Ljk5NyAwIDUuNTE4LTQuNDggOS45OTgtOS45OTggOS45OTgtNS41MTcgMC05Ljk5Ny00LjQ4LTkuOTk3LTkuOTk4IDAtNS41MTcgNC40OC05Ljk5NyA5Ljk5Ny05Ljk5N3ptNC4yNTMgOS4yNWgtOC41Yy0uNDE0IDAtLjc1LjMzNi0uNzUuNzVzLjMzNi43NS43NS43NWg4LjVjLjQxNCAwIC43NS0uMzM2Ljc1LS43NXMtLjMzNi0uNzUtLjc1LS43NXoiIGZpbGwtcnVsZT0ibm9uemVybyIvPjwvc3ZnPg==">
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            </c:forEach>
-                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -354,7 +334,6 @@
         </div>
 
     </body>
-
     <!--   Core JS Files   -->
     <script src="assets/js/core/jquery.3.2.1.min.js" type="text/javascript"></script>
     <script src="assets/js/core/popper.min.js" type="text/javascript"></script>
@@ -366,13 +345,13 @@
     <script src="assets/js/light-bootstrap-dashboard.js" type="text/javascript"></script>
     <script src="assets/js/demo.js"></script>
     <script type="text/javascript">
-                $(document).ready(function () {
-                    // Javascript method's body can be found in assets/js/demos.js
-                    demo.initDashboardPageCharts();
+            $(document).ready(function () {
+                // Javascript method's body can be found in assets/js/demos.js
+                demo.initDashboardPageCharts();
 
-                    demo.showNotification();
+                demo.showNotification();
 
-                });
+            });
     </script>
     <script>
             function showAnotherForm(event) {

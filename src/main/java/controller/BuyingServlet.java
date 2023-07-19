@@ -18,9 +18,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.Queue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import model.Account;
 import model.Transaction;
 
@@ -31,7 +34,8 @@ import model.Transaction;
 @WebServlet(name = "BuyingServlet", urlPatterns = {"/buying"})
 public class BuyingServlet extends HttpServlet {
 
-    private final static ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static Queue<Transaction> buyQueue = new LinkedList<>();
+    private ScheduledExecutorService executorService;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -68,60 +72,106 @@ public class BuyingServlet extends HttpServlet {
             request.getRequestDispatcher("shop.jsp").forward(request, response);
             return;
         }
+        String notice = "Đơn hàng hiện đang được xử lý bấm ok để xem chi tiết";
+        int slHang = new ProductDAO().getAmountById(Integer.parseInt(productId));
+        if (slHang <= 0) {
+            notice = "Sản phẩm hiện tại đã hết hàng";
+            request.setAttribute("slHang", 1);
+        } else {
 
-        Transaction t1 = Transaction.builder()
-                .accountId(account.getUserName())
-                .buyPrice(giaThe)
-                .buyAmount(soLuongMua)
-                .productId(Integer.parseInt(productId))
-                .status(false)
-                .build();
+            Transaction t1 = Transaction.builder()
+                    .accountId(account.getUserName())
+                    .buyPrice(giaThe)
+                    .buyAmount(soLuongMua)
+                    .productId(Integer.parseInt(productId))
+                    .status(false)
+                    .build();
 
-        new TransactionDAO().addTransaction(t1);
-        executor.execute(new OrderProcessor());
-        //chuyen trang
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("Buy request has been added to the queue.");
-        //lay tien hien tai cua tai khoan
-        account.setMoney(new AccountDAO().getMoney(account.getUserName()));
+            synchronized (buyQueue) {
+                buyQueue.add(t1);
+            }
+            //chuyen trang
+            response.setStatus(HttpServletResponse.SC_OK);
+            //chuyen trang
+            response.getWriter().println("Buy request has been added to the queue.");
+            //lay tien hien tai cua tai khoan
+            account.setMoney(new AccountDAO().getMoney(account.getUserName()));
+        }
         // Lên lịch trả kết quả cho người dùng sau 5 giây
-        request.setAttribute("notice", "Đơn hàng hiện đang được xử lý bấm ok để xem chi tiết");
+        request.setAttribute("notice", notice);
         request.setAttribute("suppliers", l.getAllSupplier());
         request.setAttribute("pId", productId);
         request.setAttribute("listPrice", l.getAllPrice());
         request.getRequestDispatcher("shop.jsp").forward(request, response);
     }
 
-    public class OrderProcessor implements Runnable {
-
-        public void run() {
+    @Override
+    public void init() throws ServletException {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        // Tạo một luồng riêng biệt để xử lý hàng đợi
+        Thread processingThread = new Thread(() -> {
             while (true) {
-                //lay transaction dang cho xu ly 
-                List<Transaction> list = new TransactionDAO().getTransactionStatus();
-                for (Transaction t1 : list) {
-                    ProductDAO pd = new ProductDAO();
-                    int slHang = pd.getAmountById(t1.getProductId());
-                    if (slHang <= 0) {
-                        continue;
+                Transaction t;
+                synchronized (buyQueue) {
+                    // Lấy yêu cầu từ hàng đợi
+                    if (buyQueue.isEmpty()) {
+                        // Lên lịch kiểm tra xem có yêu cầu nào sau 2 giây
+                        executorService.schedule(this::processPendingRequests, 1, TimeUnit.SECONDS);
+                        try {
+                            buyQueue.wait(); // Chờ đợi khi hàng đợi rỗng
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        continue; // Tiếp tục vòng lặp
                     }
-                    TransactionDAO ts = new TransactionDAO();
-                    int transactionId = ts.addTransaction(t1);
-                    // Thực hiện xử lý yêu cầu mua hàng ở đây
-                    //        giảm số lượng thẻ trong product table 
-//        và set status = 0 nếu số lượng về 0
-                    pd.updateAmount(t1.getBuyAmount(), t1.getProductId());
-                    //đánh dấu thẻ trong Card table (productId,transactionId)
-                    CardDAO cd = new CardDAO();
-                    cd.updateStatusCard(t1.getProductId(), transactionId, t1.getBuyAmount());
-                    boolean status = false;
-                    new TransactionDAO().updateStatus(status,t1.getId());
-                    //lay tien cua tai khoan
-                    AccountDAO ad = new AccountDAO();
-                    double money = ad.getMoney(t1.getAccountId());
-                    ad.updateMoney(t1.getAccountId(), t1.getBuyPrice() * t1.getBuyAmount(), money);
+
+                    t = buyQueue.poll();
                 }
+
+                // Xử lý yêu cầu mua hàng
+                processTransaction(t);
             }
+        });
+        processingThread.start();
+    }
+
+    private void processTransaction(Transaction t1) {
+        //kiem tra so luong
+        TransactionDAO ts = new TransactionDAO();
+        int slHang = new ProductDAO().getAmountById(t1.getProductId());
+        if (slHang <= 0) {
+            t1.setStatus(false);
+            return;
         }
+        // Thực hiện xử lý yêu cầu mua hàng ở đây
+        //lay tien cua tai khoan
+        AccountDAO ad = new AccountDAO();
+        double money = ad.getMoney(t1.getAccountId());
+        ad.updateMoney(t1.getAccountId(), t1.getBuyPrice() * t1.getBuyAmount(), money);
+//        giảm số lượng thẻ trong product table 
+//        và set status = 0 nếu số lượng về 0
+        ProductDAO pd = new ProductDAO();
+        pd.updateAmount(t1.getBuyAmount(), t1.getProductId());
+        t1.setStatus(true);
+        int transactionId = ts.addTransaction(t1);
+        //đánh dấu thẻ trong Card table (productId,transactionId)
+        CardDAO cd = new CardDAO();
+        cd.updateStatusCard(t1.getProductId(), transactionId, t1.getBuyAmount());
+    }
+
+    private void processPendingRequests() {
+        synchronized (buyQueue) {
+            if (buyQueue.isEmpty()) {
+                System.out.println("No buy requests found after 2 seconds.");
+                // Process the pending requests here or take any necessary action
+            }
+            buyQueue.notifyAll(); // Notify the waiting thread
+        }
+    }
+
+    @Override
+    public void destroy() {
+        executorService.shutdown();
     }
 
 }

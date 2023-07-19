@@ -46,5 +46,43 @@ public class TransferDAO extends DBContext {
 
         return list;
     }
+    public int getTransferCount() {
+String sql = "SELECT COUNT(*) FROM history-transfers;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;    }
+    public List<Transfer> getAllTransfer(int limit, int offset) {
+        List<Transfer> list = new ArrayList<>();
+        String sql = "SELECT * FROM swp1.`history-transfers`LIMIT ? OFFSET ?;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, limit);
+            st.setInt(2, offset);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                Transfer t = new Transfer(
+                        rs.getInt("id"),
+                        rs.getString("FromAccount"),
+                        rs.getString("ToAccount"),
+                        rs.getDouble("Amount"), 
+                        rs.getDate("createdAt"),
+                        rs.getDate("deleteAt"),
+                        rs.getBoolean("TransactionType"));
+                list.add(t);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+
+        return list;
+    }
 
 }

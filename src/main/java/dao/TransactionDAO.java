@@ -172,7 +172,7 @@ public class TransactionDAO extends DBContext {
 
     public List<Transaction> getAllTransaction(int limit, int offset) {
         List<Transaction> list = new ArrayList<>();
-        String sql = "SELECT * FROM swp1.transaction limit ? offset ?;";
+        String sql = "SELECT * FROM swp1.transaction where status !=0 limit ? offset ?;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setInt(1, limit);
             st.setInt(2, offset);
@@ -196,7 +196,7 @@ public class TransactionDAO extends DBContext {
     }
 
     public int getSizeByAccount(String userName) {
-        String sql = "SELECT count(*) FROM transaction WHERE accountID = ?";
+        String sql = "SELECT count(*) FROM transaction WHERE accountID = ? and status !=0";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setString(1, userName);
             ResultSet rs = st.executeQuery();
@@ -250,20 +250,20 @@ public class TransactionDAO extends DBContext {
         String accountId = "";
         if (!account.isEmpty()) {
             if (priceFilter.size() == 0 && supplierFilter.size() == 0) {
-                accountId = "accountId = ? ";
+                accountId = "and accountId = ? ";
             } else {
-                accountId = "accountId = ? and ";
+                accountId = "and accountId = ? and ";
             }
         }
         String sql = "select t.* from transaction t join product p on t.ProductID=p.Id\n"
-                + "where " + accountId + supplier + price;
+                + "where status !=0 " + accountId + supplier + price +"limit ? offset ?";
         System.out.println(sql);
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             if (!account.isEmpty()) {
                 st.setString(1, account);
             }
-//            st.setInt(2, limit);
-//            st.setInt(3, offset);
+            st.setInt(2, limit);
+            st.setInt(3, offset);
 
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -285,7 +285,7 @@ public class TransactionDAO extends DBContext {
     }
 
     public int getTransByAccount(String userName, String id) {
-        String sql = "SELECT * FROM swp1.transaction where accountId=? and ProductID=? order by createdAt desc;";
+        String sql = "SELECT * FROM swp1.transaction where accountId=? and ProductID=? order by createdAt desc limit 1;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setString(1, userName);
             st.setInt(2, Integer.parseInt(id));
@@ -301,14 +301,28 @@ public class TransactionDAO extends DBContext {
 
     public void updateStatus(boolean status, int id) {
         String sql = "update transaction \n"
-                + "set status =1\n"
+                + "set status =?\n"
                 + "where Id = ?";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setInt(1, id);
+            st.setBoolean(1, status);
+            st.setInt(2, id);
             st.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    public boolean getStatusById(int x) {
+        String sql = "SELECT * FROM swp1.transaction where id = ? limit 1";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean("status");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
     }
 
 }

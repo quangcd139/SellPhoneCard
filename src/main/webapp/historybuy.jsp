@@ -48,7 +48,7 @@
 
         </style>
         <style>
-            #formOverlay {
+            #formOverlay139 {
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -231,7 +231,7 @@
 
                                     <form method="GET" id="pageNumberForm" onchange="submitForm()">
                                         <label for="page-number">Trang:</label>
-                                        <input type="text" id="page-number" name="page" value="${page}" onkeydown="handlePageNumber(event)">
+                                        <input type="text" id="page-number" name="page" value="${page}" oninput="handlePageNumber(event)">
                                         <span>/</span>
                                         <span>${soTrang}</span>
                                         <input type="hidden" name="sl" value="${limit}">
@@ -239,7 +239,6 @@
                                     </form>
                                     <!--                                        <input type="submit" value="Áp dụng">-->
                                     <!--<button type="button" >Submit</button>-->
-
                                 </div>
                             </div>
                         </div>
@@ -247,17 +246,18 @@
 
                 </div>
             </div>
-            <div id="formOverlay">
-                <div id="formContainer">
-                    <span id="closeButton" onclick="closeForm()">&times;</span>
+            <c:if test="${status != null}">
+                <div id="formOverlay139">
+                    <div id="formContainer">
+                        <span id="closeButton" onclick="closeForm123()">&times;</span>
 
-                    <form action="/your-action-url" method="POST">
-                        <c:if test="${status != null}">
-                            <c:if test="${status > 0}">
+                        <form action="/your-action-url" method="POST">
+
+                            <c:if test="${listCard.size()!=0}">
                                 <p>Thẻ đã mua thành công</p>
                                 <p>${product.supplier}</p>
                                 <p>${product.sellPrice}</p>
-                                <p>${product.amount}</p>
+                                <p>${listCard.size()}</p>
                                 <p>${product.expirationDate}</p>
                                 <table style="width: 500px">
                                     <tr>
@@ -266,36 +266,29 @@
                                     </tr>
                                     <c:forEach items="${listCard}" var="c">
                                         <tr>
-                                        <td>${c.seri}</td>
-                                        <td>${c.code}</td>
+                                            <td>${c.seri}</td>
+                                            <td>${c.code}</td>
                                         </tr>
                                     </c:forEach>
                                 </table>
 
                             </c:if>
-                            <c:if test="${status == 0}">
+                            <c:if test="${listCard.size()==0}">
                                 <p>Mua thẻ không thành công do hết hàng</p>
                             </c:if>
-                        </c:if>
 
-                        <!-- Other form elements or inputs can be added here -->
+                            <!-- Other form elements or inputs can be added here -->
 
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </c:if>
         </div>
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
         <script>
-            function closeForm() {
-                document.getElementById("formOverlay").style.display = "none";
-                function closeForm() {
-                    document.getElementById("formOverlay139").style.display = "none";
-                    var checkboxes = document.querySelectorAll("#formContainer input[type='checkbox']");
-                    checkboxes.forEach(function (checkbox) {
-                        checkbox.style.display = "block";
-                    });
-                }
+            function closeForm123() {
+                document.getElementById("formOverlay139").style.display = "none";
             }
         </script>
         <%@include file="footer.jsp" %>

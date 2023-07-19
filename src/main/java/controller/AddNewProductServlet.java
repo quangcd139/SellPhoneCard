@@ -8,25 +8,26 @@ import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import model.Account;
 import model.Product;
+import jakarta.servlet.http.Part;
+import java.io.File;
 
 /**
  *
  * @author dell
  */
+@MultipartConfig(fileSizeThreshold = 1024 * 1024 * 1, // 1 MB
+        maxFileSize = 1024 * 1024 * 10, // 10 MB
+        maxRequestSize = 1024 * 1024 * 100 // 100 MB
+)
+
 @WebServlet(name = "AddNewProductServlet", urlPatterns = {"/addNewProduct"})
 public class AddNewProductServlet extends HttpServlet {
 
@@ -83,49 +84,56 @@ public class AddNewProductServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    private static final String UPLOAD_DIRECTORY = "imageLogo"; // Thư mục lưu trữ ảnh tải lên
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        HttpSession sess = request.getSession();
-        Account account = (Account) sess.getAttribute("account");
-        if(account==null){
-            request.getRequestDispatcher("login/login.jsp").forward(request, response);
-            return;
-        }
-        String productName = request.getParameter("proname");
-        String t = request.getParameter("proprice");
-        String supplier = request.getParameter("prosupplier");
-        String tien = request.getParameter("proamount");
-//        String expireDate = request.getParameter("proexpire");
+
+        String productName = request.getParameter("pname");
+        String t = request.getParameter("pprice");
+        String supplier = request.getParameter("psupplier");
+
+        String expireDate = request.getParameter("proexpire");
         try {
-            int amount = Integer.parseInt(tien);
             double sellPrice = Double.parseDouble(t);
-//            Product product = new Product();
-//
-//            product.setAmount(amount);
-//            product.setSellPrice(sellPrice);
-//            product.setAccountId(account1.getUserName());
-//            product.setSupplier(supplier);
-//            product.setName(productName);
             ProductDAO pDAO = new ProductDAO();
-            
             Product p = new Product();
             p.setSellPrice(sellPrice);
-            p.setAmount(amount);
             p.setSupplier(supplier);
             p.setStatus(false);
-//            p.setAccountId(account.getUserName());
             p.setName(productName);
-            
-            pDAO.insertProduct(p);
 
             List<Product> list = new ArrayList<>();
             list = pDAO.getListProduct();
             request.setAttribute("myproc", list);
+            String uploadPath = getServletContext().getRealPath("") + UPLOAD_DIRECTORY;
+            File uploadDir = new File(uploadPath);
+            if (uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+            Part part = request.getPart("imageFile");
+            String fileName = part.getSubmittedFileName();
+            
+            String appPath = request.getServletContext().getRealPath("");
+            appPath = appPath.replace('\\', '/');
+            int size = fileName.length();
+            fileName = supplier + "_logo." + fileName.substring(size - 3, size);
+            String filePath = appPath + "imageLogo/" + fileName;
+            part.write(filePath);
+            System.out.println(filePath);
+            System.out.println(fileName);
+            // Tên tệp duy nhất kèm theo dấu thời gian
+            
+            String imageLink = request.getContextPath() + "/" + UPLOAD_DIRECTORY + "/" + fileName;
+            p.setImage(fileName);
+            pDAO.insertProduct(p);
+
+            request.setAttribute("notice", "Thêm sản phẩm thành công");
             request.getRequestDispatcher("addOneProduct.jsp").forward(request, response);
 
         } catch (Exception e) {
+            System.out.println(e.fillInStackTrace());
         }
     }
 

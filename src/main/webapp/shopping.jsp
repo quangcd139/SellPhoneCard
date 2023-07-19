@@ -144,7 +144,7 @@
             </div>
         </div>
         <!-- Shop End -->
-
+        <%= new Gson().toJson(productList)%>
 
 
 
@@ -155,11 +155,23 @@
             window.onload = function () {
                 var Message = '<%= request.getAttribute("notice")%>';
                 var pId = '<%= request.getAttribute("pId")%>';
+                var check = '<%= request.getAttribute("slHang")%>';
                 if (Message !== "null") {
-                    alert(Message);
-                    window.location.href = 'myhistorybill?id='+pId;
+                    if (check !== "null" && check) {
+                        alert(Message);
+                    } else {
+                        var confirmed = false;
+                        setTimeout(function () {
+                            confirmed = confirm(Message);
+                            if (confirmed) {
+                                window.location.href = 'myhistorybill?id=' + pId;
+                            }
+                        }, 1500); // Delay of 2 seconds (2000 milliseconds)
+                    }
                 }
             };
+
+
         </script>
 
         <!-- JavaScript Libraries -->

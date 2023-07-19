@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.ListBuyOfShopDAO;
 import dao.ProductDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import model.Account;
 import model.Product;
@@ -64,7 +66,8 @@ public class ManageProduct extends HttpServlet {
             throws ServletException, IOException {
         String slParam = request.getParameter("sl");
         int limit = 3; // Giá trị mặc định cho limit
-
+        List<String> prices = new ListBuyOfShopDAO().getAllPrice();
+        List<Product> suppliers = new ListBuyOfShopDAO().getAllSupplier();
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
 
@@ -107,8 +110,10 @@ public class ManageProduct extends HttpServlet {
         page = Math.min(soTrang, Math.max(1, page));
         int offset = (page - 1) * limit;
 
-        List<Product> list = pd.getAllProducts(limit, offset);
+        List<Product> list = getListByFilter(limit, offset, request, prices, suppliers);
         request.setAttribute("list", list);
+        request.setAttribute("prices", prices);
+        request.setAttribute("suppliers", suppliers);
         request.setAttribute("soTrang", soTrang);
         request.setAttribute("limit", limit);
         request.setAttribute("page", page);
@@ -117,27 +122,56 @@ public class ManageProduct extends HttpServlet {
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
-
-/**
- * Handles the HTTP <code>POST</code> method.
- *
- * @param request servlet request
- * @param response servlet response
- * @throws ServletException if a servlet-specific error occurs
- * @throws IOException if an I/O error occurs
- */
-@Override
-protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /** 
+    public List<Product> getListByFilter(int limit, int offset, HttpServletRequest request,
+            List<String> prices, List<Product> suppliers) {
+        List<Product> list = new ArrayList<>();
+        ProductDAO td = new ProductDAO();
+        List<String> priceFilter = new ArrayList<>();
+        List<String> supplierFilter = new ArrayList<>();
+        for (String p : prices) {
+            if (request.getParameter(p) != null) {
+                priceFilter.add(p);
+            }
+        }
+        for (Product s : suppliers) {
+            if (request.getParameter(s.getSupplier()) != null) {
+                supplierFilter.add(s.getSupplier());
+            }
+        }
+        String name = request.getParameter("pName") != null ? request.getParameter("pName") : "";
+        if (priceFilter.size() == 0 && supplierFilter.size() == 0 && name.isEmpty()) {
+            list = td.getAllProducts(limit, offset);
+        } else {
+            list = td.getListFilterProduct(priceFilter, supplierFilter, name, limit, offset);
+        }
+        request.setAttribute("selectedPrices", priceFilter);
+        request.setAttribute("selectedSuppliers", supplierFilter);
+        request.setAttribute("name", name);
+
+        return list;
+    }
+
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override
-public String getServletInfo() {
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

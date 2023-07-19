@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import model.Account;
 import model.Card;
@@ -72,24 +71,25 @@ public class HistoryBuyServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-        
+
         if (account == null) {
             request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
         //kiem tra đơn hàng mua thành công hay chưa
-        if(request.getParameter("id")!=null){
+        if (request.getParameter("id") != null) {
             String id = request.getParameter("id");
             TransactionDAO td = new TransactionDAO();
-            int x =td.getTransByAccount(account.getUserName(),id);
+            int x = td.getTransByAccount(account.getUserName(), id);
+            boolean status = td.getStatusById(x);
             List<Card> listCard = new CardDAO().getCardByTranId(x);
-            request.setAttribute("status", x);
+            request.setAttribute("status", status);
             request.setAttribute("product", new ProductDAO().getProductById(id));
             request.setAttribute("listCard", listCard);
         }
         List<String> prices = new ListBuyOfShopDAO().getAllPrice();
         List<Product> suppliers = new ListBuyOfShopDAO().getAllSupplier();
-        
+
         String slParam = request.getParameter("sl");
         int limit = 3; // Giá trị mặc định cho limit
 
