@@ -4,7 +4,9 @@
  */
 package controller;
 
+import dao.CardDAO;
 import dao.ListBuyOfShopDAO;
+import dao.ProductDAO;
 import dao.TransactionDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import model.Account;
+import model.Card;
 import model.Product;
 import model.Transaction;
 
@@ -69,13 +72,24 @@ public class HistoryBuyServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-        List<String> prices = new ListBuyOfShopDAO().getAllPrice();
-        List<Product> suppliers = new ListBuyOfShopDAO().getAllSupplier();
-
+        
         if (account == null) {
             request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
+        //kiem tra đơn hàng mua thành công hay chưa
+        if(request.getParameter("id")!=null){
+            String id = request.getParameter("id");
+            TransactionDAO td = new TransactionDAO();
+            int x =td.getTransByAccount(account.getUserName(),id);
+            List<Card> listCard = new CardDAO().getCardByTranId(x);
+            request.setAttribute("status", x);
+            request.setAttribute("product", new ProductDAO().getProductById(id));
+            request.setAttribute("listCard", listCard);
+        }
+        List<String> prices = new ListBuyOfShopDAO().getAllPrice();
+        List<Product> suppliers = new ListBuyOfShopDAO().getAllSupplier();
+        
         String slParam = request.getParameter("sl");
         int limit = 3; // Giá trị mặc định cho limit
 
@@ -119,7 +133,6 @@ public class HistoryBuyServlet extends HttpServlet {
         request.setAttribute("soTrang", soTrang);
         request.setAttribute("limit", limit); // Thêm thuộc tính limit vào request để sử dụng trong JSP
         request.setAttribute("prices", prices);
-        request.setAttribute("page", page);
         request.setAttribute("suppliers", suppliers);
         request.getRequestDispatcher("historybuy.jsp").forward(request, response);
     }

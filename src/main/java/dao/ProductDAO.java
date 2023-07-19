@@ -153,20 +153,6 @@ public class ProductDAO extends DBContext {
             System.out.println(e.getMessage());
         }
     }
-    int getLastId() {
-        String sql = "select Id from product order by id desc limit 1";
-        try ( PreparedStatement st = connection.prepareStatement(sql)) {
-
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return 0;
-    }
-
     void updateAmountProduct(int productId, int amount) {
         String sql = "update product \n"
                 + "set amount=?\n"
@@ -182,7 +168,7 @@ public class ProductDAO extends DBContext {
         }
     }
 
-    int getAmountById(int productId) {
+    public int getAmountById(int productId) {
         String sql = "select amount from product where id = ?";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setInt(1, productId);
@@ -284,7 +270,7 @@ public class ProductDAO extends DBContext {
                         rs.getString("image"),
                         rs.getDate("ExpirationDate"),
                         rs.getString("Description"),
-                        rs.getDate("createdAt"),
+                        new Date(rs.getTimestamp("createdAt").getTime()),
                         rs.getDate("deleteAt"),
                         rs.getBoolean("status"),
                         rs.getDate("updateAt"));

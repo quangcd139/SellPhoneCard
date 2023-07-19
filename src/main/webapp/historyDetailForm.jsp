@@ -149,12 +149,8 @@
                         <tbody>
                         </tbody>
                     </table>
-
-
                 </form>
-
             </div>
-
         </div>
         <script>
             function closeForm() {

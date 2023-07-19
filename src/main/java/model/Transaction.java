@@ -27,6 +27,7 @@ public class Transaction {
     private String accountId;
     private String description;
     private int productId;
+    private boolean status;
 
     public Transaction(int id, double buyPrice, int buyAmount, Date createdAt, String description) {
         this.id = id;
@@ -43,6 +44,16 @@ public class Transaction {
         this.createdAt = createdAt;
         this.description = description;
         this.accountId = accountId;
+    }
+    
+    public Transaction(int id, double buyPrice, int buyAmount, Date createdAt, String description,boolean status, int productId) {
+        this.id = id;
+        this.buyPrice = buyPrice;
+        this.buyAmount = buyAmount;
+        this.createdAt = createdAt;
+        this.description = description;
+        this.status =status;
+        this.productId = productId;
     }
 
 }

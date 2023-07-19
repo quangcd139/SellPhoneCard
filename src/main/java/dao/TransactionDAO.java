@@ -14,7 +14,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Transaction;
-import org.apache.poi.poifs.crypt.dsig.services.TSPTimeStampService;
 
 /**
  *
@@ -25,18 +24,21 @@ public class TransactionDAO extends DBContext {
     public int addTransaction(Transaction t) {
 
         String sql = "iNSERT INTO `swp1`.`transaction` ( "
-                + "`BuyPrice`, `BuyAmount`, `createdAt`, `ProductId`,`accountId`,`Description`)\n"
-                + " VALUES (?,?,?,?,?,?);";
+                + "`BuyPrice`, `BuyAmount`, `createdAt`, `ProductId`,`accountId`,`Description`, status)\n"
+                + " VALUES (?,?,?,?,?,?,?);";
         try ( PreparedStatement st = connection.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             st.setDouble(1, t.getBuyPrice());
             st.setInt(2, t.getBuyAmount());
             Date d = new Date();
-            java.sql.Date createdAt = new java.sql.Date(d.getTime());
-            st.setDate(3, createdAt);
+            java.sql.Date createdAtDate = new java.sql.Date(d.getTime()); // Assuming 'd' is a java.util.Date object
+// Convert java.sql.Date to java.sql.Timestamp
+            java.sql.Timestamp createdAtDateTime = new java.sql.Timestamp(createdAtDate.getTime());
+            st.setTimestamp(3, createdAtDateTime);
             st.setInt(4, t.getProductId());
             st.setString(5, t.getAccountId());
             st.setString(6, "The dien thoai ");
+            st.setBoolean(7, t.isStatus());
             st.executeUpdate();
 
             ResultSet generatedKeys = st.getGeneratedKeys();
@@ -48,6 +50,31 @@ public class TransactionDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return 0;
+    }
+//getTransactionStatus
+
+    public List<Transaction> getTransactionStatus() {
+        List<Transaction> list = new ArrayList<>();
+        String sql = "select * from transaction where status = 0";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Transaction t = new Transaction(
+                        rs.getInt("Id"),
+                        rs.getDouble("BuyPrice"),
+                        rs.getInt("BuyAmount"),
+                        rs.getDate("createdAt"),
+                        rs.getString("Description"),
+                        rs.getBoolean("status"),
+                        rs.getInt("productId")
+                );
+
+                list.add(t);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return list;
     }
 
     public List<Transaction> getAllByAccount(String account) {
@@ -216,7 +243,7 @@ public class TransactionDAO extends DBContext {
             supplier = "(" + supplier;
             if (!price.isEmpty()) {
                 supplier += ") and ";
-            }else{
+            } else {
                 supplier += ") ";
             }
         }
@@ -255,6 +282,33 @@ public class TransactionDAO extends DBContext {
             System.out.println(e.getMessage());
         }
         return list;
+    }
+
+    public int getTransByAccount(String userName, String id) {
+        String sql = "SELECT * FROM swp1.transaction where accountId=? and ProductID=? order by createdAt desc;";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, userName);
+            st.setInt(2, Integer.parseInt(id));
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("Id");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return 0;
+    }
+
+    public void updateStatus(boolean status, int id) {
+        String sql = "update transaction \n"
+                + "set status =1\n"
+                + "where Id = ?";
+        try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setInt(1, id);
+            st.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 }

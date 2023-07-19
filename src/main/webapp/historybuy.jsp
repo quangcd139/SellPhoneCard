@@ -47,13 +47,40 @@
             }
 
         </style>
+        <style>
+            #formOverlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #formContainer {
+                background-color: #fff;
+                padding: 20px;
+                position: relative; /* Add this property */
+            }
+
+            #closeButton {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                cursor: pointer;
+                font-size: 24px; /* Add this property */
+            }
+            /* Add this CSS to hide the checkbox inputs */
+        </style>
         <script>
             function showAnotherForm(event) {
 
                 event.preventDefault(); // Prevent the default link behavior
                 var id = $(event.target).data('id'); // Get the ID from the data attribute
                 var url = 'detailHistory?id=' + id; // Construct the URL
-
                 $.ajax({
                     url: url,
                     type: 'GET',
@@ -128,7 +155,7 @@
         <%@include file="header.jsp" %>
         <div class="container-xxl position-relative bg-white d-flex p-0">
 
-            <form action="myhistorybill" method="get" style="margin-left: 100px;">
+            <form id="form1" action="myhistorybill" method="get" style="margin-left: 100px;">
                 <h5>Lọc theo mệnh giá mua</h5>
                 <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
                     <input type="checkbox" value="Tất cả giá">Tất cả giá
@@ -204,7 +231,7 @@
 
                                     <form method="GET" id="pageNumberForm" onchange="submitForm()">
                                         <label for="page-number">Trang:</label>
-                                        <input type="text" id="page-number" name="page" value="${page}" oninput="handlePageNumber(event)">
+                                        <input type="text" id="page-number" name="page" value="${page}" onkeydown="handlePageNumber(event)">
                                         <span>/</span>
                                         <span>${soTrang}</span>
                                         <input type="hidden" name="sl" value="${limit}">
@@ -220,74 +247,115 @@
 
                 </div>
             </div>
-            <!-- Table End -->
+            <div id="formOverlay">
+                <div id="formContainer">
+                    <span id="closeButton" onclick="closeForm()">&times;</span>
 
+                    <form action="/your-action-url" method="POST">
+                        <c:if test="${status != null}">
+                            <c:if test="${status > 0}">
+                                <p>Thẻ đã mua thành công</p>
+                                <p>${product.supplier}</p>
+                                <p>${product.sellPrice}</p>
+                                <p>${product.amount}</p>
+                                <p>${product.expirationDate}</p>
+                                <table style="width: 500px">
+                                    <tr>
+                                        <th>Seri</th>
+                                        <th>Code</th>
+                                    </tr>
+                                    <c:forEach items="${listCard}" var="c">
+                                        <tr>
+                                        <td>${c.seri}</td>
+                                        <td>${c.code}</td>
+                                        </tr>
+                                    </c:forEach>
+                                </table>
 
+                            </c:if>
+                            <c:if test="${status == 0}">
+                                <p>Mua thẻ không thành công do hết hàng</p>
+                            </c:if>
+                        </c:if>
+
+                        <!-- Other form elements or inputs can be added here -->
+
+                    </form>
+                </div>
+            </div>
         </div>
-        <!-- Content End -->
-
-
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-    </div>
-    <%@include file="footer.jsp" %>
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/chart/chart.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            function closeForm() {
+                document.getElementById("formOverlay").style.display = "none";
+                function closeForm() {
+                    document.getElementById("formOverlay139").style.display = "none";
+                    var checkboxes = document.querySelectorAll("#formContainer input[type='checkbox']");
+                    checkboxes.forEach(function (checkbox) {
+                        checkbox.style.display = "block";
+                    });
+                }
+            }
+        </script>
+        <%@include file="footer.jsp" %>
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/chart/chart.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/waypoints/waypoints.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <script src="lib/tempusdominus/js/moment.min.js"></script>
+        <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+        <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
-    <script>
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
+        <script>
 
-                                            function saveSelectedOption() {
-                                                var select = document.getElementById('mySelect');
-                                                var selectedOption = select.value;
-                                                // Lưu giá trị vào local storage
-                                                localStorage.setItem('selectedOption', selectedOption);
-                                            }
+            function saveSelectedOption() {
+                var select = document.getElementById('mySelect');
+                var selectedOption = select.value;
+                // Lưu giá trị vào local storage
+                localStorage.setItem('selectedOption', selectedOption);
+            }
 
-                                            // Khôi phục giá trị lựa chọn từ local storage khi tải lại trang
-                                            window.onload = function () {
-                                                var select = document.getElementById('mySelect');
-                                                var selectedOption = localStorage.getItem('selectedOption');
-                                                if (selectedOption) {
-                                                    select.value = selectedOption;
-                                                }
-                                            };
+            // Khôi phục giá trị lựa chọn từ local storage khi tải lại trang
+            window.onload = function () {
+                var select = document.getElementById('mySelect');
+                var selectedOption = localStorage.getItem('selectedOption');
+                if (selectedOption) {
+                    select.value = selectedOption;
+                }
+            };
 
-                                            if (pageNumberValue) {
-                                                document.getElementById("page-number").value = pageNumberValue;
-                                            }
-                                            function submitForm() {
-                                                document.getElementById("pageSizeForm").submit();
-                                                document.getElementById("pageNumberForm").submit;
-                                                localStorage.setItem('pageNumber', pageNumber);
-                                            }
+            if (pageNumberValue) {
+                document.getElementById("page-number").value = pageNumberValue;
+            }
+            function submitForm() {
+                document.getElementById("pageSizeForm").submit();
+                document.getElementById("pageNumberForm").submit;
+                localStorage.setItem('pageNumber', pageNumber);
+            }
 
 
 
-                                            function handlePageNumber(event) {
-                                                const pageNumberInput = document.getElementById('page-number');
-                                                let pageNumber = parseInt(pageNumberInput.value);
-                                                const maxPage = parseInt('${soTrang}');
+            function handlePageNumber(event) {
+                const pageNumberInput = document.getElementById('page-number');
+                let pageNumber = parseInt(pageNumberInput.value);
+                const maxPage = parseInt('${soTrang}');
 
-                                                if (isNaN(pageNumber) || pageNumber < 1) {
-                                                    pageNumber = 1;
-                                                } else if (pageNumber > maxPage) {
-                                                    pageNumber = maxPage;
-                                                }
+                if (isNaN(pageNumber) || pageNumber < 1) {
+                    pageNumber = 1;
+                } else if (pageNumber > maxPage) {
+                    pageNumber = maxPage;
+                }
 
-                                                pageNumberInput.value = pageNumber;
-                                            }
+                pageNumberInput.value = pageNumber;
+            }
 
-    </script>
-</body>
+        </script>
+    </body>
 </html>

@@ -243,8 +243,8 @@
                 return true;
             }
             function validateAndShowForm() {
-                var checkStat = checkStatus();
                 var isValid = validateForm();
+                var checkStat = checkStatus();
                 if (isValid && checkStat) {
                     showAnotherForm();
                 }

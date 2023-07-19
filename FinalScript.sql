@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `swp1`.`product` (
   `updateAt` DATE NULL DEFAULT NULL,
   PRIMARY KEY (`Id`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -81,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `swp1`.`transaction` (
     FOREIGN KEY (`accountId`)
     REFERENCES `swp1`.`account` (`Account`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -109,6 +111,25 @@ CREATE TABLE IF NOT EXISTS `swp1`.`card` (
     FOREIGN KEY (`ProductId`)
     REFERENCES `swp1`.`product` (`Id`))
 ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `swp1`.`history-transfers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `swp1`.`history-transfers` (
+  `Id` INT NOT NULL AUTO_INCREMENT,
+  `FromAccount` VARCHAR(200) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL,
+  `ToAccount` VARCHAR(200) CHARACTER SET 'utf8mb3' NULL DEFAULT NULL,
+  `Amount` DOUBLE NULL DEFAULT NULL,
+  `createdAt` DATETIME NULL DEFAULT NULL,
+  `deleteAt` DATETIME NULL DEFAULT NULL,
+  `TransactionType` TINYINT(1) NULL DEFAULT NULL,
+  PRIMARY KEY (`Id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 

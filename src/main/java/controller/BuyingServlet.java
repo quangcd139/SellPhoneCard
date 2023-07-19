@@ -18,12 +18,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import model.Account;
 import model.Transaction;
 
@@ -31,12 +28,10 @@ import model.Transaction;
  *
  * @author PC
  */
-
 @WebServlet(name = "BuyingServlet", urlPatterns = {"/buying"})
 public class BuyingServlet extends HttpServlet {
 
-    private Queue<Transaction> buyQueue = new LinkedList<>();
-    private ScheduledExecutorService executorService;
+    private final static ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -53,6 +48,7 @@ public class BuyingServlet extends HttpServlet {
             request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
+
         ListBuyOfShopDAO l = new ListBuyOfShopDAO();
         //get data form home.jsp
         String supplier = request.getParameter("supplier");
@@ -77,103 +73,55 @@ public class BuyingServlet extends HttpServlet {
                 .accountId(account.getUserName())
                 .buyPrice(giaThe)
                 .buyAmount(soLuongMua)
-                .productId(Integer.parseInt(productId)).build();
+                .productId(Integer.parseInt(productId))
+                .status(false)
+                .build();
 
-        synchronized (buyQueue) {
-            buyQueue.add(t1);
-        }
+        new TransactionDAO().addTransaction(t1);
+        executor.execute(new OrderProcessor());
         //chuyen trang
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().println("Buy request has been added to the queue.");
         //lay tien hien tai cua tai khoan
         account.setMoney(new AccountDAO().getMoney(account.getUserName()));
         // Lên lịch trả kết quả cho người dùng sau 5 giây
-        scheduleResponse(account.getUserName(), request, response);
-        request.setAttribute("err", "buy sucess");
+        request.setAttribute("notice", "Đơn hàng hiện đang được xử lý bấm ok để xem chi tiết");
         request.setAttribute("suppliers", l.getAllSupplier());
+        request.setAttribute("pId", productId);
         request.setAttribute("listPrice", l.getAllPrice());
         request.getRequestDispatcher("shop.jsp").forward(request, response);
     }
 
-    @Override
-    public void init() throws ServletException {
-        executorService = Executors.newSingleThreadScheduledExecutor();
-        // Tạo một luồng riêng biệt để xử lý hàng đợi
-        Thread processingThread = new Thread(() -> {
+    public class OrderProcessor implements Runnable {
+
+        public void run() {
             while (true) {
-                Transaction t;
-                synchronized (buyQueue) {
-                    // Lấy yêu cầu từ hàng đợi
-                    if (buyQueue.isEmpty()) {
-                        // Lên lịch kiểm tra xem có yêu cầu nào sau 2 giây
-                        executorService.schedule(this::processPendingRequests, 2, TimeUnit.SECONDS);
-                        try {
-                            buyQueue.wait(); // Chờ đợi khi hàng đợi rỗng
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        continue; // Tiếp tục vòng lặp
+                //lay transaction dang cho xu ly 
+                List<Transaction> list = new TransactionDAO().getTransactionStatus();
+                for (Transaction t1 : list) {
+                    ProductDAO pd = new ProductDAO();
+                    int slHang = pd.getAmountById(t1.getProductId());
+                    if (slHang <= 0) {
+                        continue;
                     }
-
-                    t = buyQueue.poll();
-                }
-
-                // Xử lý yêu cầu mua hàng
-                processTransaction(t);
-            }
-        });
-        processingThread.start();
-    }
-
-    private void processTransaction(Transaction t1) {
-        TransactionDAO ts = new TransactionDAO();
-        int transactionId = ts.addTransaction(t1);
-        // Thực hiện xử lý yêu cầu mua hàng ở đây
-        //lay tien cua tai khoan
-        AccountDAO ad = new AccountDAO();
-        double money = ad.getMoney(t1.getAccountId());
-        ad.updateMoney(t1.getAccountId(), t1.getBuyPrice() * t1.getBuyAmount(), money);
-//        giảm số lượng thẻ trong product table 
+                    TransactionDAO ts = new TransactionDAO();
+                    int transactionId = ts.addTransaction(t1);
+                    // Thực hiện xử lý yêu cầu mua hàng ở đây
+                    //        giảm số lượng thẻ trong product table 
 //        và set status = 0 nếu số lượng về 0
-        ProductDAO pd = new ProductDAO();
-        pd.updateAmount(t1.getBuyAmount(), t1.getProductId());
-        //đánh dấu thẻ trong Card table (productId,transactionId)
-        CardDAO cd = new CardDAO();
-        cd.updateStatusCard(t1.getProductId(), transactionId, t1.getBuyAmount());
-
-    }
-
-    private void scheduleResponse(String userId, HttpServletRequest request, HttpServletResponse response) {
-        executorService.schedule(() -> {
-            // Tìm kiếm kết quả của người dùng dựa trên userId
-            // ...
-
-            // Gửi phản hồi với kết quả cho người dùng
-            try {
-                // Set attributes to be passed to the JSP page
-                request.setAttribute("err", "Buy request processed successfully. Result: ...");
-                // Forward the request to the JSP page
-                RequestDispatcher dispatcher = request.getRequestDispatcher("/shop");
-                dispatcher.forward(request, response);
-            } catch (IOException | ServletException e) {
-                e.printStackTrace();
+                    pd.updateAmount(t1.getBuyAmount(), t1.getProductId());
+                    //đánh dấu thẻ trong Card table (productId,transactionId)
+                    CardDAO cd = new CardDAO();
+                    cd.updateStatusCard(t1.getProductId(), transactionId, t1.getBuyAmount());
+                    boolean status = false;
+                    new TransactionDAO().updateStatus(status,t1.getId());
+                    //lay tien cua tai khoan
+                    AccountDAO ad = new AccountDAO();
+                    double money = ad.getMoney(t1.getAccountId());
+                    ad.updateMoney(t1.getAccountId(), t1.getBuyPrice() * t1.getBuyAmount(), money);
+                }
             }
-        }, 5, TimeUnit.SECONDS);
-    }
-
-    private void processPendingRequests() {
-        synchronized (buyQueue) {
-            if (buyQueue.isEmpty()) {
-                System.out.println("No buy requests found after 2 seconds.");
-                // Process the pending requests here or take any necessary action
-            }
-            buyQueue.notifyAll(); // Notify the waiting thread
         }
-    }
-
-    @Override
-    public void destroy() {
-        executorService.shutdown();
     }
 
 }
