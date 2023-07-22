@@ -58,7 +58,7 @@
                     <input type="text" name="name" value="<%=request.getParameter("name")%>">
             </td>
             <td>
-                    <input type="text" name="description" value="<%=request.getParameter("description")%>">
+                    <textarea id="id" name="description" rows="5" cols="25"><%=request.getParameter("description")%></textarea>
             </td>
             <td>
                     <button type="submit">Update</button>

@@ -72,21 +72,21 @@ public class BuyingServlet extends HttpServlet {
             request.getRequestDispatcher("shop.jsp").forward(request, response);
             return;
         }
-        String notice = "Đơn hàng hiện đang được xử lý bấm ok để xem chi tiết";
+        String notice = "Bạn có muốn tiếp tục mua hàng không ? ";
         int slHang = new ProductDAO().getAmountById(Integer.parseInt(productId));
         if (slHang <= 0) {
             notice = "Sản phẩm hiện tại đã hết hàng";
             request.setAttribute("slHang", 1);
         } else {
-
             Transaction t1 = Transaction.builder()
                     .accountId(account.getUserName())
                     .buyPrice(giaThe)
                     .buyAmount(soLuongMua)
                     .productId(Integer.parseInt(productId))
+                    .description(supplier)
                     .status(false)
                     .build();
-
+            
             synchronized (buyQueue) {
                 buyQueue.add(t1);
             }
@@ -141,6 +141,7 @@ public class BuyingServlet extends HttpServlet {
         int slHang = new ProductDAO().getAmountById(t1.getProductId());
         if (slHang <= 0) {
             t1.setStatus(false);
+            ts.addTransaction(t1);
             return;
         }
         // Thực hiện xử lý yêu cầu mua hàng ở đây

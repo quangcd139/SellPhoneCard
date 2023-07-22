@@ -34,7 +34,6 @@ public class UploadHelper {
             for (Part part : request.getParts()) {
                 String fileName = part.getSubmittedFileName();
                 if (fileName != null && fileName.length() > 0) {
-
                     if (fileName.endsWith("png") || fileName.endsWith("jpg")) {
                         // Đây là file ảnh
                         int size = fileName.length();

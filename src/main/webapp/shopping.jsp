@@ -144,9 +144,6 @@
             </div>
         </div>
         <!-- Shop End -->
-        <%= new Gson().toJson(productList)%>
-
-
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
@@ -163,7 +160,7 @@
                         var confirmed = false;
                         setTimeout(function () {
                             confirmed = confirm(Message);
-                            if (confirmed) {
+                            if (!confirmed) {
                                 window.location.href = 'myhistorybill?id=' + pId;
                             }
                         }, 1500); // Delay of 2 seconds (2000 milliseconds)

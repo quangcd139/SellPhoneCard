@@ -37,7 +37,7 @@ public class TransactionDAO extends DBContext {
             st.setTimestamp(3, createdAtDateTime);
             st.setInt(4, t.getProductId());
             st.setString(5, t.getAccountId());
-            st.setString(6, "The dien thoai ");
+            st.setString(6, t.getDescription());
             st.setBoolean(7, t.isStatus());
             st.executeUpdate();
 
@@ -89,7 +89,8 @@ public class TransactionDAO extends DBContext {
                         rs.getDouble("BuyPrice"),
                         rs.getInt("BuyAmount"),
                         rs.getDate("createdAt"),
-                        rs.getString("Description")
+                        rs.getString("Description"),
+                        rs.getBoolean("status")
                 );
 
                 list.add(t);
@@ -111,7 +112,8 @@ public class TransactionDAO extends DBContext {
                         rs.getDouble("BuyPrice"),
                         rs.getInt("BuyAmount"),
                         rs.getDate("createdAt"),
-                        rs.getString("Description")
+                        rs.getString("Description"), 
+                        rs.getBoolean("status")
                 );
                 return t;
             }
@@ -137,7 +139,8 @@ public class TransactionDAO extends DBContext {
                         rs.getDouble("BuyPrice"),
                         rs.getInt("BuyAmount"),
                         rs.getDate("createdAt"),
-                        rs.getString("Description")
+                        rs.getString("Description"),
+                        rs.getBoolean("status")
                 );
 
                 list.add(t);
@@ -250,31 +253,34 @@ public class TransactionDAO extends DBContext {
         String accountId = "";
         if (!account.isEmpty()) {
             if (priceFilter.size() == 0 && supplierFilter.size() == 0) {
-                accountId = "and accountId = ? ";
+                accountId = " where accountId like ? ";
             } else {
-                accountId = "and accountId = ? and ";
+                accountId = " where accountId like ? and ";
             }
         }
         String sql = "select t.* from transaction t join product p on t.ProductID=p.Id\n"
-                + "where status !=0 " + accountId + supplier + price +"limit ? offset ?";
+                 + accountId +(accountId.isEmpty()?" where ":" ")+ supplier + price;
         System.out.println(sql);
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
+            int i=1;
             if (!account.isEmpty()) {
-                st.setString(1, account);
+                st.setString(i, "%"+account+"%");
+                i++;
             }
-            st.setInt(2, limit);
-            st.setInt(3, offset);
+//            st.setInt(i, limit);
+//            st.setInt(i+1, offset);
 
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                Transaction t = new Transaction(
-                        rs.getInt("Id"),
-                        rs.getDouble("BuyPrice"),
-                        rs.getInt("BuyAmount"),
-                        rs.getDate("createdAt"),
-                        rs.getString("Description"),
-                        rs.getString("accountId")
-                );
+                Transaction t = Transaction.builder()
+                    .id(rs.getInt("Id"))
+                    .accountId(rs.getString("accountId"))
+                    .buyPrice(rs.getDouble("BuyPrice"))
+                    .buyAmount(rs.getInt("BuyAmount"))
+                    .createdAt(rs.getDate("createdAt"))
+                    .description(rs.getString("Description"))
+                    .status(rs.getBoolean("status"))
+                    .build();
 
                 list.add(t);
             }

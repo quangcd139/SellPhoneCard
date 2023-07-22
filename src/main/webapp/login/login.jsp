@@ -204,7 +204,7 @@
     <script>
 
         function refreshCaptcha() {
-            fetch('/CaptchaServlet', {
+            fetch('/SWP/CaptchaServlet', {
                 method: 'POST'
             })
                     .then(Response => Response.blob())

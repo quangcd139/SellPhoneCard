@@ -116,17 +116,15 @@ public class CardDAO extends DBContext {
                         int productId = 0;
                         int amount = 0;
                         boolean check = false;
-                        // để kiểm tra có tồn tại sản phẩm nào có expirationDate trong database ko
+                        // để kiểm tra có tồn tại sản phẩm nào có  trong database ko
                         //nếu có thì lấy ra pId và amount
                         for (Product p : products) {
-                            if (p.getExpirationDate().equals(expirationDate)
-                                    && p.getSellPrice() == sellPrice
+                            if ( p.getSellPrice() == sellPrice
                                     && p.getSupplier().equals(supplier)) {
                                 productId = p.getId();
                                 amount = p.getAmount() + 1;
                                 p.setAmount(amount);
                                 //set updateAt product
-                                pd.updateDateProduct(productId);
                                 check = true;
                                 break;
                             }
@@ -138,7 +136,8 @@ public class CardDAO extends DBContext {
                             p.setSupplier(supplier);
                             amount = 1;
                             p.setAmount(amount);
-                            p.setDescription("mua the nha mang " + supplier);
+                            p.setDescription("Thẻ nhà mạng " + supplier);
+                            p.setName("Thẻ nhà mạng " + supplier);
                             if (imageName.isEmpty()) {
                                 p.setImage(supplier + "_logo.png");
                             } else {
@@ -146,7 +145,7 @@ public class CardDAO extends DBContext {
                             }
                             p.setStatus(true);
                             p.setCreatedAt(new java.sql.Date((new Date()).getTime()));//get date now
-                            p.setExpirationDate(new java.sql.Date(expirationDate.getTime()));//get date now
+//                            p.setExpirationDate(new java.sql.Date(expirationDate.getTime()));//get date now
                             //lấy pId vừa add
                             productId = pd.addProduct(p, expirationDate);
                             p.setId(productId);
@@ -179,6 +178,7 @@ public class CardDAO extends DBContext {
             }
             
             for (Map.Entry<Integer, Integer> entry : mapList.entrySet()) {
+                pd.updateDateProduct(entry.getKey());
                 pd.updateAmountProduct(entry.getKey(),entry.getValue());
             }
         } catch (FileNotFoundException e) {

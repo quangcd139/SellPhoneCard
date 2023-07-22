@@ -128,19 +128,22 @@ public class AccountTransferServlet extends HttpServlet {
         try {
             String fromAccount = request.getParameter("fromAccount");
             String toAccount = request.getParameter("toAccount");
-            String type = request.getParameter("type");
             double amount = Double.parseDouble(request.getParameter("amount"));
+            String type = request.getParameter("type");
+//            String description = request.getParameter("description");           
             AccountDAO dao = new AccountDAO();
             // transfer money
-            dao.transferMoney(fromAccount, toAccount, amount,type);
-            // redirect to history transfer
+            dao.transferMoney(fromAccount, toAccount, amount, type);
+            // redirect to history transfer 
+            request.getSession().setAttribute("transferSuccess", true); 
             response.sendRedirect("AccountTransferServlet");
             // in ra thong bao
-//            PrintWriter out = response.getWriter();
-//            out.println("<script type=\"text/javascript\">");
-//            out.println("alert('Transfer money successfully');");
+            PrintWriter out = response.getWriter();
+            out.println("<script type=\"text/javascript\">");
+            out.println("alert('Transfer money successfully');");
         } catch (Exception e) {
             System.out.println("doPost: " + e.getMessage()); 
+            response.sendRedirect("AccountTransferServlet");
         }
         processRequest(request, response);
     }

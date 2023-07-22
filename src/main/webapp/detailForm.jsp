@@ -134,10 +134,10 @@
                     <input class="modal-input" type="text" id="soLuong" name="quantity" readonly><br>
 
                     <label class="modal-label" for="mieuTa">Miêu tả:</label>
-
-                    <input class="modal-input" type="text" id="mieuTa" value="" readonly><br>
+                    <input class="modal-input" type="text" id="mieuTa" value="" readonly><br><!--
                     <label class="modal-label" for="hetHan">Ngày hết hạn:</label> 
                     <input class="modal-input" type="text" id="hetHan" value="" readonly><br>
+                    -->
                     <input type="text" id="pId" name="id" hidden=""><br>
 
                     <input class="submit" type="submit" value="Buy">
@@ -181,8 +181,6 @@
 
                 var description1 = document.getElementById("mieuTa");
                 description1.value = description;
-                var hetHan = document.getElementById("hetHan");
-                hetHan.value = expirationDate;
                 var pid = document.getElementById("pId");
                 pid.value = id;
             }
@@ -209,28 +207,32 @@
                 var supplierInput = document.getElementById("supplier").value;
                 var denominationInput = document.getElementById("denomination").value;
                 var quantityInput = document.getElementById("quantity").value;
+                if (productList.length === 0) {
+                    alert("Chưa có sản phẩm nào trong kho");
+                    return false;
+                }
                 outerLoop:for (var i = 0; i < productList.length; i++) {
                     var obj = productList[i];
                     for (var key in obj) {
                         var sellPrice = obj["sellPrice"];
                         var supplier = obj["supplier"];
-                        var expirationDate = obj["expirationDate"];
                         var amount = obj["amount"];
                         var status = obj["status"];
-                        var pId = obj["id"];
                         var check1 = false;
-                        var check2=false;
-                        var check3=false;
                         if (sellPrice == denominationInput && supplier == supplierInput) {
+                            var pId = obj["id"];
+
                             if (quantityInput > amount) {
                                 if (amount == 0) {
-                                    check2=true;
+                                    check2 = true;
+                                    return false;
                                 } else {
-                                    alert("so luong hang trong kho chi con " + amount +
-                                            "vui long nhap lai");
+                                    alert("Số lượng hàng trong khi chỉ còn " + amount +
+                                            " vui lòng nhập số lượng nhỏ hơn "+amount);
+                                    return false;
                                 }
-                                return false;
                             }
+
                             id = pId;
                             check1 = true;
                             break outerLoop;

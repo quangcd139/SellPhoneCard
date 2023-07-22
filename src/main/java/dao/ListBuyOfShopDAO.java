@@ -39,7 +39,7 @@ public class ListBuyOfShopDAO extends DBContext {
     
     public List<Product> getAllProductOrder() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM product where status!=0 and amount>0 order by ExpirationDate,Supplier;";
+        String sql = "SELECT * FROM product where status!=0 and amount>0 order by Supplier;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             ResultSet rs = st.executeQuery();
             while (rs.next()) {

@@ -41,6 +41,4 @@ public class DBContext {
             System.out.println("Connect fail!");
         }
     }
-
-    
 }

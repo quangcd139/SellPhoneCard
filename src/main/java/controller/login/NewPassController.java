@@ -96,11 +96,11 @@ public class NewPassController extends HttpServlet {
             
             if (request.getParameter("mode") != null) {
                 acc.updateNewPass(account1.getUserName(), encrytedPass);
-                request.setAttribute("err1", "change password successfull");
+                request.setAttribute("err1", "Thay đổi mật khẩu thành công");
                 request.getRequestDispatcher("account.jsp").forward(request, response);
             } else {
                 acc.updateNewPass(account.getUserName(), encrytedPass);
-                request.setAttribute("err", "change password successfull");
+                request.setAttribute("err", "Thay đổi mật khẩu thành công");
                 request.getRequestDispatcher("login/login.jsp").forward(request, response);
             }
         } else {

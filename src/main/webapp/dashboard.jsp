@@ -11,6 +11,7 @@
 <%@page import="com.google.gson.Gson"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 
@@ -168,6 +169,15 @@
     </head>
 
     <body>
+        <%-- Check if the transfer was successful and display the success message --%>
+        <% boolean transferSuccess = Boolean.TRUE.equals(session.getAttribute("transferSuccess")); %>
+        <% if (transferSuccess) { %>
+        <script type="text/javascript">
+                alert("Transfer money successfully!");
+        </script>
+        <%-- Clear the session attribute to prevent showing the message on subsequent requests --%>
+        <% session.removeAttribute("transferSuccess"); %>
+        <% }%>
         <div class="wrapper">
             <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
                 <!--
@@ -342,7 +352,6 @@
                         </form>
 
 
-
                         <form method="GET" id="pageNumberForm" onchange="submitForm()">
                             <label for="page-number">Trang:</label>
                             <input type="text" id="page-number" name="page" value="${page}" oninput="handlePageNumber(event)">
@@ -440,7 +449,7 @@
                                     </c:forEach>
                                 </div>
 
-                                <h5>Lọc tên sản phẩm</h5>
+                                <h5>Lọc theo tên sản phẩm</h5>
                                 <div class="custom-control custom-checkbox align-items-center justify-content-between mb-3">
                                     <input type="text" name="pName" value="${name}">
 
@@ -454,22 +463,19 @@
                             <th>Mệnh giá</th>
                             <th>Số lượng</th>
                             <th>Nhà mạng</th>
-                            <th>Ngày hết hạn</th>
                             <th>Mô tả</th>
                             <th>Ngày bắt đầu bán</th>
-                            <th>Thêm sản phẩm </th>
+                            <th>Xem chi tiết</th>
                             <th>Chỉnh sửa </th>
                                 <c:forEach items="${list}" var="p">
                                 <tr>
                                     <td>${p.id}</td>
                                     <td>${p.name}</td>
-                                    <td>${p.sellPrice}</td>
+                                    <td><fmt:formatNumber value="${p.sellPrice}" pattern="#,##0" /></td>
                                     <td>${p.amount}</td>
                                     <td>${p.supplier}</td>
-                                    <td>${p.expirationDate}</td>
                                     <td>${p.description}</td>
                                     <td>${p.createdAt}</td>
-                                    <td><a href="addOneProduct.jsp">Thêm sản phẩm </a></td>
                                     <td><a href="editProduct.jsp?id=${p.id}&name=${p.name}&description=${p.description}">Chỉnh sửa</a></td>
                                 </tr>
                             </c:forEach>
@@ -489,10 +495,12 @@
                             <span>${soTrang}</span>
                             <input type="hidden" name="sl" value="${limit}">
 
-                            <a class="${i == page ? 'active' : ''}" href="manageProduct?page=${i}">${i}</a>
+                            <a class="${i == page ? 'active' : ''}" href="manageProduct?page=${i}">${i}</a><br>
+                            <!--<a href="addOneProduct.jsp">Thêm sản phẩm </a>-->
+
                         </c:if>
                         <c:if test="${check==3}">
-                             <div class="form-container">
+                            <div class="form-container">
                                 <form action="adminTransaction" method="get">
                                     <h5>Lọc theo mệnh giá mua</h5>
                                     <hr  width="100%" align="center" />
@@ -831,45 +839,7 @@
                                     });
     </script>
     <script>
-            function showAnotherForm(event) {
-                event.preventDefault(); // Prevent the default link behavior
-                var id = $(event.target).data('id'); // Get the ID from the data attribute
-                var url = 'detailHistory?id=' + id; // Construct the URL
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function (response) {
-                        displayCards(response);
-                        console.log(response);
-                    },
-                    error: function (xhr, status, error) {
-                        // Handle any errors that occur during the AJAX request
-                        console.error(error);
-                    }
-                });
-                function displayCards(response) {
-                    var anotherFormContainer = document.getElementById("anotherFormContainer");
-                    anotherFormContainer.style.display = "block";
-                    var product = response.product;
-                    var listCard = response.listCard;
-                    // Display product details
-
-                    // Display card details
-                    var table = $('#cardTable');
-                    for (var i = 0; i < listCard.length; i++) {
-                        var card = listCard[i];
-                        var row = $('<tr></tr>');
-                        row.append('<td>' + card.seri + '</td>');
-                        row.append('<td>' + card.code + '</td>');
-                        // Add more table cells for additional card properties
-                        table.append(row);
-                    }
-
-                    $('#menhGia').text(product.sellPrice);
-                    $('#nhaMang').text(product.supplier);
-                    $('#date').text(product.expirationDate);
-                }
-            }
+            
 
             function saveSelectedOption() {
                 var select = document.getElementById('mySelect');

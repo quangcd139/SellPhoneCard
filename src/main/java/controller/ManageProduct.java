@@ -107,9 +107,13 @@ public class ManageProduct extends HttpServlet {
         } catch (NumberFormatException e) {
         }
         int page = Math.min(soTrang, Math.max(1, xpage));
+        
         page = Math.min(soTrang, Math.max(1, page));
-        int offset = (page - 1) * limit;
-
+        if(page==0){
+            page=1;
+        }
+        int offset = (page - 1) * limit;//-3
+        
         List<Product> list = getListByFilter(limit, offset, request, prices, suppliers);
         request.setAttribute("list", list);
         request.setAttribute("prices", prices);
@@ -118,7 +122,6 @@ public class ManageProduct extends HttpServlet {
         request.setAttribute("limit", limit);
         request.setAttribute("page", page);
         request.setAttribute("check", 2);
-
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
@@ -161,7 +164,6 @@ public class ManageProduct extends HttpServlet {
         request.setAttribute("selectedPrices", priceFilter);
         request.setAttribute("selectedSuppliers", supplierFilter);
         request.setAttribute("name", name);
-
         return list;
     }
 

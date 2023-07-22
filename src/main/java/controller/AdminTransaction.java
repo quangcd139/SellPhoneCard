@@ -112,7 +112,7 @@ public class AdminTransaction extends HttpServlet {
         request.setAttribute("prices", prices);
         request.setAttribute("suppliers", suppliers);
         request.setAttribute("check", 3);
-        request.setAttribute("accountName", accountName);
+        
         request.getRequestDispatcher("dashboard.jsp").forward(request, response);
     }
 
@@ -135,7 +135,7 @@ public class AdminTransaction extends HttpServlet {
      *
      * @return a String containing servlet description
      */
-    public List<Transaction> getListByFilter(String account, List<String> prices, List<Product> suppliers, int limit, int offset, HttpServletRequest request) {
+    public List<Transaction> getListByFilter(String accountName, List<String> prices, List<Product> suppliers, int limit, int offset, HttpServletRequest request) {
         TransactionDAO td = new TransactionDAO();
         List<Transaction> list = new ArrayList<>();
         List<String> priceFilter = new ArrayList<>();
@@ -150,12 +150,13 @@ public class AdminTransaction extends HttpServlet {
                 supplierFilter.add(s);
             }
         }
-        if (priceFilter.size() == 0 && supplierFilter.size() == 0 && account.isEmpty()) {
+        if (priceFilter.size() == 0 && supplierFilter.size() == 0 && accountName.isEmpty()) {
             list = td.getAllTransaction(limit, offset);
         }else{
             request.setAttribute("selectedPrices", prices);
             request.setAttribute("selectedSuppliers", supplierFilter);
-            list = td.getAllByAccountFilter(account, limit, offset,priceFilter,supplierFilter);
+            request.setAttribute("accountName", accountName);
+            list = td.getAllByAccountFilter(accountName, limit, offset,priceFilter,supplierFilter);
         }
 
         return list;

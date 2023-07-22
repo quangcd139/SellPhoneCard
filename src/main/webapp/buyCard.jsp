@@ -6,6 +6,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -178,8 +180,8 @@
                 <h3>Choose one denomination</h3>
                 <div class="denomination-btns">
                     <c:forEach items="${listPrice}" var="p">
-                        <button type="button" onclick="selectDenomination(${p})" id="denomination${p}">
-                            ${p}
+                        <button type="button" onclick="selectDenomination(${p})" value="${p}" id="denomination${p}">
+                            <fmt:formatNumber value="${p}" pattern="#,##0" />
                         </button>
                     </c:forEach>
                     <input type="hidden" id="denomination" name="denomination">

@@ -32,7 +32,7 @@ public class TransferDAO extends DBContext {
                         rs.getInt("id"),
                         rs.getString("FromAccount"),
                         rs.getString("ToAccount"),
-                        rs.getDouble("Amount"), 
+                        rs.getDouble("Amount"),
                         rs.getDate("createdAt"),
                         rs.getDate("deleteAt"),
                         rs.getBoolean("TransactionType"));
@@ -46,8 +46,9 @@ public class TransferDAO extends DBContext {
 
         return list;
     }
+
     public int getTransferCount() {
-String sql = "SELECT COUNT(*) FROM history-transfers;";
+        String sql = "SELECT COUNT(*) FROM `history-transfers`;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
@@ -56,10 +57,16 @@ String sql = "SELECT COUNT(*) FROM history-transfers;";
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return 0;    }
+        return 0;
+    }
+    
+//    public static void main(String[] args) {
+//        System.out.println(new TransferDAO().getTransferCount());
+//    }
+
     public List<Transfer> getAllTransfer(int limit, int offset) {
         List<Transfer> list = new ArrayList<>();
-        String sql = "SELECT * FROM swp1.`history-transfers`LIMIT ? OFFSET ?;";
+        String sql = "SELECT * FROM `history-transfers` LIMIT ? OFFSET ?;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             st.setInt(1, limit);
             st.setInt(2, offset);
@@ -70,7 +77,7 @@ String sql = "SELECT COUNT(*) FROM history-transfers;";
                         rs.getInt("id"),
                         rs.getString("FromAccount"),
                         rs.getString("ToAccount"),
-                        rs.getDouble("Amount"), 
+                        rs.getDouble("Amount"),
                         rs.getDate("createdAt"),
                         rs.getDate("deleteAt"),
                         rs.getBoolean("TransactionType"));

@@ -250,17 +250,14 @@
                                                     <th scope="col">Sell Price</th>
                                                     <th scope="col">Image</th>
                                                     <th scope="col">Supplier</th>
-                                                    <th scope="col">Expiration Date</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-
                                                 <tr>
                                                     <td><input type="text" name="pname" required maxlength="40"></td>
                                                     <td><input type="text" name="pprice" required></td>
-                                                    <td><input type="file" name="imageFile"  accept=".jpg, .png" required></td>
+                                                    <td><input type="file" name="imageFile" accept=".jpg, .png" required></td>
                                                     <td><input type="text" name="psupplier" required></td>
-                                                    <td><input type="text" name="pexpire" ></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7" align="right">

@@ -34,10 +34,8 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getAllProduct() {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM swp1.product where status !=0 and ExpirationDate"
-                + " > ?  order by Supplier,ExpirationDate;";
+        String sql = "SELECT * FROM swp1.product where status !=0 order by Supplier;";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setDate(1, new java.sql.Date((new Date()).getTime()));
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Product p = new Product(
@@ -47,7 +45,7 @@ public class ProductDAO extends DBContext {
                         rs.getInt("Amount"),
                         rs.getString("supplier"),
                         rs.getString("image"),
-                        rs.getDate("ExpirationDate"),
+                        null,
                         rs.getString("Description"),
                         rs.getDate("createdAt"),
                         rs.getDate("deleteAt"),
@@ -93,7 +91,7 @@ public class ProductDAO extends DBContext {
 
     public int addProduct(Product p, Date expirationDate) {
         String sql = "insert into product (SellPrice,supplier,amount,"
-                + "Image,ExpirationDate,Description,createdAt,status)\n"
+                + "Image,Description,createdAt,status,name)\n"
                 + "values(?,?,?,?,?,?,?,?);";
         try ( PreparedStatement st = connection.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
@@ -101,13 +99,13 @@ public class ProductDAO extends DBContext {
             st.setString(2, p.getSupplier());
             st.setInt(3, 0);
             st.setString(4, p.getImage());
-            java.sql.Date sqlExpirationDate = new java.sql.Date(expirationDate.getTime());
-            st.setDate(5, sqlExpirationDate);
-            st.setString(6, p.getDescription());
-            st.setDate(7, new java.sql.Date((new Date()).getTime()));
-            st.setBoolean(8, p.isStatus());
+//            java.sql.Date sqlExpirationDate = new java.sql.Date(expirationDate.getTime());
+//            st.setDate(5, sqlExpirationDate);
+            st.setString(5, p.getDescription());
+            st.setDate(6, new java.sql.Date((new Date()).getTime()));
+            st.setBoolean(7, p.isStatus());
+            st.setString(8, p.getName());
             st.execute();
-
             ResultSet rs = st.getGeneratedKeys();
             if (rs.next()) {
                 int productId = rs.getInt(1);
@@ -132,7 +130,7 @@ public class ProductDAO extends DBContext {
             st.setDate(5, new java.sql.Date((new Date()).getTime()));
             st.setString(6, p.getDescription());
             st.setDate(7, new java.sql.Date((new Date()).getTime()));
-            st.setBoolean(8, p.isStatus());
+            st.setBoolean(8, true);
             st.setString(9, p.getName());
             st.execute();
 
@@ -256,11 +254,10 @@ public class ProductDAO extends DBContext {
 
     public List<Product> getAllProducts(int limit, int offset) {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT * FROM product WHERE status != 0 AND ExpirationDate > ? ORDER BY Supplier, ExpirationDate LIMIT ? OFFSET ?";
+        String sql = "SELECT * FROM product ORDER BY Supplier LIMIT ? OFFSET ?";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setDate(1, new java.sql.Date(new Date().getTime()));
-            st.setInt(2, limit);
-            st.setInt(3, offset);
+            st.setInt(1, limit);
+            st.setInt(2, offset);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Product p = new Product(
@@ -285,9 +282,8 @@ public class ProductDAO extends DBContext {
     }
 
     public int getProductCount() {
-        String sql = "SELECT COUNT(*) FROM product WHERE status != 0 AND ExpirationDate > ?";
+        String sql = "SELECT COUNT(*) FROM product WHERE status != 0";
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setDate(1, new java.sql.Date(new Date().getTime()));
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
@@ -339,7 +335,7 @@ public class ProductDAO extends DBContext {
                 nameQuery = "and name like ? ";
             }
         }
-        String sql = "select * from swp1.product where "  + supplier + price + nameQuery+" limit ? offset ?";
+        String sql = "select * from swp1.product where "  + supplier + price + nameQuery;
         System.out.println(sql);
         try ( PreparedStatement st = connection.prepareStatement(sql)) {
             int i=1;
@@ -347,8 +343,8 @@ public class ProductDAO extends DBContext {
                 st.setString(i, "%"+name+"%");
                 i++;
             }
-            st.setInt(i, limit);
-            st.setInt(i+1, offset);
+//            st.setInt(i, limit);
+//            st.setInt(i+1, offset);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 Product t = new Product(

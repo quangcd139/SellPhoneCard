@@ -71,6 +71,7 @@ public class AccountInforServlet extends HttpServlet {
             request.getRequestDispatcher("login/login.jsp").forward(request, response);
             return;
         }
+        account1.setMoney(new AccountDAO().getMoney(account1.getUserName()));
 //        String newPass = request.getParameter("pass");
 //        String rePass = request.getParameter("rePass");
 //        AccountDAO acc = new AccountDAO();
@@ -111,7 +112,7 @@ public class AccountInforServlet extends HttpServlet {
 
         // update database
         acc.updateProfile(account, name, phonex);
-        request.setAttribute("err2", "update successfull");
+        request.setAttribute("err1", "Cập nhập thành công");
 
         request.getRequestDispatcher("account.jsp").forward(request, response);
 

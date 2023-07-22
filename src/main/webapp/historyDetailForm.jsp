@@ -13,6 +13,55 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <script>
+            function showAnotherForm(event) {
+
+                event.preventDefault(); // Prevent the default link behavior
+                var id = $(event.target).data('id'); // Get the ID from the data attribute
+                var url = 'detailHistory?detailId=' + id; // Construct the URL
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (response) {
+                        displayCards(response);
+                        console.log(response);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle any errors that occur during the AJAX request
+                        console.error(error);
+                    }
+                });
+                function displayCards(response) {
+                    var anotherFormContainer = document.getElementById("anotherFormContainer");
+                    anotherFormContainer.style.display = "block";
+                    var product = response.product;
+                    var listCard = response.listCard;
+                    // Display product details
+
+                    // Display card details
+                    var table = $('#cardTable');
+                    for (var i = 0; i < listCard.length; i++) {
+                        var card = listCard[i];
+                        var row = $('<tr></tr>');
+                        row.append('<td>' + card.seri + '</td>');
+                        row.append('<td>' + card.code + '</td>');
+                        // Add more table cells for additional card properties
+                        table.append(row);
+                    }
+                    $('#menhGia').text(product.sellPrice);
+                    $('#nhaMang').text(product.supplier);
+
+                    var originalDate = listCard[0].expirationDate;
+                    var parsedDate = new Date(originalDate);
+
+// Formatting the date using Intl.DateTimeFormat
+                    var formattedDate = new Intl.DateTimeFormat('en', {day: '2-digit', month: '2-digit', year: 'numeric'}).format(parsedDate);
+
+                    $('#date').text(formattedDate);
+                }
+
+            }
+        </script>
         <style>
             .blur {
                 filter: blur(5px); /* Adjust the blur amount as desired */
@@ -143,8 +192,8 @@
                                 <td>Card seri</td>
                                 <td>Card code</td>
                             </tr>
-                            <tr id="data">
-                            </tr>
+                            <!--                                                        <tr id="data">
+                                                                                    </tr>-->
                         </thead>
                         <tbody>
                         </tbody>
@@ -154,21 +203,23 @@
         </div>
         <script>
             function closeForm() {
+                clearTable();
                 var overlay = document.getElementById("overlay");
                 var formContainer = document.getElementById("anotherFormContainer");
                 overlay.style.display = "none";
                 formContainer.style.display = "none";
-                clearTable();
             }
 
             function clearTable() {
                 var table = document.getElementById("cardTable");
                 var rows = table.getElementsByTagName("tr");
                 for (var i = 0; i < rows.length; i++) {
+                    var cells1 = rows[i].getElementsByTagName("tr");
                     var cells = rows[i].getElementsByTagName("td");
                     for (var j = 0; j < cells.length; j++) {
                         cells[j].textContent = ""; // Clear the text content of each cell
                     }
+//                        cells1[i].textContent = "";
                 }
             }
         </script>

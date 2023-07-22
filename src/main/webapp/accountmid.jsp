@@ -59,18 +59,18 @@
 
                             <div class="p-3 py-5">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 class="text-right">Profile Settings</h4>
+                                    <h4 class="text-right">Thông tin cá nhân</h4>
                                 </div>
                                 <div class="row mt-2">
-                                    <div class="col-md-6"><label class="labels">Account :</label><input type="text" class="form-control" name="acc" readonly value="${sessionScope.account.userName}">
+                                    <div class="col-md-6"><label class="labels">Tên đăng nhập :</label><input type="text" class="form-control" name="acc" readonly value="${sessionScope.account.userName}">
                                     </div>
-                                    <div class="col-md-6"><label class="labels">Name :</label><input type="text" class="form-control" name="name" value="${sessionScope.account.name}">
+                                    <div class="col-md-6"><label class="labels">Tên :</label><input type="text" class="form-control" name="name" value="${sessionScope.account.name}">
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <!--                                    <div class="col-md-12"><label class="labels">Age :</label><input type="text" class="form-control" name="agex" placeholder="age" value="" name="">
                                                                         </div>-->
-                                    <div class="col-md-12"><label class="labels">Phone Number :</label><input type="text" class="form-control" name="phonex" id="phone" placeholder="phone number" value="${sessionScope.account.phone}">
+                                    <div class="col-md-12"><label class="labels">Số điện thoại :</label><input type="text" class="form-control" name="phonex" id="phone" placeholder="phone number" value="${sessionScope.account.phone}">
                                     </div>
                                     <!--                                    <div class="col-md-12"><label class="labels">Address :</label><input type="text" class="form-control" name="addressx" placeholder="address" value="">
                                                                         </div>-->
@@ -79,15 +79,14 @@
 
                                 <div>
                                     <div style="margin-top: 20px;">
-                                        <h5 style="display: inline-block;">Surplus :</h5> 
-                                        <h5 style="color: #ee4d2d;display: inline-block;"><s:formatNumber value="${sessionScope.account.money}" type="currency"/></h5>
+                                        <h5 style="display: inline-block;">Tiền hiện có :</h5> 
+                                        <h5 style="color: #ee4d2d;display: inline-block;"><s:formatNumber value="${sessionScope.account.money}" /></h5>
                                         <h5 style="margin-left: 5px;display: inline-block;">VND</h5>
                                     </div>
                                 </div>
                                 <div class="mt-5 text-center">
                                     <!--                                    <button class="btn btn-primary profile-button" type="button">-->
-                                    <h3 style="color: red;">${requestScope.err2}</h3>
-                                    <input type="submit" value="Save Profile">
+                                    <input type="submit" value="Lưu">
 
                                     <!--                                    </button>-->
                                 </div>
@@ -99,23 +98,22 @@
                     <form action="newPass?mode=1" method="post">
                         <div class="p-3 py-5">
                             <div class="d-flex justify-content-between align-items-center experience">
-                                <h5>Input Change Password :</h5>
+                                <h5>Thay đổi mật khẩu:</h5>
                             </div><br>
-                            <div class="col-md-12"><label class="labels">Password Old : </label><input type="password" class="form-control" readonly name="passold" value="${sessionScope.account.password}">
-                                
+                            <div class="col-md-12"><label class="labels">Mật khẩu cũ : </label><input type="password" class="form-control" readonly name="passold" value="${sessionScope.account.password}">
+
                             </div> <br>
-                            <div class="col-md-12"><label class="labels">New Password : </label><input type="text" class="form-control" placeholder="New pass" name="pass">
-                                
+                            <div class="col-md-12"><label class="labels">Mật khẩu mới : </label><input type="text" class="form-control" placeholder="New pass" name="pass">
+
                             </div><br/>
-                            <div class="col-md-12"><label class="labels">Re-New Password : </label><input type="text" class="form-control" placeholder="Re-new pass" name="rePass">
-                                
+                            <div class="col-md-12"><label class="labels">Nhập lại mật khẩu mới : </label><input type="text" class="form-control" placeholder="Re-new pass" name="rePass">
+
                             </div>
 
                         </div>
                         <label class="labels">${requestScope.succ}</label>
                         <div class="col-md-7" style="float: right;">
-                            <h4 style="color: red;">${requestScope.err1}</h4>
-                            <input type="submit" value="Change Password">
+                            <input type="submit" value="Lưu">
                         </div>
 
                     </form>
@@ -125,7 +123,14 @@
 
         </div>
     </div>
-
+    <script >
+        window.onload = function () {
+            var successMessage = '<%= request.getAttribute("err1")%>';
+            if (successMessage && successMessage !== "null") {
+                alert(successMessage);
+            }
+        };
+    </script>
 </body>
 
 </html>

@@ -192,22 +192,12 @@
                                         <a href="shop" class="nav-item nav-link" style="float: left;">Shopping</a>
 <!--                                        <a href="myshop" class="nav-item nav-link" style="float: left;">My Shop</a>
                                         <a href="cart" class="nav-item nav-link" style="float: left;">Cart</a>-->
-                                        <a href="vnpay_pay.jsp" class="nav-item nav-link" style="float: left;">Load Money</a>
                                         <a href="myhistorybill" class="nav-item nav-link" style="float: left;">History Buy</a>
                                     </div>
 
                                 </div>
                             </div>   
                             <div class="navbar-nav ml-auto py-0 d-none d-lg-block" style="float: right; display: inline;">
-                                <a href="" class="btn px-0" style="float: right;">
-                                    <i class="fas fa-heart text-primary"></i>
-                                    <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">0</span>
-                                </a>
-                                <a href="cart" class="btn px-0 ml-3" style="float: right; margin-right:20px;">
-                                    <i class="fas fa-shopping-cart text-primary"></i>
-                                    <span class="badge text-secondary border border-secondary rounded-circle" style="padding-bottom: 2px;">${sessionScope.sizecart}</span>
-                                </a>
-
                             </div>
                         </nav>
 

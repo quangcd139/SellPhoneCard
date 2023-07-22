@@ -64,7 +64,7 @@ public class detailHistoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String transactionId = request.getParameter("id");
+        String transactionId = request.getParameter("detailId");
         CardDAO c = new CardDAO();
         List<Card> listCard = c.getCardByTranId(Integer.parseInt(transactionId));
         int id = listCard.get(0).getProductId();
