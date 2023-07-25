@@ -39,7 +39,7 @@
             <br><br>
 
             <label for="amount">Amount:</label>
-            <input type="text" name="amount" id="amount" required>
+            <input type="number" name="amount" id="amount" required max="10000000" min="0">
 
             <br><br>
 

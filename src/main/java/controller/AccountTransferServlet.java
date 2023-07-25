@@ -31,7 +31,7 @@ public class AccountTransferServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        try ( PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             out.println("<!DOCTYPE html>");
             out.println("<html>");
@@ -57,7 +57,7 @@ public class AccountTransferServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String slParam = request.getParameter("sl");
         int limit = 3; // Giá trị mặc định cho limit
 
@@ -102,7 +102,7 @@ public class AccountTransferServlet extends HttpServlet {
         int page = Math.min(soTrang, Math.max(1, xpage));
         page = Math.min(soTrang, Math.max(1, page));
         int offset = (page - 1) * limit;
-        
+
         List<Account> list = ad.getAllAccount(limit, offset);
         request.setAttribute("list", list);
         request.setAttribute("soTrang", soTrang);
@@ -132,17 +132,25 @@ public class AccountTransferServlet extends HttpServlet {
             String type = request.getParameter("type");
 //            String description = request.getParameter("description");           
             AccountDAO dao = new AccountDAO();
+            double money = dao.getMoney(toAccount);
+            if (type.equals("0")) {
+                if (money < amount) {
+                    request.getSession().setAttribute("transferFail", false);
+                    response.sendRedirect("AccountTransferServlet");
+                    return;
+                }
+            }
             // transfer money
             dao.transferMoney(fromAccount, toAccount, amount, type);
             // redirect to history transfer 
-            request.getSession().setAttribute("transferSuccess", true); 
+            request.getSession().setAttribute("transferSuccess", true);
             response.sendRedirect("AccountTransferServlet");
             // in ra thong bao
             PrintWriter out = response.getWriter();
             out.println("<script type=\"text/javascript\">");
             out.println("alert('Transfer money successfully');");
         } catch (Exception e) {
-            System.out.println("doPost: " + e.getMessage()); 
+            System.out.println("doPost: " + e.getMessage());
             response.sendRedirect("AccountTransferServlet");
         }
         processRequest(request, response);

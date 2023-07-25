@@ -170,14 +170,21 @@
 
     <body>
         <%-- Check if the transfer was successful and display the success message --%>
-        <% boolean transferSuccess = Boolean.TRUE.equals(session.getAttribute("transferSuccess")); %>
+        <% boolean transferSuccess = Boolean.TRUE.equals(session.getAttribute("transferSuccess"));
+            boolean transferFail = Boolean.FALSE.equals(session.getAttribute("transferFail"));
+        %>
         <% if (transferSuccess) { %>
         <script type="text/javascript">
                 alert("Transfer money successfully!");
         </script>
         <%-- Clear the session attribute to prevent showing the message on subsequent requests --%>
         <% session.removeAttribute("transferSuccess"); %>
-        <% }%>
+        <%}else if(transferFail){%>
+        <script type="text/javascript">
+                alert("Transfer money failed");
+        </script> 
+        <% session.removeAttribute("transferFail"); %>
+        <%}%>
         <div class="wrapper">
             <div class="sidebar" data-image="assets/img/sidebar-5.jpg">
                 <!--
@@ -839,7 +846,7 @@
                                     });
     </script>
     <script>
-            
+
 
             function saveSelectedOption() {
                 var select = document.getElementById('mySelect');

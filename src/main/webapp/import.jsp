@@ -162,6 +162,10 @@
                     x = "Thẻ đã được thêm <a href='manageProduct'>tại đây</a>";
                     x1 = "Import thành công";
                 }
+                if ('<%=request.getAttribute("err1")%>' !== "null") {
+                    x = "file không đúng định dạng";
+                    x1 = "Import Thất bại";
+                }
 
                 if (cardList.length != 0) {
                     x1 = "Import thất bại</br></br>Vui lòng kiểm tra lại các seri này";
